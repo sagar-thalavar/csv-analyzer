@@ -1,0 +1,309 @@
+employee_id,full_name,age,gender,department,job_level,city,remote_work,years_experience,salary,bonus,performance_score,projects_completed,satisfaction_score,training_hours,attrition_risk
+EMP1098,James Harris,23,Female,Operations,Mid,London,Yes,5,74499.85,13847.93,3.65,36,9.5,77,High
+EMP1153,Noah Taylor,36,Male,Finance,Junior,Toronto,Hybrid,4,86306.65,16214.67,4.63,37,5.3,5,Low
+EMP1044,Wendy White,29,Non-binary,Sales,Senior,Sydney,Hybrid,10,85964.22,0,2.17,12,2.7,94,Medium
+EMP1204,Henry Smith,36,Male,Sales,Junior,New York,Yes,2,74855.65,10300.01,2.75,16,3.4,104,High
+EMP1271,Zane Taylor,37,Male,HR,Mid,Mumbai,Hybrid,6,79223.3,0,1.52,28,3.5,46,Low
+EMP1177,Eva Jones,47,Female,Marketing,Mid,London,Hybrid,5,100376.41,17492.82,3.99,18,6.7,48,Medium
+EMP1189,Xander Davis,49,,Engineering,Mid,Tokyo,Hybrid,8,112137.09,0,1.8,39,1.5,85,High
+EMP1219,Tara Wilson,46,Non-binary,Sales,Manager,Tokyo,Hybrid,24,117344.26,7046.73,4.7,21,,66,Medium
+EMP1241,Karen Davis,58,Non-binary,Engineering,Junior,Tokyo,Yes,1,87634.45,16302.81,3.85,6,8.0,9,High
+EMP1129,Diana Johnson,24,Female,Marketing,Senior,Toronto,No,14,90680.89,6925.15,4.59,12,,111,Medium
+EMP1090,Leo Anderson,43,Male,Sales,Senior,Berlin,Yes,13,85291.07,14361.65,3.59,36,7.1,36,Medium
+EMP1052,Alice Wilson,39,Male,Finance,Junior,Sydney,No,2,86008.5,10005.75,3.32,32,9.7,60,Medium
+EMP1213,Karen Harris,60,Female,Operations,Junior,London,Yes,1,64813.2,9595.29,3.01,7,4.0,24,Medium
+EMP1187,Yara Williams,38,Male,Engineering,Lead,New York,Yes,19,140587.86,0,1.74,26,5.6,80,High
+EMP1223,Tara Williams,48,Non-binary,Marketing,Lead,Tokyo,Hybrid,15,92802.18,0,2.24,24,8.4,65,Low
+EMP1173,Sam Smith,36,Non-binary,Marketing,Senior,Berlin,Yes,10,75262.45,0,1.61,30,6.1,98,Medium
+EMP1250,Leo White,40,Non-binary,Engineering,Junior,Sydney,No,4,102531.54,17889.97,2.69,7,1.4,21,Medium
+EMP1028,Noah Taylor,32,Non-binary,HR,Lead,New York,No,15,81814.93,15150.25,3.16,33,7.0,79,Medium
+EMP1051,Maya Wilson,24,Female,Finance,Lead,Mumbai,No,18,111206.82,6902.19,3.23,39,3.3,11,Low
+EMP1097,Leo Smith,46,Male,HR,Junior,Berlin,Yes,2,54245.53,5755.14,2.89,2,3.9,12,High
+EMP1003,Blake Davis,45,Male,Engineering,Senior,Berlin,No,13,119441.83,0,2.47,14,7.0,89,High
+EMP1199,Carol Davis,38,Male,Sales,Senior,New York,No,13,102066.85,15471.04,3.3,29,6.0,70,Low
+EMP1245,Alice Jones,48,Female,HR,Lead,New York,Yes,16,96852.48,0,1.9,17,6.9,1,High
+EMP1124,Diana Thompson,38,Non-binary,Sales,Lead,Tokyo,Yes,18,92017.56,13480.24,4.02,16,3.5,38,Low
+EMP1174,Yara Thompson,49,Male,Sales,Lead,Mumbai,Hybrid,18,101427.58,13383.67,4.02,16,3.7,4,Medium
+EMP1201,Chase Taylor,58,Female,Engineering,Junior,Toronto,Hybrid,2,98137.11,5652.27,4.8,26,5.5,48,High
+EMP1292,Zane Martin,58,,Sales,Lead,Toronto,Yes,18,104443.65,20356.94,3.93,22,9.7,58,High
+EMP1156,Yara Taylor,46,Female,Engineering,Manager,London,Hybrid,21,129140.85,13349.51,3.22,38,6.9,10,High
+EMP1137,Chase Williams,33,Male,HR,Junior,Toronto,Hybrid,2,59282.22,0,2.5,27,4.4,114,Medium
+EMP1065,Henry Anderson,38,Non-binary,Marketing,Manager,Toronto,Hybrid,21,98434.93,0,2.17,9,6.7,115,High
+EMP1183,James Jones,31,Male,HR,Manager,Sydney,Hybrid,25,105344.41,19085.73,4.35,1,6.5,21,Medium
+EMP1038,Leo Garcia,41,Male,Finance,Manager,Sydney,Yes,20,130406.23,9723.72,4.22,20,6.2,116,Medium
+EMP1157,Iris Jones,46,Female,HR,Manager,Berlin,Yes,23,126186.49,9229.47,4.24,6,1.0,39,Medium
+EMP1054,Alice Thompson,50,,HR,Senior,London,No,14,94315.74,11768.15,3.68,36,2.2,36,Medium
+EMP1165,Yara Taylor,38,Male,HR,Junior,Sydney,Hybrid,4,59893.97,0,1.54,34,6.0,88,High
+EMP1055,Uma Davis,48,Male,Operations,Mid,London,Yes,6,79030.46,4113.63,2.59,30,9.5,82,Low
+EMP1100,Alice Anderson,45,Male,Marketing,Lead,Sydney,Hybrid,19,95966.1,,1.8,33,8.1,64,High
+EMP1071,Victor Anderson,34,Male,Finance,Manager,Toronto,No,21,115170.24,12636.59,2.76,6,,82,High
+EMP1080,Frank Jones,55,Male,Finance,Manager,Tokyo,No,22,118006.96,6443.01,3.72,30,4.1,47,Medium
+EMP1251,David Wilson,47,Male,Finance,Mid,Tokyo,Yes,7,88944.9,0,2.16,22,2.0,53,Low
+EMP1003,Blake Davis,45,Male,Engineering,Senior,Berlin,No,13,119441.83,0,2.47,14,7.0,89,High
+EMP1155,Xander Jones,44,Male,Operations,Manager,New York,No,24,108735.41,0,1.77,15,8.5,43,High
+EMP1117,Henry Miller,40,Female,Finance,Senior,Sydney,Hybrid,12,86423.38,0,1.67,31,3.6,1,Low
+EMP1109,Zane Taylor,40,Female,Operations,Senior,Toronto,Yes,12,95915.81,12708.8,3.98,12,8.1,65,Low
+EMP1102,Uma Garcia,30,Male,Operations,Lead,Mumbai,No,15,101062.94,0,2.14,3,3.6,5,Low
+EMP1087,Uma Taylor,26,Female,Operations,Senior,Tokyo,Hybrid,11,89019.87,0,2.03,20,8.2,75,Low
+EMP1103,Maya Thompson,34,Female,HR,Mid,Berlin,Yes,9,75102.45,0,1.63,22,3.5,102,Medium
+EMP1266,Maya Brown,26,Female,Finance,Junior,Sydney,Yes,1,76798.89,10586.05,4.15,19,8.1,38,High
+EMP1115,Blake Taylor,45,Non-binary,Operations,Senior,Sydney,Yes,12,83361.38,5803.2,4.91,21,3.2,15,Medium
+EMP1035,Xander Garcia,47,Non-binary,HR,Mid,Sydney,Hybrid,5,53325.47,6938.63,4.93,2,1.8,54,Low
+EMP1248,Henry Williams,29,Female,HR,Lead,Mumbai,Hybrid,15,89761.05,10507.45,4.5,2,,52,Low
+EMP1135,Sam Thompson,29,Non-binary,Marketing,Mid,London,Hybrid,6,70748.17,9059.39,2.65,38,5.4,115,High
+EMP1046,Yara Harris,25,Female,Engineering,Junior,Toronto,No,1,88751.16,6891.93,3.04,8,8.4,51,Medium
+EMP1267,Maya Smith,47,,HR,Mid,Berlin,Hybrid,6,62181.39,4381.13,3.37,10,3.7,113,High
+EMP1084,Blake Taylor,23,Female,Finance,Senior,London,Hybrid,14,95935.33,6454.15,2.96,30,8.5,117,Medium
+EMP1159,Xander Thompson,32,Male,Marketing,Lead,Berlin,No,19,103437.56,15804.99,3.32,18,5.4,8,Low
+EMP1139,Henry Davis,34,,HR,Senior,Toronto,Yes,12,78506.81,0,2.04,3,8.3,53,High
+EMP1092,Aria Jones,49,Non-binary,Operations,Manager,Berlin,Yes,23,112639.63,14525.89,3.9,24,3.8,27,Medium
+EMP1075,Olivia Williams,39,Non-binary,Engineering,Senior,Mumbai,Hybrid,11,120793.88,7229.8,3.63,36,7.4,48,High
+EMP1016,Bob Johnson,54,Male,Finance,Lead,Toronto,Yes,16,95144.49,0,2.05,5,6.4,86,Low
+EMP1106,Victor Thomas,60,Non-binary,Sales,Lead,Toronto,No,17,102407.84,7313.65,4.83,3,2.1,30,High
+EMP1272,Olivia Anderson,30,Non-binary,Sales,Lead,London,No,16,92085.62,16231.84,3.62,5,7.5,114,Low
+EMP1208,James Taylor,42,Male,Marketing,Mid,Mumbai,Hybrid,6,81851.28,10074.26,3.74,40,8.1,28,High
+EMP1012,Carol Martin,58,Non-binary,Marketing,Mid,Tokyo,Yes,9,85492.53,0,1.96,31,8.3,24,Low
+EMP1200,David Smith,27,Non-binary,Engineering,Manager,Sydney,No,25,144209.1,15262.51,4.38,5,1.2,8,Low
+EMP1025,Iris Garcia,60,Female,Finance,Mid,Berlin,Hybrid,9,91388.83,0,1.63,21,4.9,65,Low
+EMP1086,Xander Jones,26,Male,Marketing,Junior,Toronto,Hybrid,4,82412.36,13518.29,3.61,32,5.2,72,High
+EMP1070,Xander Thompson,53,Non-binary,HR,Lead,Tokyo,No,19,93974.93,6094.58,2.95,3,7.2,27,Medium
+EMP1283,Victor Jackson,55,Female,Finance,Senior,London,No,14,112372.44,6350.81,2.8,25,4.2,102,High
+EMP1046,Yara Harris,25,Female,Engineering,Junior,Toronto,No,1,88751.16,6891.93,3.04,8,8.4,51,Medium
+EMP1031,Olivia Martin,50,Non-binary,Finance,Manager,Toronto,Hybrid,20,118464.64,19343.8,2.61,33,4.8,116,High
+EMP1015,Maya Wilson,57,Non-binary,HR,Senior,Mumbai,No,10,84709.42,16399.54,2.98,10,2.7,27,Low
+EMP1148,Iris Harris,30,Non-binary,Operations,Manager,Sydney,No,21,102219.03,10510.82,4.06,12,9.3,69,High
+EMP1128,Diana Garcia,40,Female,HR,Manager,Berlin,Hybrid,21,112873.12,9020.64,3.17,4,9.2,11,High
+EMP1209,Wendy Moore,58,Female,Marketing,Mid,Toronto,Hybrid,6,74279.27,14285.26,4.05,3,2.6,40,High
+EMP1114,Tara Smith,47,Female,HR,Manager,Tokyo,Yes,21,86801.7,7528.46,2.56,4,2.4,53,Medium
+EMP1107,Tara Jones,26,Non-binary,Operations,Lead,London,Hybrid,15,80549.57,8522.31,4.82,24,4.6,83,Medium
+EMP1247,Diana Garcia,26,Female,Finance,Lead,Berlin,Yes,16,109337.72,19725.87,4.48,22,9.7,6,High
+EMP1164,Blake Jackson,27,Male,Finance,Junior,Toronto,Yes,2,87511.19,11423.35,4.63,23,2.5,78,Low
+EMP1009,Zane Moore,58,Male,Marketing,Junior,New York,Hybrid,2,67612.89,0,2.34,32,8.3,97,High
+EMP1036,Karen Miller,48,Female,HR,Senior,Toronto,Yes,11,71198.38,0,2.47,31,1.2,69,Low
+EMP1104,Maya Taylor,27,Non-binary,Marketing,Lead,Tokyo,Yes,16,98074.66,8827.51,4.29,28,6.4,105,Low
+EMP1205,Blake Thomas,59,Female,Sales,Mid,Toronto,Hybrid,6,70369.54,0,2.12,23,9.2,3,High
+EMP1018,Yara Williams,56,Male,Engineering,Lead,Sydney,No,15,114547.77,0,1.85,9,9.4,112,Low
+EMP1290,Alice Garcia,55,Male,Engineering,Mid,Mumbai,Hybrid,9,112584.12,15526.7,2.88,5,9.3,70,Medium
+EMP1238,Zane Johnson,25,Non-binary,HR,Manager,New York,Hybrid,21,97440.1,0,1.67,2,1.4,14,Medium
+EMP1004,Xander Davis,42,Male,Marketing,Lead,London,Yes,15,81447.88,10876.75,3.74,21,4.6,8,Low
+EMP1020,Eva Wilson,54,Female,Sales,Manager,Berlin,Yes,20,105795.08,,3.91,6,6.7,106,Medium
+EMP1252,Yara White,25,Non-binary,HR,Manager,Tokyo,Hybrid,22,91577.08,4638.44,4.87,31,9.3,99,Low
+EMP1094,Wendy Garcia,40,Non-binary,Operations,Lead,Toronto,No,15,99329.8,19412.85,4.02,15,5.8,39,Medium
+EMP1168,Rachel Garcia,33,,Sales,Lead,Mumbai,No,18,92428.05,13352.53,4.29,26,1.3,78,Low
+EMP1239,Wendy Jones,48,Non-binary,Marketing,Manager,New York,Hybrid,23,123289.84,6336.57,3.9,34,3.4,77,High
+EMP1206,Sam Miller,36,Non-binary,HR,Lead,London,Yes,18,89031.7,0,1.82,34,5.3,42,High
+EMP1027,Noah Taylor,48,Non-binary,HR,Manager,Tokyo,Hybrid,23,96915.7,6696.21,2.53,12,,38,Medium
+EMP1142,Diana Garcia,46,Non-binary,Operations,Manager,Berlin,Hybrid,22,96202.37,18397.55,4.9,27,4.7,38,Medium
+EMP1280,Uma Smith,50,Non-binary,Operations,Manager,Tokyo,No,24,104760.78,0,1.8,11,3.0,52,High
+EMP1256,Chase Jackson,25,Male,Engineering,Lead,Berlin,Yes,17,131745.29,0,1.69,19,7.2,18,Low
+EMP1011,Henry Davis,57,Male,Engineering,Senior,Sydney,Yes,11,108771.29,0,1.57,1,1.6,80,Low
+EMP1029,James Davis,37,Female,Marketing,Mid,Sydney,Yes,5,82971.95,0,1.59,30,4.7,80,High
+EMP1150,Diana Harris,39,Non-binary,Operations,Lead,Berlin,Yes,16,103613.25,5440.62,2.94,33,8.3,86,Medium
+EMP1298,Henry Wilson,45,Female,HR,Manager,Toronto,No,20,93183.81,10517.09,2.98,18,5.1,73,Low
+EMP1291,Leo Wilson,47,Non-binary,Marketing,Manager,New York,No,20,100662.3,11899.68,4.87,12,4.7,13,High
+EMP1259,James White,33,Non-binary,Marketing,Manager,Sydney,Yes,22,111033.21,0,1.76,25,1.4,35,High
+EMP1234,Carol Harris,50,Female,Sales,Manager,London,Yes,21,112713.23,0,1.7,37,7.9,62,Low
+EMP1118,Yara Thomas,57,Female,Sales,Junior,New York,No,2,63165.81,0,2.18,33,5.1,70,Medium
+EMP1268,Blake Thompson,27,Female,Marketing,Junior,London,Hybrid,4,89275.35,11795.85,2.88,23,2.9,115,High
+EMP1255,Frank Martin,44,Non-binary,Finance,Manager,Tokyo,Hybrid,23,121345.33,18996.96,3.73,37,9.5,90,Medium
+EMP1126,Yara Jones,38,Non-binary,Sales,Junior,Tokyo,Yes,2,68634.38,7986.05,2.71,13,8.5,34,High
+EMP1112,Frank Taylor,38,Male,Operations,Mid,Mumbai,Hybrid,8,68603.81,12135.33,4.63,18,2.1,38,High
+EMP1031,Olivia Martin,50,Non-binary,Finance,Manager,Toronto,Hybrid,20,118464.64,19343.8,2.61,33,4.8,116,High
+EMP1229,Iris Taylor,41,Male,Sales,Mid,London,Hybrid,9,93385.39,18007.33,3.8,16,9.1,103,High
+EMP1019,Aria Thompson,55,Male,Operations,Senior,Mumbai,Hybrid,10,75899.04,15034.46,3.64,20,9.4,13,Low
+EMP1154,Victor Johnson,47,Male,Marketing,Senior,Berlin,Yes,11,97224.59,0,2.0,37,3.2,106,Medium
+EMP1141,Diana Taylor,37,Female,Finance,Manager,London,Hybrid,20,120260.97,20775.97,4.2,34,3.0,38,Medium
+EMP1235,Noah Harris,34,Non-binary,HR,Junior,Berlin,Yes,1,61218.33,,1.63,21,,67,Low
+EMP1288,Tara Jackson,47,Non-binary,Engineering,Junior,Mumbai,Hybrid,3,99767.21,15830.48,3.63,19,7.4,76,Low
+EMP1289,Olivia Smith,34,Male,Marketing,Manager,Toronto,Hybrid,22,119275.28,15234.2,4.76,33,,29,High
+EMP1284,Noah Jones,60,,Sales,Lead,Tokyo,No,16,98546.82,0,1.79,13,1.0,95,Low
+EMP1282,Victor Jackson,56,Non-binary,Marketing,Manager,Toronto,Yes,20,115479.01,6450.14,3.65,6,,16,High
+EMP1057,Alice Moore,53,Male,Operations,Senior,Tokyo,Hybrid,10,93119.8,12756.34,4.43,31,4.1,70,High
+EMP1242,Olivia Moore,45,Non-binary,Sales,Lead,Berlin,No,15,108934.28,,4.56,8,1.9,97,Low
+EMP1265,Karen Johnson,38,Non-binary,Engineering,Junior,New York,Hybrid,3,96373.34,0,1.69,15,9.2,52,Medium
+EMP1081,Carol Johnson,27,Female,Marketing,Mid,Tokyo,Hybrid,6,85383.54,4906.51,4.14,28,5.4,56,Medium
+EMP1014,Blake Williams,27,,HR,Lead,London,No,18,101894.62,5320.29,3.39,32,5.3,110,Medium
+EMP1037,Yara Johnson,23,Non-binary,Engineering,Mid,London,Yes,8,123436.47,0,2.2,9,5.3,14,High
+EMP1127,Sam Davis,36,Male,Marketing,Junior,New York,No,2,87908.29,11397.86,3.84,22,,12,High
+EMP1023,Alice Garcia,37,Female,Operations,Senior,London,Hybrid,11,90671.89,10133.22,4.24,7,4.4,4,Medium
+EMP1017,Sam Johnson,55,Female,Finance,Junior,Berlin,Yes,3,87119.59,11983.37,2.97,21,3.1,50,Low
+EMP1147,Henry Jones,48,Female,Engineering,Mid,London,Yes,9,109615.93,15083.68,3.44,22,3.1,72,Low
+EMP1293,David Wilson,36,Female,Engineering,Senior,Tokyo,No,13,108748.98,21655.15,3.72,34,5.8,89,Medium
+EMP1068,Rachel Brown,45,Male,HR,Senior,Mumbai,Yes,12,76029.7,13180.71,3.55,31,1.2,113,High
+EMP1212,Henry Garcia,38,Male,HR,Junior,New York,No,3,66034.45,0,1.57,11,9.0,20,High
+EMP1278,Iris Miller,48,Female,Marketing,Mid,Mumbai,Yes,6,88770.36,13241.56,4.36,31,7.1,61,Low
+EMP1132,Alice Wilson,58,Male,HR,Mid,Berlin,Hybrid,8,68444.51,9402.16,2.65,24,7.2,7,High
+EMP1061,Xander Williams,28,Female,HR,Junior,London,Hybrid,4,54643.68,8501.66,4.16,20,9.1,5,Medium
+EMP1108,Paul Martin,40,Non-binary,HR,Lead,Tokyo,Yes,18,102604.28,8432.59,3.96,8,2.2,9,Medium
+EMP1244,Zane Jackson,32,Male,Operations,Mid,Tokyo,Hybrid,6,85161.75,0,1.71,31,8.2,86,Medium
+EMP1222,Iris Anderson,53,Non-binary,Engineering,Senior,Mumbai,Yes,11,117593.08,0,2.48,15,2.2,95,Medium
+EMP1056,Iris Jackson,54,Non-binary,HR,Lead,London,Yes,16,89198.82,16794.37,2.84,18,8.0,109,Medium
+EMP1096,Blake Anderson,27,Male,Finance,Junior,Berlin,No,4,86885.76,0,1.94,33,2.3,55,Low
+EMP1217,Bob Thomas,52,Non-binary,Finance,Senior,London,No,14,108447.9,,4.88,20,1.7,115,High
+EMP1041,Noah Wilson,50,Male,Sales,Mid,Toronto,No,8,85477.65,,4.41,37,6.5,48,Medium
+EMP1214,Iris Moore,25,,Sales,Mid,New York,No,8,88984.49,11002.24,3.42,6,3.7,84,High
+EMP1257,Bob Anderson,57,Male,HR,Junior,Mumbai,Hybrid,4,72058.37,10904.51,3.66,36,4.5,65,High
+EMP1295,Grace Davis,28,Male,Finance,Senior,New York,Hybrid,12,99796.7,0,2.05,32,6.5,97,High
+EMP1143,Henry Moore,57,Female,Operations,Mid,Tokyo,Hybrid,5,78133.57,14627.48,4.32,34,2.2,31,Medium
+EMP1170,Uma Taylor,33,Non-binary,Finance,Senior,Mumbai,No,13,97258.37,17197.97,2.72,40,6.3,86,Low
+EMP1048,Noah Moore,35,Non-binary,Finance,Manager,London,No,20,136869.91,0,1.85,6,,22,High
+EMP1095,Sam White,46,Non-binary,HR,Manager,Sydney,No,25,107064.36,0,2.49,11,8.4,102,High
+EMP1196,Chase Martin,54,Male,HR,Manager,Mumbai,No,23,108420.77,14866.18,4.12,5,6.3,7,Medium
+EMP1001,Uma Thompson,22,Male,HR,Mid,Mumbai,No,8,80015.87,7339.74,3.07,22,3.5,27,Medium
+EMP1059,Quinn Taylor,51,Male,Engineering,Lead,Mumbai,Yes,15,135755.34,0,1.85,27,8.8,19,Low
+EMP1273,Sam Thomas,56,Non-binary,Finance,Mid,Tokyo,Hybrid,7,93013.26,12346.5,4.67,10,4.3,28,High
+EMP1019,Aria Thompson,55,Male,Operations,Senior,Mumbai,Hybrid,10,75899.04,15034.46,3.64,20,9.4,13,Low
+EMP1221,Sam Harris,31,Non-binary,Engineering,Mid,Sydney,Hybrid,6,108120.21,0,2.46,26,1.3,113,Medium
+EMP1076,David Brown,36,Female,Operations,Manager,Berlin,No,21,110082.77,12605.63,4.53,26,4.7,12,Medium
+EMP1122,Xander Johnson,31,Non-binary,Finance,Lead,London,Yes,16,116195.75,,3.67,37,9.5,14,Low
+EMP1125,Wendy Miller,57,Non-binary,Operations,Manager,Berlin,No,23,117307.13,14308.01,3.21,8,6.2,69,Medium
+EMP1281,Tara Martin,51,Non-binary,Sales,Mid,Sydney,Yes,6,73246.99,,4.03,15,4.4,16,Low
+EMP1180,Bob Brown,51,Male,Operations,Lead,Tokyo,Yes,15,110325.21,0,2.05,9,8.9,38,Low
+EMP1120,Quinn White,47,Non-binary,Marketing,Manager,Mumbai,No,20,111437.01,10896.26,4.76,38,4.0,106,High
+EMP1073,David Smith,59,Female,Marketing,Junior,New York,Yes,1,79490.46,13375.44,2.75,17,1.5,94,Medium
+EMP1193,Sam Anderson,36,Non-binary,Engineering,Lead,New York,No,17,127768.35,7397.89,3.86,5,8.9,110,Medium
+EMP1194,Olivia Smith,45,Non-binary,Sales,Mid,Tokyo,Yes,7,76978.39,,4.09,35,7.8,31,Low
+EMP1297,Yara Garcia,22,Male,HR,Junior,Mumbai,Yes,4,68532.39,8156.08,3.94,25,6.2,41,Medium
+EMP1000,Uma Brown,56,Male,Engineering,Manager,Sydney,No,24,137309.47,20803.06,4.08,3,,27,Low
+EMP1002,Leo Wilson,40,Non-binary,Engineering,Manager,Sydney,No,24,134202.35,8296.39,4.73,37,2.7,8,Low
+EMP1077,Eva Harris,28,Non-binary,Engineering,Junior,Mumbai,No,3,93360.78,5973.64,4.41,9,6.0,75,High
+EMP1220,Sam Martin,28,Male,HR,Junior,Sydney,Yes,4,63307.93,10367.09,3.56,19,8.8,112,Medium
+EMP1066,Sam Anderson,30,Non-binary,Operations,Mid,Berlin,Hybrid,5,79646.01,6080.66,4.12,33,9.2,106,Low
+EMP1254,Wendy Martin,35,Male,Sales,Manager,London,Hybrid,23,102766.6,13671.78,4.08,19,7.2,117,High
+EMP1093,Eva Jones,56,Non-binary,Engineering,Senior,Sydney,Yes,10,101472.18,6613.06,4.46,22,8.9,79,Low
+EMP1078,Blake Jackson,35,Male,Operations,Junior,Mumbai,No,2,79222.99,10828.81,2.73,15,8.6,44,High
+EMP1225,Uma Brown,53,Non-binary,Operations,Junior,Tokyo,Yes,1,81282.29,0,2.35,31,6.3,44,Medium
+EMP1022,James Anderson,57,Female,Engineering,Senior,Sydney,Hybrid,12,118104.64,0,1.86,10,9.3,30,Low
+EMP1270,Sam Harris,26,Male,Sales,Senior,Berlin,No,12,97689.67,0,1.85,29,4.0,84,Medium
+EMP1192,Alice Johnson,24,Non-binary,Engineering,Mid,Toronto,Hybrid,8,116695.26,8967.35,4.72,27,3.0,31,Medium
+EMP1123,Wendy Miller,25,Non-binary,HR,Lead,London,Hybrid,17,100490.07,18899.99,4.21,14,6.0,84,Medium
+EMP1088,Bob Johnson,54,Female,Sales,Senior,Tokyo,Hybrid,10,100165.41,14248.66,4.49,36,9.6,94,Low
+EMP1216,Olivia Johnson,25,Male,Sales,Lead,Toronto,Hybrid,15,89407.66,0,2.44,7,1.8,44,High
+EMP1260,Alice Taylor,41,Female,HR,Manager,Toronto,Hybrid,23,103510.24,14443.0,4.75,36,4.2,100,High
+EMP1182,Sam Davis,49,Non-binary,Finance,Manager,London,No,22,120642.1,8214.41,2.7,5,3.1,11,High
+EMP1163,Victor Harris,31,Non-binary,Marketing,Manager,Tokyo,No,21,116561.2,10245.99,2.56,5,5.0,76,Medium
+EMP1269,Tara Wilson,58,Male,Marketing,Junior,Toronto,Hybrid,4,81906.91,0,2.13,30,6.8,9,Medium
+EMP1111,Uma Williams,57,Non-binary,HR,Lead,Sydney,Yes,15,84444.33,8586.06,3.88,9,4.9,116,Low
+EMP1144,Blake Anderson,60,Non-binary,Engineering,Lead,New York,Yes,18,126573.01,0,2.44,13,8.2,75,High
+EMP1262,Rachel Smith,37,Male,Engineering,Manager,Mumbai,No,22,131234.84,24644.73,3.75,25,9.2,120,Low
+EMP1161,Uma Jones,52,Female,Sales,Senior,London,No,11,78593.76,12126.53,3.61,21,3.6,88,High
+EMP1264,Uma Williams,35,Non-binary,Marketing,Manager,Toronto,Hybrid,22,107795.53,18901.92,3.9,28,6.8,120,Low
+EMP1152,Wendy Davis,24,Male,Sales,Manager,Tokyo,No,22,109145.06,,4.97,25,6.0,7,High
+EMP1151,David Martin,55,Female,Marketing,Mid,Toronto,No,8,87373.17,0,2.17,18,8.2,10,Medium
+EMP1045,Tara Moore,41,Male,Engineering,Mid,Mumbai,Hybrid,7,111656.7,11627.05,2.54,9,3.5,6,High
+EMP1198,Karen Jackson,29,Male,Engineering,Lead,London,Hybrid,18,118767.25,,3.08,20,8.4,89,High
+EMP1178,Maya Martin,59,Male,Operations,Mid,Toronto,Hybrid,9,75620.09,9316.9,3.09,6,7.6,58,High
+EMP1034,Paul Smith,56,Non-binary,Sales,Senior,London,No,10,86342.31,9744.01,4.84,15,3.5,62,Low
+EMP1211,David Smith,32,Female,Engineering,Senior,Tokyo,No,13,141071.98,15933.8,3.03,23,5.9,12,Medium
+EMP1231,Blake Garcia,28,Female,Operations,Lead,London,Hybrid,18,92902.07,0,2.13,17,7.5,71,Low
+EMP1069,Uma White,24,Male,Operations,Senior,Berlin,No,10,72426.84,4888.91,3.77,8,1.9,113,High
+EMP1258,Maya Jackson,50,Male,Operations,Senior,Mumbai,Hybrid,11,87399.54,7032.44,4.1,24,7.8,69,High
+EMP1119,Eva Brown,45,Male,HR,Senior,London,Hybrid,12,87680.83,,4.28,33,4.6,5,Low
+EMP1232,Henry Anderson,59,Female,Marketing,Manager,Tokyo,Yes,24,120974.93,12793.38,4.6,31,1.5,81,High
+EMP1035,Xander Garcia,47,Non-binary,HR,Mid,Sydney,Hybrid,5,53325.47,6938.63,4.93,2,1.8,54,Low
+EMP1091,Blake Jones,44,Female,Sales,Junior,Mumbai,Hybrid,3,77343.43,5507.95,3.54,26,2.2,90,Low
+EMP1246,Xander Davis,37,,Operations,Senior,Berlin,Hybrid,11,72673.62,8352.17,3.66,25,2.3,105,High
+EMP1008,Diana Brown,45,Male,Operations,Senior,Sydney,Hybrid,10,88187.08,0,2.2,1,6.4,62,Low
+EMP1007,Victor Brown,43,Male,Operations,Lead,Berlin,No,18,98524.82,16285.15,4.13,11,5.1,92,High
+EMP1043,Zane Smith,37,Female,Engineering,Senior,Mumbai,Hybrid,10,123586.63,0,2.28,24,5.3,67,Medium
+EMP1226,Wendy Williams,36,Non-binary,Sales,Junior,London,Hybrid,1,66190.47,,3.5,14,3.4,52,High
+EMP1033,Eva Miller,48,Male,Engineering,Senior,London,No,14,133869.33,,2.93,25,9.1,74,High
+EMP1279,Henry Johnson,54,Male,Marketing,Lead,Sydney,Yes,19,115271.28,8093.04,3.57,4,2.5,118,Low
+EMP1263,Diana Martin,24,Female,Sales,Lead,Mumbai,Yes,17,103484.9,12090.51,4.31,21,5.6,12,Low
+EMP1113,Sam Jones,43,Non-binary,Marketing,Manager,New York,Yes,22,127268.51,23582.87,3.69,6,1.4,82,High
+EMP1072,Henry Jones,35,Male,Finance,Mid,Berlin,Yes,7,106972.15,0,2.23,39,1.0,109,Low
+EMP1188,Carol Thompson,35,Male,Finance,Manager,Sydney,No,20,119919.02,0,1.78,26,6.3,97,High
+EMP1063,Iris Smith,50,Female,HR,Senior,Sydney,No,10,72289.31,5327.46,3.87,28,7.2,58,Medium
+EMP1058,Wendy Davis,52,Non-binary,Finance,Senior,Toronto,No,13,106825.73,0,1.65,25,9.9,101,High
+EMP1079,Zane Jackson,57,Male,Finance,Manager,Sydney,Hybrid,25,124862.56,17734.98,4.36,18,1.3,34,High
+EMP1099,David Johnson,26,Male,Marketing,Senior,Toronto,No,14,88211.13,12651.38,3.74,39,5.8,80,High
+EMP1167,David White,24,Non-binary,Operations,Manager,New York,Yes,23,106267.41,6384.14,3.08,22,6.8,86,Low
+EMP1233,Grace Martin,25,Male,Engineering,Manager,London,Yes,22,128560.17,12181.51,2.84,22,4.7,72,Medium
+EMP1039,Wendy Davis,60,Male,Engineering,Manager,Toronto,Hybrid,23,133523.14,23706.23,4.2,3,4.1,54,High
+EMP1158,Frank Jackson,44,Non-binary,HR,Lead,New York,Hybrid,18,84687.52,,1.59,39,8.1,110,Medium
+EMP1067,Zane Moore,26,,Operations,Senior,Toronto,Yes,11,88389.71,10628.84,4.31,26,9.7,102,High
+EMP1236,Henry Anderson,24,Female,Sales,Mid,Berlin,No,5,84561.3,5056.18,2.57,34,6.4,43,Medium
+EMP1021,Iris Garcia,22,Male,Operations,Lead,New York,Hybrid,15,99107.99,11313.48,3.43,10,5.9,106,Medium
+EMP1276,Bob Taylor,38,Non-binary,Engineering,Manager,Sydney,Hybrid,23,147513.85,0,2.46,12,4.4,48,Medium
+EMP1134,Diana Harris,27,Non-binary,Finance,Manager,Tokyo,Hybrid,22,127798.39,17811.54,3.88,24,1.7,72,Low
+EMP1274,Quinn Williams,32,Non-binary,HR,Senior,London,No,12,69807.03,11935.68,4.47,11,2.6,72,High
+EMP1197,Blake Taylor,50,Female,HR,Manager,London,Yes,23,95994.85,9497.51,4.41,13,2.2,98,High
+EMP1006,Quinn Harris,49,Non-binary,Engineering,Manager,New York,No,25,143687.91,24256.23,3.7,25,6.4,59,High
+EMP1013,Olivia Johnson,47,Non-binary,Operations,Manager,Berlin,Yes,21,97949.19,6343.45,4.94,16,2.7,68,Medium
+EMP1140,Grace Williams,24,Female,Engineering,Manager,Tokyo,Yes,20,141557.76,8111.46,3.96,35,3.0,110,Low
+EMP1121,Aria Smith,59,Female,Sales,Senior,Toronto,Hybrid,11,85068.76,16757.24,3.86,2,6.4,33,High
+EMP1224,Yara Martin,25,Male,Finance,Junior,New York,No,1,91324.41,0,2.2,4,9.3,90,Low
+EMP1016,Bob Johnson,54,Male,Finance,Lead,Toronto,Yes,16,95144.49,0,2.05,5,6.4,86,Low
+EMP1024,James Davis,26,Female,Marketing,Junior,Berlin,Hybrid,1,69479.49,0,2.48,33,,107,High
+EMP1026,Wendy Jackson,34,Female,Engineering,Lead,Tokyo,Yes,17,134480.13,21690.64,4.02,22,6.6,84,Low
+EMP1294,Aria Taylor,39,Male,Engineering,Lead,Mumbai,Hybrid,18,135669.97,24983.28,2.74,13,5.5,25,Low
+EMP1253,David Thomas,46,Female,Operations,Manager,Sydney,Hybrid,20,95956.72,9430.3,3.62,16,3.5,43,Medium
+EMP1053,Frank Taylor,47,Non-binary,HR,Manager,New York,No,23,96451.63,14408.67,3.23,6,3.8,41,Low
+EMP1020,Eva Wilson,54,Female,Sales,Manager,Berlin,Yes,20,12000,,3.91,6,6.7,106,Medium
+EMP1191,Iris Williams,58,Male,HR,Lead,Berlin,Yes,15,84167.98,4908.33,3.29,17,8.0,114,High
+EMP1287,Frank Brown,57,Non-binary,Marketing,Lead,Mumbai,Hybrid,17,93624.02,9434.09,2.9,4,2.4,81,Low
+EMP1190,Eva Smith,32,Female,Marketing,Lead,London,Hybrid,16,110112.98,17410.49,4.24,18,7.6,15,Low
+EMP1240,Xander Brown,55,Male,Sales,Junior,Berlin,Hybrid,4,77234.24,12874.47,3.63,27,3.7,5,High
+EMP1064,Henry Thomas,47,Female,Finance,Senior,New York,Hybrid,12,81229.47,15977.16,2.53,4,9.2,95,Medium
+EMP1169,Grace Miller,58,Male,Sales,Manager,Toronto,Hybrid,25,116975.89,19815.86,3.96,12,4.3,25,Medium
+EMP1060,Wendy Thomas,42,Non-binary,Operations,Junior,Mumbai,No,3,79737.23,8532.0,4.51,35,1.3,8,Low
+EMP1186,Henry Harris,22,Female,HR,Junior,Berlin,Yes,4,67838.79,0,1.75,25,8.7,72,Medium
+EMP1032,Olivia Wilson,50,Male,Marketing,Manager,Mumbai,No,21,107431.01,9226.91,3.2,16,3.4,40,High
+EMP1005,Grace Harris,37,Non-binary,HR,Manager,Sydney,Hybrid,21,114395.92,10264.98,3.11,17,7.7,54,High
+EMP1218,Sam Jones,35,Male,Engineering,Manager,London,Yes,25,121471.06,0,2.09,28,1.7,87,Medium
+EMP1047,Eva Moore,48,Non-binary,Engineering,Mid,Sydney,Hybrid,8,105358.34,0,1.91,15,8.0,48,Medium
+EMP1042,Grace Anderson,55,Male,Sales,Senior,New York,Yes,11,85804.03,11443.57,4.58,27,5.4,97,Low
+EMP1105,Victor Moore,50,Female,Sales,Lead,Tokyo,Yes,15,87846.32,10007.23,3.61,23,6.5,55,Medium
+EMP1299,Xander Wilson,31,Non-binary,Marketing,Lead,London,No,18,108652.43,11640.21,3.01,1,2.6,63,Low
+EMP1185,Tara Moore,41,Male,Operations,Junior,Sydney,Hybrid,1,68783.02,10232.22,4.47,33,2.7,50,Medium
+EMP1227,Alice Harris,22,Male,Marketing,Manager,Berlin,Hybrid,21,112919.66,0,2.11,20,7.4,90,High
+EMP1138,Carol Thompson,30,Non-binary,Marketing,Manager,London,Yes,21,112368.3,12243.51,4.97,2,9.8,59,High
+EMP1202,Iris Wilson,40,Female,HR,Mid,Tokyo,Hybrid,5,79853.97,0,2.36,31,1.5,35,Medium
+EMP1136,Noah White,38,Male,Finance,Junior,Mumbai,Yes,2,74449.05,3965.57,2.58,38,1.7,54,Medium
+EMP1149,Carol Johnson,36,Male,Engineering,Senior,Mumbai,Yes,14,111326.95,0,1.98,1,3.0,58,Medium
+EMP1162,Maya Wilson,57,Male,HR,Senior,Mumbai,No,12,89377.97,11783.98,3.57,14,4.9,37,High
+EMP1160,Carol Anderson,30,Female,Sales,Mid,New York,No,8,80697.68,9577.14,3.66,22,8.6,48,Medium
+EMP1116,Maya Jackson,32,Female,Marketing,Mid,Sydney,No,6,90038.75,7065.8,4.02,32,8.9,63,Low
+EMP1175,Blake Brown,44,Non-binary,Marketing,Mid,Sydney,Hybrid,7,82506.15,11401.41,4.34,28,2.5,17,Low
+EMP1082,Noah Brown,47,Non-binary,Sales,Manager,New York,Yes,22,103587.21,5885.06,3.83,14,3.7,27,Low
+EMP1277,Iris Thomas,44,Female,Marketing,Lead,Toronto,No,17,100366.91,17321.87,2.92,39,1.1,112,Low
+EMP1036,Karen Miller,48,Female,HR,Senior,Toronto,Yes,11,71198.38,0,2.47,31,1.2,69,Low
+EMP1207,Diana Taylor,31,Male,Engineering,Junior,Toronto,Hybrid,1,105457.5,0,2.02,24,9.6,47,High
+EMP1215,Frank Moore,47,Female,Engineering,Lead,Tokyo,Hybrid,16,128330.43,12352.19,4.45,17,1.8,69,Medium
+EMP1172,Karen White,46,Non-binary,Finance,Junior,Sydney,Hybrid,2,98679.09,7822.22,3.2,32,4.7,62,Medium
+EMP1085,Sam Thomas,43,Male,Finance,Junior,Berlin,Yes,3,81802.31,7897.29,2.89,5,5.6,14,High
+EMP1074,Yara Anderson,55,Female,Finance,Lead,Tokyo,Hybrid,19,123533.67,6980.24,4.81,2,1.5,61,Medium
+EMP1237,Chase Harris,47,Male,Sales,Manager,London,Yes,25,118692.67,0,2.16,9,2.9,2,High
+EMP1146,Karen Moore,54,Female,HR,Lead,Tokyo,Yes,15,79619.79,0,2.42,31,7.9,40,Low
+EMP1195,Leo Smith,41,Male,Sales,Junior,London,Hybrid,1,83340.38,8870.85,4.16,16,4.8,7,Low
+EMP1040,Blake Jackson,31,Female,HR,Junior,London,Hybrid,4,60265.22,7169.2,4.62,34,9.7,34,High
+EMP1228,Olivia Wilson,22,Non-binary,Marketing,Lead,Mumbai,No,15,95878.0,13199.82,3.68,36,6.8,77,Medium
+EMP1249,Tara Moore,51,Female,Finance,Lead,Berlin,Yes,18,106126.06,0,2.22,15,8.6,42,High
+EMP1261,Carol Martin,44,Male,Marketing,Senior,London,Hybrid,14,96325.82,10645.21,3.4,22,4.0,37,Low
+EMP1166,Victor Martin,27,Male,Marketing,Senior,Toronto,Hybrid,12,102785.26,19332.07,2.53,10,4.1,43,Medium
+EMP1181,Leo Wilson,25,Female,Engineering,Senior,Mumbai,No,12,118481.21,17456.63,3.83,15,4.9,11,High
+EMP1145,Diana Taylor,34,Non-binary,Sales,Junior,New York,Hybrid,1,64665.36,0,2.24,31,9.2,89,High
+EMP1089,Karen Harris,43,Non-binary,Finance,Mid,New York,Hybrid,5,98412.79,11571.22,4.85,12,1.4,90,Medium
+EMP1275,Leo Johnson,45,Male,Marketing,Manager,New York,Hybrid,25,116839.4,6943.67,3.21,14,5.7,101,Medium
+EMP1101,Maya Anderson,26,Female,Sales,Manager,London,Hybrid,24,117117.04,0,1.56,7,7.9,94,Medium
+EMP1179,Rachel Thomas,42,Female,Marketing,Senior,Berlin,Hybrid,14,81791.29,10159.07,4.39,37,2.2,109,Medium
+EMP1062,Eva Davis,27,Non-binary,Finance,Senior,Toronto,No,14,94211.7,0,2.09,40,7.1,63,High
+EMP1210,Eva Taylor,27,Non-binary,Operations,Junior,Mumbai,Hybrid,3,72113.26,0,2.09,22,5.0,33,Low
+EMP1010,Rachel Garcia,56,Non-binary,Sales,Lead,Mumbai,Yes,17,350000,0,2.24,20,4.6,85,High
+EMP1176,Rachel Wilson,54,Non-binary,Finance,Lead,Toronto,Yes,18,125310.98,17031.06,2.52,9,9.7,100,Medium
+EMP1131,Karen Moore,47,Female,Finance,Manager,Sydney,No,22,120914.55,9228.71,4.15,6,4.6,12,Low
+EMP1285,Uma Miller,49,Non-binary,Operations,Senior,Sydney,No,11,67327.53,4442.77,2.93,17,8.7,54,High
+EMP1286,Yara Miller,38,Female,HR,Lead,Sydney,No,18,94334.75,12568.85,2.8,26,7.6,109,High
+EMP1296,Karen Harris,36,Non-binary,Finance,Mid,London,Yes,9,75162.57,,4.71,34,8.2,61,High
+EMP1184,Diana Jackson,29,Non-binary,Finance,Manager,Mumbai,No,22,116363.65,8262.05,4.64,23,9.7,40,Low
+EMP1133,Quinn Moore,45,Non-binary,Operations,Junior,London,Yes,4,74271.03,14192.85,3.74,9,5.3,58,High
+EMP1171,Leo Jones,46,Female,Finance,Senior,London,No,13,98551.15,6965.6,2.96,35,7.2,82,Low
+EMP1230,Alice Harris,58,Male,Sales,Mid,Berlin,Hybrid,9,90992.58,12507.25,4.08,15,7.2,81,Medium
+EMP1049,Tara Harris,40,Non-binary,Sales,Junior,Toronto,No,2,79102.73,0,2.31,5,7.2,118,Medium
+EMP1243,Karen Anderson,27,Female,HR,Manager,Toronto,No,20,100535.29,0,2.44,12,2.0,51,Medium
+EMP1130,David Taylor,54,,Sales,Lead,Berlin,Yes,15,104992.37,20030.87,3.23,8,4.0,93,Medium
+EMP1110,Zane Harris,27,Male,Engineering,Senior,Berlin,No,12,109362.04,14517.49,4.31,31,5.7,98,Medium
+EMP1030,Henry Jones,49,Male,Operations,Manager,London,Hybrid,23,119731.34,7900.84,4.2,34,5.2,71,Low
+EMP1083,Paul Jackson,54,Non-binary,Marketing,Mid,Toronto,Hybrid,5,72678.75,,2.83,23,,110,High
+EMP1050,Diana Miller,26,Male,HR,Junior,London,No,4,56095.1,9760.25,4.68,39,7.7,72,Medium
+EMP1203,Quinn Davis,44,Female,Operations,Lead,Sydney,No,18,99801.06,19801.58,4.28,23,9.2,64,Medium
