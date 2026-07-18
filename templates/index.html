@@ -3,25 +3,27 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>CSV Analyzer Pro</title>
+<title>OmniFile | CSV & PDF Tools Suite</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #080810;
-    --surface: #0f0f1a;
-    --surface2: #16162a;
-    --surface3: #1e1e36;
-    --border: #2a2a44;
-    --border2: #3a3a5c;
+    --bg: #07070c;
+    --surface: #0c0c16;
+    --surface2: #121222;
+    --surface3: #181830;
+    --border: #22223c;
+    --border2: #33335c;
     --accent: #00d4aa;
+    --accent-glow: rgba(0, 212, 170, 0.15);
     --accent2: #7c3aed;
+    --accent2-glow: rgba(124, 58, 237, 0.15);
     --accent3: #f59e0b;
     --danger: #ef4444;
-    --text: #e0e0f0;
-    --muted: #8888aa;
+    --text: #e2e2ec;
+    --muted: #84849a;
     --font-mono: 'JetBrains Mono', monospace;
-    --font-display: 'Syne', sans-serif;
+    --font-display: 'Outfit', sans-serif;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,31 +31,31 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: var(--font-mono);
+    font-family: var(--font-display);
     font-size: 13px;
     line-height: 1.6;
     min-height: 100vh;
     overflow-x: hidden;
   }
 
-  /* Grid noise texture */
+  /* Grid noise background */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(0,212,170,0.015) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,212,170,0.015) 1px, transparent 1px);
-    background-size: 40px 40px;
+      linear-gradient(rgba(0, 212, 170, 0.012) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 212, 170, 0.012) 1px, transparent 1px);
+    background-size: 32px 32px;
     pointer-events: none;
     z-index: 0;
   }
 
-  /* ── Layout ── */
   .shell { display: flex; min-height: 100vh; position: relative; z-index: 1; }
 
+  /* ── Sidebar ── */
   .sidebar {
-    width: 240px;
+    width: 250px;
     flex-shrink: 0;
     background: var(--surface);
     border-right: 1px solid var(--border);
@@ -66,84 +68,90 @@
   }
 
   .logo {
-    padding: 24px 20px 20px;
+    padding: 24px 20px;
     border-bottom: 1px solid var(--border);
+    cursor: pointer;
   }
 
   .logo h1 {
-    font-family: var(--font-display);
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 800;
-    color: var(--accent);
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     letter-spacing: -0.5px;
     line-height: 1.2;
   }
 
   .logo span {
-    font-size: 10px;
+    font-size: 9px;
+    font-family: var(--font-mono);
     color: var(--muted);
-    letter-spacing: 2px;
+    letter-spacing: 2.5px;
     text-transform: uppercase;
-    font-weight: 300;
   }
 
   .nav { padding: 16px 0; flex: 1; }
 
   .nav-section {
-    padding: 6px 20px 4px;
+    padding: 10px 20px 4px;
     font-size: 9px;
-    letter-spacing: 2px;
+    font-family: var(--font-mono);
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     color: var(--muted);
-    margin-top: 8px;
   }
 
   .nav-btn {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     width: 100%;
-    padding: 9px 20px;
+    padding: 8px 20px;
     background: none;
     border: none;
     color: var(--muted);
     cursor: pointer;
-    font-family: var(--font-mono);
-    font-size: 12px;
+    font-family: var(--font-display);
+    font-size: 13px;
     text-align: left;
-    transition: all 0.15s;
-    border-left: 2px solid transparent;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
   }
 
   .nav-btn:hover { color: var(--text); background: var(--surface2); }
-  .nav-btn.active { color: var(--accent); border-left-color: var(--accent); background: rgba(0,212,170,0.05); }
-  .nav-btn .icon { font-size: 14px; width: 18px; text-align: center; }
+  .nav-btn.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-glow); }
+  .nav-btn .icon { font-size: 15px; width: 18px; text-align: center; }
 
-  .main { margin-left: 240px; flex: 1; padding: 28px 32px; }
+  .main { margin-left: 250px; flex: 1; padding: 24px 32px; display: flex; flex-direction: column; }
 
-  /* ── Topbar ── */
+  /* ── Header / Topbar ── */
   .topbar {
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 28px;
-    padding-bottom: 20px;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
     border-bottom: 1px solid var(--border);
   }
 
-  .file-info {
-    flex: 1;
+  .header-title h2 { font-size: 20px; font-weight: 700; color: var(--text); }
+  .header-title p { font-size: 12px; color: var(--muted); }
+
+  .file-badge-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    margin-top: 6px;
   }
 
   .file-badge {
     background: var(--surface2);
     border: 1px solid var(--border2);
     border-radius: 4px;
-    padding: 4px 10px;
+    padding: 3px 8px;
     font-size: 11px;
+    font-family: var(--font-mono);
     color: var(--accent);
   }
 
@@ -151,673 +159,789 @@
     background: var(--surface2);
     border: 1px solid var(--border);
     border-radius: 4px;
-    padding: 4px 10px;
+    padding: 3px 8px;
     font-size: 11px;
+    font-family: var(--font-mono);
     color: var(--muted);
   }
 
   .stat-pill strong { color: var(--text); }
 
-  /* ── Upload Zone ── */
-  #upload-zone {
-    border: 2px dashed var(--border2);
-    border-radius: 8px;
-    padding: 60px 40px;
-    text-align: center;
+  /* ── Alert Banner ── */
+  .alert-banner {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 6px;
+    padding: 10px 16px;
+    color: #fca5a5;
+    font-size: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .alert-banner .icon { font-size: 16px; }
+
+  /* ── Grid Directory (Dashboard) ── */
+  .dashboard-filters { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+  .filter-tab {
+    padding: 6px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    color: var(--muted);
     cursor: pointer;
-    transition: all 0.2s;
-    background: var(--surface);
-    max-width: 600px;
-    margin: 80px auto;
+    font-family: var(--font-display);
+    font-size: 12px;
+    transition: all 0.15s;
+  }
+  .filter-tab:hover { color: var(--text); border-color: var(--border2); }
+  .filter-tab.active { background: var(--accent2); color: #fff; border-color: var(--accent2); box-shadow: 0 4px 12px var(--accent2-glow); }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
   }
 
-  #upload-zone:hover, #upload-zone.drag { border-color: var(--accent); background: rgba(0,212,170,0.04); }
-  #upload-zone .up-icon { font-size: 40px; margin-bottom: 16px; }
-  #upload-zone h2 { font-family: var(--font-display); font-size: 22px; color: var(--text); margin-bottom: 8px; }
-  #upload-zone p { color: var(--muted); font-size: 12px; }
-  #csv-file { display: none; }
-
-  /* ── Panels / Cards ── */
-  .panel {
+  .tool-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 6px;
-    margin-bottom: 20px;
+    border-radius: 10px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .tool-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--border2);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  .tool-card:hover::before { opacity: 1; }
+
+  .tool-icon {
+    font-size: 26px;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .tool-card:nth-child(even) .tool-icon { color: var(--accent2); }
+
+  .tool-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .tool-desc { font-size: 11.5px; color: var(--muted); line-height: 1.4; flex: 1; }
+  
+  .tool-badge {
+    position: absolute;
+    top: 12px; right: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-family: var(--font-mono);
+    font-weight: 500;
+  }
+  .badge-active { background: rgba(0, 212, 170, 0.15); color: var(--accent); border: 1px solid var(--accent); }
+  .badge-coming { background: rgba(245, 158, 11, 0.15); color: var(--accent3); border: 1px solid var(--accent3); }
+
+  /* ── Workspaces Viewport ── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* Split layout */
+  .workspace { display: grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 1024px) { .workspace { grid-template-columns: 1fr; } }
+
+  .control-pane {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .preview-pane {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
   }
 
   .panel-header {
-    padding: 14px 18px;
     border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+    margin-bottom: 16px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: space-between;
+  }
+  .panel-title { font-size: 14px; font-weight: 600; color: var(--text); }
+
+  /* ── Upload & Drop Zones ── */
+  .dropzone {
+    border: 2px dashed var(--border2);
+    border-radius: 8px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
     background: var(--surface2);
+    margin-bottom: 16px;
   }
+  .dropzone:hover, .dropzone.drag { border-color: var(--accent); background: rgba(0, 212, 170, 0.03); }
+  .dropzone .up-icon { font-size: 32px; margin-bottom: 12px; color: var(--muted); }
+  .dropzone h4 { font-size: 14px; margin-bottom: 4px; color: var(--text); }
+  .dropzone p { font-size: 11px; color: var(--muted); }
+  .file-input { display: none; }
 
-  .panel-title {
-    font-family: var(--font-display);
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-    letter-spacing: 0.3px;
-  }
-
-  .panel-body { padding: 18px; }
-
-  /* ── Stats Grid ── */
-  .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
-
-  .stat-card {
+  /* ── Form Controls ── */
+  .form-group { margin-bottom: 14px; }
+  label { display: block; font-size: 11.5px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+  input[type="text"], input[type="number"], input[type="password"], select, textarea {
+    width: 100%;
     background: var(--surface2);
     border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 14px 16px;
+    border-radius: 4px;
+    color: var(--text);
+    padding: 8px 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    outline: none;
+    transition: all 0.15s;
   }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); background: var(--surface3); }
+  
+  .form-row { display: flex; gap: 10px; }
+  .form-row .form-group { flex: 1; }
 
-  .stat-card .label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-  .stat-card .value { font-size: 22px; font-weight: 700; color: var(--accent); font-family: var(--font-display); }
-  .stat-card .sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 9px 16px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+  .btn-primary { background: var(--accent); color: #07070c; }
+  .btn-primary:hover { background: #00bfa0; box-shadow: 0 0 12px rgba(0, 212, 170, 0.3); }
+  
+  .btn-secondary { background: transparent; border-color: var(--border2); color: var(--text); }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+  
+  .btn-danger { background: transparent; border-color: var(--danger); color: var(--danger); }
+  .btn-danger:hover { background: var(--danger); color: #fff; }
 
-  /* ── Table ── */
-  .table-wrap { overflow-x: auto; max-height: 420px; overflow-y: auto; }
+  .btn-purple { background: var(--accent2); color: #fff; }
+  .btn-purple:hover { background: #6d28d9; box-shadow: 0 0 12px rgba(124, 58, 237, 0.3); }
 
-  table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+  /* ── Drag & Drop Ordering UI ── */
+  .order-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; max-height: 250px; overflow-y: auto; }
+  .order-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: grab;
+  }
+  .order-item.dragging { opacity: 0.5; border-style: dashed; }
+  .order-item span { font-family: var(--font-mono); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+  .order-item .handle { cursor: grab; color: var(--muted); font-size: 16px; }
+
+  /* ── Interactive Signature Pad ── */
+  .canvas-container {
+    background: #000;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    position: relative;
+    margin-bottom: 12px;
+    touch-action: none;
+  }
+  canvas#signature-pad { display: block; width: 100%; height: 150px; cursor: crosshair; }
+  
+  .canvas-tools { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+  .color-dot { width: 16px; height: 16px; border-radius: 99px; cursor: pointer; border: 2px solid transparent; }
+  .color-dot.active { border-color: #fff; }
+
+  /* ── PDF Page Visual Signing Grid ── */
+  .sign-preview-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border: 1px solid var(--border);
+    background: #05050a;
+    padding: 10px;
+    border-radius: 6px;
+    overflow: auto;
+    flex: 1;
+  }
+  .pdf-render-container { position: relative; display: inline-block; }
+  .pdf-render-img { display: block; max-width: 100%; height: auto; user-select: none; }
+  
+  /* Signature overlay token on canvas */
+  .sig-token {
+    position: absolute;
+    border: 1.5px dashed var(--accent);
+    background: rgba(0, 212, 170, 0.15);
+    cursor: move;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 50px;
+    user-select: none;
+  }
+  .sig-token span { font-size: 9px; font-weight: bold; color: var(--accent); text-shadow: 0 1px 2px #000; }
+  
+  /* ── Tables & Data Grids ── */
+  .table-wrap { overflow-x: auto; flex: 1; max-height: 440px; }
+  table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 11px; }
   th {
-    background: var(--surface3);
+    background: var(--surface2);
     padding: 8px 12px;
     text-align: left;
     color: var(--accent);
     font-size: 10px;
-    letter-spacing: 1px;
+    font-weight: 600;
     text-transform: uppercase;
-    position: sticky;
-    top: 0;
-    z-index: 2;
+    position: sticky; top: 0; z-index: 2;
     border-bottom: 1px solid var(--border2);
-    white-space: nowrap;
   }
-  td { padding: 7px 12px; border-bottom: 1px solid var(--border); color: var(--text); white-space: nowrap; }
-  tr:hover td { background: rgba(0,212,170,0.03); }
+  td { padding: 6px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
+  tr:hover td { background: rgba(0, 212, 170, 0.02); }
 
-  /* ── Form Controls ── */
-  label { font-size: 11px; color: var(--muted); display: block; margin-bottom: 4px; }
-  input, select, textarea {
-    background: var(--surface2);
-    border: 1px solid var(--border2);
+  /* Stats cards */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
+  .stat-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; }
+  .stat-card .label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-card .value { font-size: 18px; font-weight: 700; color: var(--accent); }
+  .stat-card .sub { font-size: 9px; color: var(--muted); }
+
+  /* ── Logs and outputs ── */
+  .log-box {
+    background: #040408;
+    border: 1px solid var(--border);
     border-radius: 4px;
-    color: var(--text);
+    padding: 10px 14px;
     font-family: var(--font-mono);
-    font-size: 12px;
-    padding: 7px 10px;
-    width: 100%;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  input:focus, select:focus { border-color: var(--accent); }
-  select option { background: var(--surface3); }
-
-  .form-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-  .form-group { display: flex; flex-direction: column; gap: 4px; min-width: 140px; }
-
-  .btn {
-    padding: 7px 16px;
-    border-radius: 4px;
-    border: 1px solid transparent;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
+    font-size: 11px;
+    color: var(--accent);
+    max-height: 150px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    margin-top: 10px;
   }
 
-  .btn-primary { background: var(--accent); color: #000; font-weight: 600; }
-  .btn-primary:hover { background: #00bfa0; }
-  .btn-secondary { background: transparent; border-color: var(--border2); color: var(--muted); }
-  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-danger { background: transparent; border-color: var(--danger); color: var(--danger); }
-  .btn-danger:hover { background: var(--danger); color: #fff; }
-  .btn-purple { background: var(--accent2); color: #fff; }
-  .btn-purple:hover { background: #6d28d9; }
-  .btn-amber { background: var(--accent3); color: #000; font-weight: 600; }
-  .btn-amber:hover { background: #d97706; }
+  /* ── Chart Container ── */
+  .chart-out { display: flex; justify-content: center; align-items: center; flex: 1; }
+  .chart-img { max-width: 100%; border-radius: 4px; border: 1px solid var(--border); }
+  .chart-placeholder { text-align: center; padding: 40px; color: var(--muted); font-size: 13px; }
 
-  /* ── Tabs ── */
-  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
-  .tab {
-    padding: 9px 18px;
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-    transition: all 0.15s;
-  }
-  .tab:hover { color: var(--text); }
-  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-  /* ── Chart display ── */
-  .chart-img { width: 100%; border-radius: 4px; display: block; }
-  .chart-placeholder { text-align: center; padding: 40px; color: var(--muted); }
-
-  /* ── Filter builder ── */
+  /* ── Filter lists ── */
+  .filter-rows { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
   .filter-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    padding: 8px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
+    display: flex; gap: 6px; align-items: center;
+    padding: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px;
   }
+  .filter-row select, .filter-row input { flex: 1; min-width: 60px; padding: 5px; }
 
-  .filter-row select, .filter-row input { width: auto; flex: 1; min-width: 100px; }
-
-  /* ── Clean ops ── */
-  .op-card {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 12px 14px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  /* ── Section view ── */
-  .view { display: none; }
-  .view.active { display: block; }
-
-  /* ── Toast ── */
+  /* ── Toast notifications ── */
   #toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
+    position: fixed; bottom: 24px; right: 24px;
     background: var(--surface3);
     border: 1px solid var(--border2);
     border-radius: 6px;
-    padding: 12px 18px;
+    padding: 10px 16px;
     font-size: 12px;
     z-index: 9999;
     opacity: 0;
-    transform: translateY(12px);
-    transition: all 0.25s;
-    max-width: 320px;
+    transform: translateY(10px);
+    transition: all 0.2s;
   }
   #toast.show { opacity: 1; transform: translateY(0); }
   #toast.success { border-color: var(--accent); color: var(--accent); }
   #toast.error { border-color: var(--danger); color: var(--danger); }
 
-  /* ── Log output ── */
-  .log-box {
-    background: #050508;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 12px;
-    font-size: 11px;
-    color: var(--accent);
-    max-height: 200px;
-    overflow-y: auto;
-    margin-top: 12px;
-    white-space: pre-wrap;
-  }
-
-  /* ── Badge ── */
-  .badge {
-    display: inline-block;
-    padding: 1px 7px;
-    border-radius: 3px;
-    font-size: 10px;
-    font-weight: 600;
-  }
-  .badge-numeric { background: rgba(0,212,170,0.15); color: var(--accent); }
-  .badge-text { background: rgba(124,58,237,0.15); color: #a78bfa; }
-  .badge-missing { background: rgba(239,68,68,0.15); color: var(--danger); }
-
-  /* ── Numeric stats table ── */
-  .stats-table { font-size: 11px; width: 100%; border-collapse: collapse; }
-  .stats-table th { background: var(--surface3); padding: 6px 10px; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border2); text-align: right; }
-  .stats-table th:first-child { text-align: left; }
-  .stats-table td { padding: 6px 10px; border-bottom: 1px solid var(--border); text-align: right; }
-  .stats-table td:first-child { text-align: left; color: var(--accent); font-weight: 500; }
-  .stats-table tr:hover td { background: rgba(0,212,170,0.03); }
-
-  /* scrollbar */
+  /* Custom Scrollbar */
   ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: var(--surface); }
-  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-
-  .divider { height: 1px; background: var(--border); margin: 16px 0; }
-  .text-muted { color: var(--muted); }
-  .text-accent { color: var(--accent); }
-  .flex { display: flex; }
-  .gap-8 { gap: 8px; }
-  .gap-12 { gap: 12px; }
-  .items-center { align-items: center; }
-  .mb-12 { margin-bottom: 12px; }
-  .mb-16 { margin-bottom: 16px; }
-  .col-span-2 { grid-column: span 2; }
-
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
-
-  .export-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
 </style>
 </head>
 <body>
 
 <div class="shell">
-  <!-- Sidebar -->
-  <nav class="sidebar">
-    <div class="logo">
-      <h1>CSV<br/>Analyzer</h1>
-      <span>Pro Edition</span>
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="logo" onclick="showDashboard()">
+      <h1>OmniFile</h1>
+      <span>File Suite Pro</span>
     </div>
     <div class="nav">
-      <div class="nav-section">General</div>
-      <button class="nav-btn active" onclick="showView('overview')" id="nav-overview">
-        <span class="icon">◈</span> Overview
-      </button>
-      <button class="nav-btn" onclick="showView('preview')" id="nav-preview">
-        <span class="icon">▦</span> Data Preview
+      <button class="nav-btn active" id="nav-dashboard" onclick="showDashboard()">
+        <span class="icon">◈</span> All Tools Directory
       </button>
 
-      <div class="nav-section">Analysis</div>
-      <button class="nav-btn" onclick="showView('stats')" id="nav-stats">
-        <span class="icon">⊞</span> Statistics
-      </button>
-      <button class="nav-btn" onclick="showView('outliers')" id="nav-outliers">
-        <span class="icon">◉</span> Outliers
-      </button>
-      <button class="nav-btn" onclick="showView('groupby')" id="nav-groupby">
-        <span class="icon">⊟</span> Group By
+      <div class="nav-section">Data Analytics</div>
+      <button class="nav-btn" id="nav-csv" onclick="showTool('csv_analyzer')">
+        <span class="icon">📊</span> CSV Analyzer
       </button>
 
-      <div class="nav-section">Visualize</div>
-      <button class="nav-btn" onclick="showView('charts')" id="nav-charts">
-        <span class="icon">▨</span> Charts
-      </button>
-      <button class="nav-btn" onclick="showView('correlation')" id="nav-correlation">
-        <span class="icon">⊠</span> Correlation
-      </button>
-      <button class="nav-btn" onclick="showView('missing-chart')" id="nav-missing-chart">
-        <span class="icon">◌</span> Missing Data
-      </button>
+      <div class="nav-section">PDF Editors</div>
+      <button class="nav-btn" onclick="showTool('pdf_merge')"><span class="icon">📂</span> Merge PDF</button>
+      <button class="nav-btn" onclick="showTool('pdf_split')"><span class="icon">✂</span> Split PDF</button>
+      <button class="nav-btn" onclick="showTool('pdf_delete')"><span class="icon">🗑</span> Delete Pages</button>
+      <button class="nav-btn" onclick="showTool('pdf_rotate')"><span class="icon">⟳</span> Rotate Pages</button>
+      <button class="nav-btn" onclick="showTool('pdf_crop')"><span class="icon">⚃</span> Crop PDF</button>
+      <button class="nav-btn" onclick="showTool('pdf_arrange')"><span class="icon">⇄</span> Rearrange Pages</button>
+      <button class="nav-btn" onclick="showTool('pdf_num')"><span class="icon">🖹</span> Add Page Numbers</button>
 
-      <div class="nav-section">Transform</div>
-      <button class="nav-btn" onclick="showView('filter')" id="nav-filter">
-        <span class="icon">⊶</span> Filter / Query
-      </button>
-      <button class="nav-btn" onclick="showView('clean')" id="nav-clean">
-        <span class="icon">✦</span> Clean Data
-      </button>
+      <div class="nav-section">PDF Security</div>
+      <button class="nav-btn" onclick="showTool('pdf_encrypt')"><span class="icon">🔒</span> Password Protect</button>
+      <button class="nav-btn" onclick="showTool('pdf_decrypt')"><span class="icon">🔓</span> Remove Password</button>
+      <button class="nav-btn" onclick="showTool('pdf_sign')"><span class="icon">✍</span> Sign PDF Document</button>
 
-      <div class="nav-section">Export</div>
-      <button class="nav-btn" onclick="showView('export')" id="nav-export">
-        <span class="icon">⬡</span> Export
-      </button>
+      <div class="nav-section">Conversions</div>
+      <button class="nav-btn" onclick="showTool('pdf_convert_from')"><span class="icon">🗎</span> PDF to Other Formats</button>
+      <button class="nav-btn" onclick="showTool('pdf_convert_to')"><span class="icon">🗏</span> Convert to PDF</button>
     </div>
-  </nav>
+  </aside>
 
-  <!-- Main -->
+  <!-- Main Content Space -->
   <main class="main">
-
-    <!-- Topbar -->
-    <div class="topbar" id="topbar" style="display:none">
-      <div class="file-info">
-        <span class="icon text-accent">▣</span>
+    
+    <!-- Topbar (Displays active status or file names) -->
+    <header class="topbar">
+      <div class="header-title">
+        <h2 id="current-tool-header">Platform Dashboard</h2>
+        <p id="current-tool-subtitle">Select a utility module to get started</p>
+      </div>
+      <div class="file-badge-row" id="active-file-indicators" style="display:none;">
         <span class="file-badge" id="tb-filename">—</span>
         <span class="stat-pill"><strong id="tb-rows">—</strong> rows</span>
         <span class="stat-pill"><strong id="tb-cols">—</strong> cols</span>
         <span class="stat-pill" id="tb-missing-pill"></span>
       </div>
-      <label class="btn btn-secondary" for="csv-file-replace" style="margin:0; cursor:pointer;">↺ Replace</label>
-      <input type="file" id="csv-file-replace" accept=".csv" style="display:none" onchange="uploadFile(this)">
-    </div>
+    </header>
 
-    <!-- Upload Zone -->
-    <div id="upload-zone" onclick="document.getElementById('csv-file').click()"
-         ondragover="e=>{ e.preventDefault(); this.classList.add('drag'); }"
-         ondragleave="this.classList.remove('drag')"
-         ondrop="handleDrop(event)">
-      <div class="up-icon">⬡</div>
-      <h2>Drop your CSV here</h2>
-      <p>or click to browse — up to 50 MB supported</p>
-      <input type="file" id="csv-file" accept=".csv" onchange="uploadFile(this)">
-    </div>
-
-    <!-- ── Views ── -->
-
-    <!-- OVERVIEW -->
-    <div class="view" id="view-overview">
-      <div class="stats-grid mb-16" id="overview-cards"></div>
-
-      <div class="two-col">
-        <div class="panel">
-          <div class="panel-header"><span class="icon">⊞</span><span class="panel-title">Columns</span></div>
-          <div class="panel-body">
-            <div id="col-list" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-header"><span class="icon">◌</span><span class="panel-title">Missing Values</span></div>
-          <div class="panel-body" id="missing-list"></div>
-        </div>
-      </div>
-
-      <!-- Text frequency -->
-      <div class="panel" id="text-freq-panel" style="margin-top:16px;">
-        <div class="panel-header"><span class="icon">▦</span><span class="panel-title">Text Column Frequencies</span></div>
-        <div class="panel-body" id="text-freq-body"></div>
+    <!-- Alert Banner (Vercel payload limit warning) -->
+    <div class="alert-banner" id="size-alert" style="display:none;">
+      <span class="icon">⚠️</span>
+      <div>
+        <strong>Stateless Size Alert:</strong> The selected file exceeds 4MB. Vercel Serverless request limits require smaller files for testing in this stateless sandbox.
       </div>
     </div>
 
-    <!-- PREVIEW -->
-    <div class="view" id="view-preview">
-      <div class="panel">
-        <div class="panel-header">
-          <span class="icon">▦</span>
-          <span class="panel-title">Data Preview</span>
-          <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
-            <label style="margin:0">Rows:</label>
-            <input type="number" id="preview-n" value="20" min="5" max="500" style="width:70px;">
-            <button class="btn btn-primary" onclick="loadPreview()">Load</button>
-          </div>
+    <!-- ─── VIEW: DASHBOARD DIRECTORY ─── -->
+    <div class="view active" id="view-dashboard">
+      <div class="dashboard-filters">
+        <button class="filter-tab active" onclick="filterCatalog('All', this)">All Utilities</button>
+        <button class="filter-tab" onclick="filterCatalog('data', this)">Data Tools</button>
+        <button class="filter-tab" onclick="filterCatalog('organize', this)">Organize PDF</button>
+        <button class="filter-tab" onclick="filterCatalog('convert-from', this)">Convert From PDF</button>
+        <button class="filter-tab" onclick="filterCatalog('convert-to', this)">Convert To PDF</button>
+        <button class="filter-tab" onclick="filterCatalog('protect', this)">Sign & Protect</button>
+      </div>
+
+      <div class="tools-grid" id="catalog-grid">
+        <!-- Data tools -->
+        <div class="tool-card" data-cat="data" onclick="showTool('csv_analyzer')">
+          <span class="tool-badge badge-active">Active</span>
+          <div class="tool-icon">📊</div>
+          <h3 class="tool-title">CSV Analyzer</h3>
+          <p class="tool-desc">Clean data, generate summaries, filter queries, and plot Matplotlib diagrams dynamically.</p>
         </div>
-        <div class="panel-body" style="padding:0;">
-          <div class="table-wrap" id="preview-table-wrap"></div>
+
+        <!-- Organize tools -->
+        <div class="tool-card" data-cat="organize" onclick="showTool('pdf_merge')">
+          <span class="tool-badge badge-active">Active</span>
+          <div class="tool-icon">📂</div>
+          <h3 class="tool-title">Merge PDF Documents</h3>
+          <p class="tool-desc">Upload multiple files, rearrange them with drag-and-drop, and merge them into a single PDF.</p>
+        </div>
+        <div class="tool-card" data-cat="organize" onclick="showTool('pdf_split')">
+          <span class="tool-badge badge-active">Active</span>
+          <div class="tool-icon">✂</div>
+          <h3 class="tool-title">Split PDF Pages</h3>
+          <p class="tool-desc">Provide page ranges to slice a document into single pages or smaller PDF files.</p>
+        </div>
+        <div class="tool-card" data-cat="organize" onclick="showTool('pdf_delete')">
+          <span class="tool-badge badge-active">Active</span>
+          <div class="tool-icon">🗑</div>
+          <h3 class="tool-title">Delete PDF Pages</h3>
+          <p class="tool-desc">Remove specific page numbers from your document and download the cleaned version.</p>
+        </div>
+        <div class="tool-card" data-cat="organize" onclick="showTool('pdf_rotate')">
+          <span class="tool-badge badge-active">Active</span>
+          <div class="tool-icon">⟳</div>
+          <h3 class="tool-title">Rotate PDF Pages</h3>
+          <p class="tool-desc">Rotate page selections by 90, 180, or 270 degrees in-memory.</p>
+        </div>
+        <div class="tool-card" data-cat="organize" onclick="showTool('pdf_crop')">
+          <span class="tool-badge badge-active">Active</span>
+          <div class="tool-icon">⚃</div>
+          <h3 class="tool-title">Crop PDF Margins</h3>
+          <p class="tool-desc">Set margins (left, right, top, bottom) to crop document page canvases.</p>
+        </div>
+        <div class="tool-card" data-cat="organize" onclick="showTool('pdf_arrange')">
+          <span class="tool-badge badge-active">Active</span>
+          <div class="tool-icon">⇄</div>
+          <h3 class="tool-title">Rearrange PDF Pages</h3>
+          <p class="tool-desc">Input a new sequence of pages (e.g. 3, 1, 2) to sort the pages of your PDF.</p>
+        </div>
+        <div class="tool-card" data-cat="organize" onclick="showTool('pdf_num')">
+          <span class="tool-badge badge-active">Active</span>
+          <div class="tool-icon">🖹</div>
+          <h3 class="tool-title">Add Page Numbers</h3>
+          <p class="tool-desc">Stamp page numbers automatically onto headers or footers in multiple alignments.</p>
+        </div>
+
+        <!-- Security tools -->
+        <div class="tool-card" data-cat="protect" onclick="showTool('pdf_encrypt')">
+          <span class="tool-badge badge-active">Active</span>
+          <div class="tool-icon">🔒</div>
+          <h3 class="tool-title">Password Protect PDF</h3>
+          <p class="tool-desc">Add strong password encryption to secure your document from unauthorized reading.</p>
+        </div>
+        <div class="tool-card" data-cat="protect" onclick="showTool('pdf_decrypt')">
+          <span class="tool-badge badge-active">Active</span>
+          <div class="tool-icon">🔓</div>
+          <h3 class="tool-title">Unlock PDF Document</h3>
+          <p class="tool-desc">Remove password security restrictions from an encrypted PDF file.</p>
+        </div>
+        <div class="tool-card" data-cat="protect" onclick="showTool('pdf_sign')">
+          <span class="tool-badge badge-active">Active</span>
+          <div class="tool-icon">✍</div>
+          <h3 class="tool-title">Visual Sign PDF</h3>
+          <p class="tool-desc">Draw or type your signature, preview PDF pages, and stamp it onto the document visually.</p>
+        </div>
+
+        <!-- Conversion FROM PDF -->
+        <div class="tool-card" data-cat="convert-from" onclick="showTool('pdf_convert_from')">
+          <span class="tool-badge badge-active">Active</span>
+          <div class="tool-icon">🗎</div>
+          <h3 class="tool-title">PDF to Word / Excel</h3>
+          <p class="tool-desc">Convert PDF files to editable formats including Word, Excel, HTML, Text, and Images.</p>
+        </div>
+
+        <!-- Conversion TO PDF -->
+        <div class="tool-card" data-cat="convert-to" onclick="showTool('pdf_convert_to')">
+          <span class="tool-badge badge-active">Active</span>
+          <div class="tool-icon">🗏</div>
+          <h3 class="tool-title">File to PDF converter</h3>
+          <p class="tool-desc">Convert images, Word docx, Excel sheets, HTML text, or rich-text RTF files into clean PDFs.</p>
         </div>
       </div>
     </div>
 
-    <!-- STATS -->
-    <div class="view" id="view-stats">
-      <div class="panel">
-        <div class="panel-header"><span class="icon">⊞</span><span class="panel-title">Numeric Statistics</span></div>
-        <div class="panel-body" style="padding:0; overflow-x:auto;" id="stats-table-wrap"></div>
+    <!-- ─── VIEW: CSV ANALYZER ─── -->
+    <div class="view" id="view-csv_analyzer">
+      <!-- File upload stage -->
+      <div id="csv-upload-stage">
+        <div class="dropzone" onclick="document.getElementById('csv-file').click()"
+             ondragover="e=>{ e.preventDefault(); this.classList.add('drag'); }"
+             ondragleave="this.classList.remove('drag')"
+             ondrop="handleCSVDrop(event)">
+          <div class="up-icon">📊</div>
+          <h4>Drop your CSV file here</h4>
+          <p>or click to browse local files (up to 4MB supported)</p>
+          <input type="file" id="csv-file" accept=".csv" class="file-input" onchange="uploadCSV(this)">
+        </div>
       </div>
-    </div>
 
-    <!-- OUTLIERS -->
-    <div class="view" id="view-outliers">
-      <div class="panel">
-        <div class="panel-header"><span class="icon">◉</span><span class="panel-title">Outlier Detection (IQR Method)</span></div>
-        <div class="panel-body">
-          <div class="form-row mb-16">
-            <div class="form-group">
-              <label>Numeric Column</label>
-              <select id="outlier-col"></select>
+      <!-- Core workspace stage -->
+      <div id="csv-workspace-stage" style="display:none;">
+        <div class="workspace">
+          <!-- Controls Panel -->
+          <div class="control-pane">
+            <div class="panel-header">
+              <span class="panel-title">Operation Toggles</span>
             </div>
-            <button class="btn btn-primary" onclick="detectOutliers()">Detect</button>
-          </div>
-          <div id="outlier-results"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- GROUP BY -->
-    <div class="view" id="view-groupby">
-      <div class="panel">
-        <div class="panel-header"><span class="icon">⊟</span><span class="panel-title">Group By Aggregation</span></div>
-        <div class="panel-body">
-          <div class="form-row mb-16">
+            
             <div class="form-group">
-              <label>Group By Column</label>
-              <select id="gb-group-col"></select>
-            </div>
-            <div class="form-group">
-              <label>Aggregate Column</label>
-              <select id="gb-agg-col"></select>
-            </div>
-            <div class="form-group">
-              <label>Function</label>
-              <select id="gb-func">
-                <option value="mean">Mean</option>
-                <option value="sum">Sum</option>
-                <option value="count">Count</option>
-                <option value="min">Min</option>
-                <option value="max">Max</option>
-                <option value="median">Median</option>
+              <label>Choose Workspace Section</label>
+              <select id="csv-section-select" onchange="switchCSVSection(this.value)">
+                <option value="overview">📊 Overview Summary</option>
+                <option value="preview">▦ Table Preview</option>
+                <option value="stats">⊞ Columns Stats</option>
+                <option value="charts">📈 Matplotlib Charting</option>
+                <option value="filter">⊶ Query Multi-Filter</option>
+                <option value="clean">✦ Clean Dataset</option>
+                <option value="export">⬡ Export File</option>
               </select>
             </div>
-            <button class="btn btn-primary" onclick="runGroupBy()">Run</button>
-          </div>
-          <div id="groupby-results"></div>
-        </div>
-      </div>
-    </div>
 
-    <!-- CHARTS -->
-    <div class="view" id="view-charts">
-      <div class="tabs">
-        <button class="tab active" onclick="switchChartTab('histogram', this)">Histogram</button>
-        <button class="tab" onclick="switchChartTab('bar', this)">Bar Chart</button>
-        <button class="tab" onclick="switchChartTab('scatter', this)">Scatter</button>
-        <button class="tab" onclick="switchChartTab('boxplot', this)">Box Plot</button>
-        <button class="tab" onclick="switchChartTab('line', this)">Line Chart</button>
-      </div>
+            <div class="divider" style="height:1px; background:var(--border); margin:16px 0;"></div>
 
-      <!-- Histogram -->
-      <div class="chart-tab" id="ctab-histogram">
-        <div class="panel">
-          <div class="panel-header"><span class="panel-title">Distribution Histogram</span></div>
-          <div class="panel-body">
-            <div class="form-row mb-16">
-              <div class="form-group"><label>Numeric Column</label><select id="hist-col"></select></div>
-              <div class="form-group"><label>Bins</label><input type="number" id="hist-bins" value="20" min="5" max="100" style="width:80px;"></div>
-              <button class="btn btn-primary" onclick="renderHistogram()">Plot</button>
+            <!-- Contextual Controls for CSV section -->
+            <div id="csv-controls-overview" class="csv-sec-ctrl">
+              <p class="text-muted" style="font-size:11.5px; color:var(--muted)">Displays automated descriptions, row quantities, duplicates, and data columns types.</p>
             </div>
-            <div id="hist-out"><div class="chart-placeholder text-muted">Select a column and click Plot</div></div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Bar -->
-      <div class="chart-tab" id="ctab-bar" style="display:none">
-        <div class="panel">
-          <div class="panel-header"><span class="panel-title">Bar Chart (Value Counts)</span></div>
-          <div class="panel-body">
-            <div class="form-row mb-16">
-              <div class="form-group"><label>Column</label><select id="bar-col"></select></div>
-              <div class="form-group"><label>Top N</label><input type="number" id="bar-top" value="15" min="3" max="50" style="width:80px;"></div>
-              <button class="btn btn-primary" onclick="renderBar()">Plot</button>
-            </div>
-            <div id="bar-out"><div class="chart-placeholder text-muted">Select a column and click Plot</div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Scatter -->
-      <div class="chart-tab" id="ctab-scatter" style="display:none">
-        <div class="panel">
-          <div class="panel-header"><span class="panel-title">Scatter Plot</span></div>
-          <div class="panel-body">
-            <div class="form-row mb-16">
-              <div class="form-group"><label>X Axis (numeric)</label><select id="scatter-x"></select></div>
-              <div class="form-group"><label>Y Axis (numeric)</label><select id="scatter-y"></select></div>
-              <div class="form-group"><label>Color By (optional)</label><select id="scatter-hue"><option value="">— none —</option></select></div>
-              <button class="btn btn-primary" onclick="renderScatter()">Plot</button>
-            </div>
-            <div id="scatter-out"><div class="chart-placeholder text-muted">Select axes and click Plot</div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Boxplot -->
-      <div class="chart-tab" id="ctab-boxplot" style="display:none">
-        <div class="panel">
-          <div class="panel-header"><span class="panel-title">Box Plot</span></div>
-          <div class="panel-body">
-            <div class="form-row mb-16">
-              <div class="form-group"><label>Numeric Column</label><select id="box-col"></select></div>
-              <div class="form-group"><label>Group By (optional)</label><select id="box-group"><option value="">— none —</option></select></div>
-              <button class="btn btn-primary" onclick="renderBoxplot()">Plot</button>
-            </div>
-            <div id="box-out"><div class="chart-placeholder text-muted">Select a column and click Plot</div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Line -->
-      <div class="chart-tab" id="ctab-line" style="display:none">
-        <div class="panel">
-          <div class="panel-header"><span class="panel-title">Line Chart</span></div>
-          <div class="panel-body">
-            <div class="form-row mb-16">
-              <div class="form-group"><label>X Axis</label><select id="line-x"></select></div>
-              <div class="form-group"><label>Y Axis (numeric)</label><select id="line-y"></select></div>
-              <button class="btn btn-primary" onclick="renderLine()">Plot</button>
-            </div>
-            <div id="line-out"><div class="chart-placeholder text-muted">Select axes and click Plot</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CORRELATION -->
-    <div class="view" id="view-correlation">
-      <div class="panel">
-        <div class="panel-header"><span class="icon">⊠</span><span class="panel-title">Correlation Matrix</span></div>
-        <div class="panel-body">
-          <button class="btn btn-primary mb-16" onclick="renderCorrelation()">Generate Heatmap</button>
-          <div id="corr-out"><div class="chart-placeholder text-muted">Click to generate the correlation heatmap for all numeric columns</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MISSING CHART -->
-    <div class="view" id="view-missing-chart">
-      <div class="panel">
-        <div class="panel-header"><span class="icon">◌</span><span class="panel-title">Missing Data Visualization</span></div>
-        <div class="panel-body">
-          <button class="btn btn-primary mb-16" onclick="renderMissingChart()">Analyze</button>
-          <div id="missing-chart-out"><div class="chart-placeholder text-muted">Click to visualize missing values across all columns</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- FILTER -->
-    <div class="view" id="view-filter">
-      <div class="panel">
-        <div class="panel-header">
-          <span class="icon">⊶</span>
-          <span class="panel-title">Filter & Query Builder</span>
-          <button class="btn btn-secondary" style="margin-left:auto;" onclick="addFilter()">+ Add Filter</button>
-        </div>
-        <div class="panel-body">
-          <div id="filter-rows"></div>
-
-          <div class="form-row mb-16" style="margin-top:12px;">
-            <div class="form-group">
-              <label>Sort By</label>
-              <select id="filter-sort"></select>
-            </div>
-            <div class="form-group" style="min-width:80px;">
-              <label>Direction</label>
-              <select id="filter-sort-dir">
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
-              </select>
-            </div>
-            <div class="form-group" style="min-width:80px;">
-              <label>Limit rows</label>
-              <input type="number" id="filter-limit" value="100" min="10" max="5000">
-            </div>
-            <button class="btn btn-primary" onclick="runFilter()">Apply Filter</button>
-            <button class="btn btn-secondary" onclick="resetFilter()">Reset</button>
-          </div>
-
-          <div id="filter-results"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CLEAN -->
-    <div class="view" id="view-clean">
-      <div class="panel">
-        <div class="panel-header"><span class="icon">✦</span><span class="panel-title">Data Cleaning Operations</span></div>
-        <div class="panel-body">
-
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
-
-            <!-- Quick ops (no column needed) -->
-            <div>
-              <div class="text-muted mb-12" style="font-size:10px; text-transform:uppercase; letter-spacing:1px;">Global Operations</div>
-              <div class="op-card">
-                <button class="btn btn-secondary" onclick="cleanOp({kind:'drop_duplicates'})">Drop Duplicates</button>
-                <span class="text-muted">Remove exact duplicate rows</span>
+            <div id="csv-controls-preview" class="csv-sec-ctrl" style="display:none;">
+              <div class="form-group">
+                <label>Rows limit</label>
+                <input type="number" id="preview-n" value="20" min="5" max="500">
               </div>
-              <div class="op-card">
-                <button class="btn btn-secondary" onclick="cleanOp({kind:'strip_whitespace'})">Strip Whitespace</button>
-                <span class="text-muted">Trim text in all string columns</span>
+              <button class="btn btn-primary" onclick="loadPreview()">Reload Preview</button>
+            </div>
+
+            <div id="csv-controls-stats" class="csv-sec-ctrl" style="display:none;">
+              <div class="form-group">
+                <label>Target Outlier Column</label>
+                <select id="outlier-col"></select>
               </div>
-              <div class="op-card">
-                <button class="btn btn-secondary" onclick="cleanOp({kind:'drop_nulls'})">Drop All Nulls</button>
-                <span class="text-muted">Remove rows with any null</span>
+              <button class="btn btn-primary" onclick="detectOutliers()">Find Outliers</button>
+              <div class="divider" style="height:1px; background:var(--border); margin:14px 0;"></div>
+              <div class="form-group">
+                <label>Group by column</label>
+                <select id="gb-group-col"></select>
+              </div>
+              <div class="form-group">
+                <label>Aggregate numeric col</label>
+                <select id="gb-agg-col"></select>
+              </div>
+              <div class="form-group">
+                <label>Function</label>
+                <select id="gb-func">
+                  <option value="mean">Mean</option>
+                  <option value="sum">Sum</option>
+                  <option value="count">Count</option>
+                  <option value="median">Median</option>
+                  <option value="min">Min</option>
+                  <option value="max">Max</option>
+                </select>
+              </div>
+              <button class="btn btn-purple" onclick="runGroupBy()">Run Group By</button>
+            </div>
+
+            <div id="csv-controls-charts" class="csv-sec-ctrl" style="display:none;">
+              <div class="form-group">
+                <label>Chart Mode</label>
+                <select id="chart-type" onchange="switchChartControls(this.value)">
+                  <option value="histogram">Histogram (Numeric)</option>
+                  <option value="bar">Bar Chart (Frequencies)</option>
+                  <option value="scatter">Scatter Plot (X vs Y)</option>
+                  <option value="boxplot">Box Plot (Single/Grouped)</option>
+                  <option value="line">Line Chart (Trend)</option>
+                  <option value="correlation">Correlation Heatmap</option>
+                  <option value="missing">Missing Values Chart</option>
+                </select>
+              </div>
+              
+              <div id="ctrl-hist" class="chart-sub-ctrl">
+                <div class="form-group"><label>Column</label><select id="hist-col"></select></div>
+                <div class="form-group"><label>Bins</label><input type="number" id="hist-bins" value="20" min="5" max="100"></div>
+                <button class="btn btn-primary" onclick="renderHistogram()">Generate Plot</button>
+              </div>
+
+              <div id="ctrl-bar" class="chart-sub-ctrl" style="display:none;">
+                <div class="form-group"><label>Column</label><select id="bar-col"></select></div>
+                <div class="form-group"><label>Top N rows</label><input type="number" id="bar-top" value="15" min="3" max="50"></div>
+                <button class="btn btn-primary" onclick="renderBar()">Generate Plot</button>
+              </div>
+
+              <div id="ctrl-scatter" class="chart-sub-ctrl" style="display:none;">
+                <div class="form-group"><label>X Axis Column</label><select id="scatter-x"></select></div>
+                <div class="form-group"><label>Y Axis Column</label><select id="scatter-y"></select></div>
+                <div class="form-group"><label>Color grouping (optional)</label><select id="scatter-hue"><option value="">— none —</option></select></div>
+                <button class="btn btn-primary" onclick="renderScatter()">Generate Plot</button>
+              </div>
+
+              <div id="ctrl-boxplot" class="chart-sub-ctrl" style="display:none;">
+                <div class="form-group"><label>Numeric column</label><select id="box-col"></select></div>
+                <div class="form-group"><label>Group by column</label><select id="box-group"><option value="">— none —</option></select></div>
+                <button class="btn btn-primary" onclick="renderBoxplot()">Generate Plot</button>
+              </div>
+
+              <div id="ctrl-line" class="chart-sub-ctrl" style="display:none;">
+                <div class="form-group"><label>X axis column</label><select id="line-x"></select></div>
+                <div class="form-group"><label>Y axis column</label><select id="line-y"></select></div>
+                <button class="btn btn-primary" onclick="renderLine()">Generate Plot</button>
+              </div>
+
+              <div id="ctrl-correlation" class="chart-sub-ctrl" style="display:none;">
+                <button class="btn btn-primary" onclick="renderCorrelation()">Plot Heatmap</button>
+              </div>
+
+              <div id="ctrl-missing" class="chart-sub-ctrl" style="display:none;">
+                <button class="btn btn-primary" onclick="renderMissingChart()">Plot Missing Values</button>
               </div>
             </div>
 
-            <!-- Column ops -->
-            <div>
-              <div class="text-muted mb-12" style="font-size:10px; text-transform:uppercase; letter-spacing:1px;">Column Operations</div>
-              <div class="form-group mb-12">
-                <label>Target Column</label>
-                <select id="clean-col"></select>
+            <div id="csv-controls-filter" class="csv-sec-ctrl" style="display:none;">
+              <button class="btn btn-secondary mb-12" onclick="addFilter()">+ Add Filter Rule</button>
+              <div id="filter-rows" class="filter-rows"></div>
+              
+              <div class="form-group">
+                <label>Sort By Column</label>
+                <select id="filter-sort"></select>
               </div>
-              <div style="display:flex; flex-wrap:wrap; gap:8px;">
-                <button class="btn btn-secondary" onclick="cleanColOp('drop_nulls')">Drop Nulls</button>
-                <button class="btn btn-secondary" onclick="cleanColOp('fill_null_mean')">Fill → Mean</button>
-                <button class="btn btn-secondary" onclick="cleanColOp('fill_null_median')">Fill → Median</button>
-                <button class="btn btn-secondary" onclick="cleanColOp('clip_outliers')">Clip Outliers</button>
-                <button class="btn btn-secondary" onclick="cleanColOp('to_numeric')">→ Numeric</button>
-                <button class="btn btn-secondary" onclick="cleanColOp('lowercase')">Lowercase</button>
+              <div class="form-group">
+                <label>Direction</label>
+                <select id="filter-sort-dir">
+                  <option value="asc">Ascending</option>
+                  <option value="desc">Descending</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Row Limit</label>
+                <input type="number" id="filter-limit" value="100">
+              </div>
+              
+              <div class="form-row">
+                <button class="btn btn-primary" onclick="runFilter()">Apply Query</button>
+                <button class="btn btn-secondary" onclick="resetFilter()">Reset</button>
+              </div>
+            </div>
+
+            <div id="csv-controls-clean" class="csv-sec-ctrl" style="display:none;">
+              <div class="form-group">
+                <label>Global actions</label>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  <button class="btn btn-secondary" onclick="cleanOp({kind:'drop_duplicates'})">Drop Duplicates</button>
+                  <button class="btn btn-secondary" onclick="cleanOp({kind:'strip_whitespace'})">Strip Whitespace</button>
+                  <button class="btn btn-secondary" onclick="cleanOp({kind:'drop_nulls'})">Drop All Null Rows</button>
+                </div>
+              </div>
+              
+              <div class="divider" style="height:1px; background:var(--border); margin:12px 0;"></div>
+              
+              <div class="form-group">
+                <label>Column targets</label>
+                <select id="clean-col" style="margin-bottom:8px;"></select>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:8px;">
+                  <button class="btn btn-secondary" onclick="cleanColOp('drop_nulls')">Drop Nulls</button>
+                  <button class="btn btn-secondary" onclick="cleanColOp('to_numeric')">→ Numeric</button>
+                  <button class="btn btn-secondary" onclick="cleanColOp('fill_null_mean')">Mean Fill</button>
+                  <button class="btn btn-secondary" onclick="cleanColOp('fill_null_median')">Median Fill</button>
+                  <button class="btn btn-secondary" onclick="cleanColOp('lowercase')">Lower text</button>
+                  <button class="btn btn-secondary" onclick="cleanColOp('clip_outliers')">Clip Outliers</button>
+                </div>
                 <button class="btn btn-danger" onclick="cleanColOp('drop_col')">Drop Column</button>
               </div>
 
-              <div class="divider"></div>
-              <div class="form-row">
-                <div class="form-group" style="flex:1;">
-                  <label>Fill Nulls With</label>
-                  <input type="text" id="fill-val" placeholder="Custom value">
-                </div>
-                <button class="btn btn-secondary" onclick="cleanColOp('fill_null', {value: document.getElementById('fill-val').value})">Fill</button>
+              <div class="divider" style="height:1px; background:var(--border); margin:12px 0;"></div>
+
+              <div class="form-group">
+                <label>Fill null value</label>
+                <input type="text" id="fill-val" placeholder="Custom text/number" style="margin-bottom:6px;">
+                <button class="btn btn-secondary" onclick="cleanColOp('fill_null', {value: document.getElementById('fill-val').value})">Execute Fill</button>
               </div>
-              <div class="form-row" style="margin-top:8px;">
-                <div class="form-group" style="flex:1;">
-                  <label>Rename Column To</label>
-                  <input type="text" id="rename-val" placeholder="New name">
-                </div>
-                <button class="btn btn-secondary" onclick="cleanColOp('rename_col', {new_name: document.getElementById('rename-val').value})">Rename</button>
+
+              <div class="form-group">
+                <label>Rename column</label>
+                <input type="text" id="rename-val" placeholder="New name" style="margin-bottom:6px;">
+                <button class="btn btn-secondary" onclick="cleanColOp('rename_col', {new_name: document.getElementById('rename-val').value})">Execute Rename</button>
+              </div>
+            </div>
+
+            <div id="csv-controls-export" class="csv-sec-ctrl" style="display:none;">
+              <p class="text-muted" style="margin-bottom:12px;">Download dataset streams in your target formatting:</p>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <button class="btn btn-primary" onclick="exportData('/export/csv', 'cleaned.csv')">⬇ Download CSV</button>
+                <button class="btn btn-purple" onclick="exportData('/export/excel', 'cleaned.xlsx')">⬇ Download Excel (.xlsx)</button>
+                <button class="btn btn-secondary" onclick="exportData('/export/json', 'cleaned.json')">⬇ Download JSON</button>
               </div>
             </div>
           </div>
 
-          <div class="log-box" id="clean-log" style="display:none;"></div>
+          <!-- Preview / Visualization Pane -->
+          <div class="preview-pane">
+            <div id="csv-view-overview" class="csv-sec-view">
+              <div class="stats-grid" id="overview-cards"></div>
+              
+              <div class="form-group">
+                <label>Columns detected</label>
+                <div id="col-list" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;"></div>
+              </div>
+
+              <div class="form-group">
+                <label>Missing values table</label>
+                <div id="missing-list" style="max-height:160px; overflow-y:auto; margin-bottom:16px;"></div>
+              </div>
+
+              <div class="form-group">
+                <label>Text column value frequencies</label>
+                <div id="text-freq-body" style="max-height:220px; overflow-y:auto;"></div>
+              </div>
+            </div>
+
+            <div id="csv-view-preview" class="csv-sec-view" style="display:none;">
+              <div class="panel-header"><span class="panel-title">Data preview grid (Top rows)</span></div>
+              <div class="table-wrap" id="preview-table-wrap"></div>
+            </div>
+
+            <div id="csv-view-stats" class="csv-sec-view" style="display:none;">
+              <div class="panel-header"><span class="panel-title">Numeric statistics Summary</span></div>
+              <div class="table-wrap" id="stats-table-wrap" style="margin-bottom:16px;"></div>
+              
+              <div id="stats-outlier-results"></div>
+              <div id="stats-groupby-results"></div>
+            </div>
+
+            <div id="csv-view-charts" class="csv-sec-view" style="display:none; text-align:center;">
+              <div class="panel-header"><span class="panel-title">Matplotlib Plotting Workspace</span></div>
+              <div class="chart-out" id="chart-image-out">
+                <div class="chart-placeholder">Configure variables on the left and click Plot</div>
+              </div>
+            </div>
+
+            <div id="csv-view-filter" class="csv-sec-view" style="display:none;">
+              <div class="panel-header"><span class="panel-title">Filtered Query results</span></div>
+              <div id="filter-meta" style="margin-bottom:10px; color:var(--muted); font-size:11px;"></div>
+              <div class="table-wrap" id="filter-table-wrap"></div>
+            </div>
+
+            <div id="csv-view-clean" class="csv-sec-view" style="display:none;">
+              <div class="panel-header"><span class="panel-title">Cleaning log history</span></div>
+              <div class="log-box" id="clean-log" style="height:320px; max-height:none;">No operations executed yet.</div>
+            </div>
+
+            <div id="csv-view-export" class="csv-sec-view" style="display:none;">
+              <div class="panel-header"><span class="panel-title">Export files status</span></div>
+              <div class="chart-placeholder">Select format on the left to request the download bundle. All calculations are performed stateless.</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- EXPORT -->
-    <div class="view" id="view-export">
-      <div class="panel">
-        <div class="panel-header"><span class="icon">⬡</span><span class="panel-title">Export Data</span></div>
-        <div class="panel-body">
-          <p class="text-muted mb-16">Download the current (possibly cleaned) dataset in your preferred format.</p>
-          <div class="export-btns">
-            <a class="btn btn-primary" href="/export/csv" download>⬇ CSV</a>
-            <a class="btn btn-amber" href="/export/excel" download>⬇ Excel (.xlsx)</a>
-            <a class="btn btn-purple" href="/export/json" download>⬇ JSON</a>
-          </div>
+    <!-- ─── VIEW: GENERAL PDF TOOL WORKSPACE ─── -->
+    <div class="view" id="view-pdf_workspace">
+      <div class="workspace">
+        
+        <!-- Controls Pane -->
+        <div class="control-pane" id="pdf-ctrl-container">
+          <!-- Populated dynamically via JS based on G.currentTool -->
+        </div>
 
-          <div class="divider"></div>
-          <p class="text-muted" style="font-size:11px;">The Excel export includes a Stats sheet with all numeric summaries.</p>
+        <!-- Preview Pane -->
+        <div class="preview-pane" id="pdf-preview-container">
+          <!-- Populated dynamically via JS -->
         </div>
       </div>
     </div>
@@ -825,14 +949,67 @@
   </main>
 </div>
 
-<!-- Toast -->
+<!-- Toast element -->
 <div id="toast"></div>
 
+<!-- JS Code logic -->
 <script>
-/* ─── State ─────────────────────────────────────────────────────────── */
-let G = { summary: null, filename: null };
+/* ─── State Store ────────────────────────────────────────────────────── */
+let G = {
+  currentTool: 'dashboard',
+  csvText: '',
+  csvSummary: null,
+  csvFilename: '',
+  pdfFiles: [], // Array of { name, size, bytes (ArrayBuffer/Blob) }
+  signatureImage: null, // signature canvas export blob
+};
 
-/* ─── Toast ──────────────────────────────────────────────────────────── */
+/* ─── Navigation ─── */
+function showDashboard() {
+  G.currentTool = 'dashboard';
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById('view-dashboard').classList.add('active');
+  document.getElementById('nav-dashboard').classList.add('active');
+  
+  document.getElementById('current-tool-header').textContent = 'Platform Dashboard';
+  document.getElementById('current-tool-subtitle').textContent = 'Select a utility module to get started';
+  document.getElementById('active-file-indicators').style.display = 'none';
+  document.getElementById('size-alert').style.display = 'none';
+}
+
+function showTool(toolName) {
+  G.currentTool = toolName;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.classList.remove('active');
+    // Highlight matching sidebar tool
+    if(btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${toolName}'`)) {
+      btn.classList.add('active');
+    }
+  });
+
+  const titleEl = document.getElementById('current-tool-header');
+  const subEl = document.getElementById('current-tool-subtitle');
+  document.getElementById('size-alert').style.display = 'none';
+
+  if (toolName === 'csv_analyzer') {
+    titleEl.textContent = 'CSV Analyzer Workspace';
+    subEl.textContent = 'Upload a local dataset to clean and analyze';
+    document.getElementById('view-csv_analyzer').classList.add('active');
+    document.getElementById('nav-csv').classList.add('active');
+    if (G.csvText) {
+      document.getElementById('active-file-indicators').style.display = 'flex';
+      if (new Blob([G.csvText]).size > 4 * 1024 * 1024) document.getElementById('size-alert').style.display = 'flex';
+    }
+  } else {
+    document.getElementById('active-file-indicators').style.display = 'none';
+    document.getElementById('view-pdf_workspace').classList.add('active');
+    setupPDFWorkspace(toolName);
+  }
+}
+
+/* ─── Toast Alerts ─── */
 function toast(msg, type = 'success') {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -841,51 +1018,74 @@ function toast(msg, type = 'success') {
   t._to = setTimeout(() => t.className = '', 3000);
 }
 
-/* ─── Upload ─────────────────────────────────────────────────────────── */
-function handleDrop(e) {
+/* ─── CSV Workspace Handlers ─── */
+function handleCSVDrop(e) {
   e.preventDefault();
-  document.getElementById('upload-zone').classList.remove('drag');
   const file = e.dataTransfer.files[0];
-  if (!file || !file.name.endsWith('.csv')) { toast('CSV files only', 'error'); return; }
-  uploadFileObject(file);
+  if (file && file.name.endsWith('.csv')) uploadCSVFile(file);
+  else toast('Invalid file type. CSV files only.', 'error');
 }
 
-function uploadFile(input) {
-  if (!input.files[0]) return;
-  uploadFileObject(input.files[0]);
+function uploadCSV(input) {
+  if (input.files[0]) uploadCSVFile(input.files[0]);
 }
 
-async function uploadFileObject(file) {
+async function uploadCSVFile(file) {
+  if (file.size > 4 * 1024 * 1024) {
+    document.getElementById('size-alert').style.display = 'flex';
+  } else {
+    document.getElementById('size-alert').style.display = 'none';
+  }
+
   const fd = new FormData();
   fd.append('file', file);
-  toast('Uploading…');
-  const res = await fetch('/upload', { method: 'POST', body: fd });
-  const data = await res.json();
-  if (data.error) { toast(data.error, 'error'); return; }
-  G.summary = data.summary;
-  G.filename = data.filename;
-  onDataLoaded(data);
+  toast('Uploading & Profiling CSV…');
+  
+  try {
+    const res = await fetch('/upload', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.error) { toast(data.error, 'error'); return; }
+    
+    G.csvText = data.csv_data;
+    G.csvSummary = data.summary;
+    G.csvFilename = data.filename;
+    
+    // UI indicator fields
+    document.getElementById('csv-upload-stage').style.display = 'none';
+    document.getElementById('csv-workspace-stage').style.display = 'block';
+    document.getElementById('active-file-indicators').style.display = 'flex';
+    
+    document.getElementById('tb-filename').textContent = file.name;
+    document.getElementById('tb-rows').textContent = data.summary.rows.toLocaleString();
+    document.getElementById('tb-cols').textContent = data.summary.cols;
+    const missingCount = Object.values(data.summary.missing).reduce((a,b) => a+b, 0);
+    document.getElementById('tb-missing-pill').innerHTML = `<strong>${missingCount}</strong> missing`;
+
+    populateCSVSelects(data.summary);
+    renderCSVOverview(data.summary);
+    renderCSVStatsTable(data.summary);
+    renderCSVPreviewTable(data.preview, data.summary.columns);
+    
+    // default view section
+    switchCSVSection('overview');
+    toast('Data loaded successfully.');
+  } catch (err) {
+    toast('Profile failed: ' + err, 'error');
+  }
 }
 
-function onDataLoaded(data) {
-  document.getElementById('upload-zone').style.display = 'none';
-  document.getElementById('topbar').style.display = 'flex';
-  document.getElementById('tb-filename').textContent = data.filename;
-  document.getElementById('tb-rows').textContent = data.summary.rows.toLocaleString();
-  document.getElementById('tb-cols').textContent = data.summary.cols;
-  const totalMissing = Object.values(data.summary.missing).reduce((a,b)=>a+b,0);
-  document.getElementById('tb-missing-pill').innerHTML = `<strong>${totalMissing}</strong> missing`;
+function switchCSVSection(secName) {
+  document.getElementById('csv-section-select').value = secName;
+  document.querySelectorAll('.csv-sec-ctrl').forEach(ctrl => ctrl.style.display = 'none');
+  document.querySelectorAll('.csv-sec-view').forEach(vw => vw.style.display = 'none');
+  
+  document.getElementById('csv-controls-' + secName).style.display = 'block';
+  document.getElementById('csv-view-' + secName).style.display = 'block';
 
-  populateSelects(data.summary);
-  renderOverview(data.summary);
-  renderStatsTable(data.summary);
-  renderPreviewTable(data.preview, data.summary.columns);
-  showView('overview');
-  toast(`Loaded ${data.summary.rows.toLocaleString()} rows × ${data.summary.cols} cols`);
+  if (secName === 'preview') loadPreview();
 }
 
-/* ─── Populate selects ───────────────────────────────────────────────── */
-function populateSelects(s) {
+function populateCSVSelects(s) {
   const all = s.columns, num = s.numeric_cols, txt = s.text_cols;
 
   function fill(id, cols) {
@@ -903,18 +1103,16 @@ function populateSelects(s) {
   fill('gb-group-col', all); fill('gb-agg-col', num);
   fill('clean-col', all);
   fill('filter-sort', all);
-
-  // filter row selects will be filled on add
 }
 
-/* ─── Overview ───────────────────────────────────────────────────────── */
-function renderOverview(s) {
+function renderCSVOverview(s) {
   const cards = [
     { label: 'Total Rows', value: s.rows.toLocaleString(), sub: 'records' },
     { label: 'Columns', value: s.cols, sub: `${s.numeric_cols.length} numeric / ${s.text_cols.length} text` },
-    { label: 'Duplicates', value: s.duplicates, sub: 'identical rows' },
-    { label: 'Missing Cells', value: Object.values(s.missing).reduce((a,b)=>a+b,0).toLocaleString(), sub: 'across all columns' },
+    { label: 'Duplicates', value: s.duplicates.toLocaleString(), sub: 'identical rows' },
+    { label: 'Missing Cells', value: Object.values(s.missing).reduce((a,b)=>a+b,0).toLocaleString(), sub: 'across dataset' },
   ];
+  
   document.getElementById('overview-cards').innerHTML = cards.map(c => `
     <div class="stat-card">
       <div class="label">${c.label}</div>
@@ -922,174 +1120,194 @@ function renderOverview(s) {
       <div class="sub">${c.sub}</div>
     </div>`).join('');
 
-  // Column badges
   document.getElementById('col-list').innerHTML = s.columns.map(c => {
     const type = s.numeric_cols.includes(c) ? 'numeric' : 'text';
-    return `<span class="badge badge-${type}" title="${s.dtypes[c]}">${c}</span>`;
+    const badgeType = type === 'numeric' ? 'badge-active' : 'badge-coming';
+    return `<span class="tool-badge ${badgeType}" style="position:static; margin:0;" title="${s.dtypes[c]}">${c} (${s.dtypes[c]})</span>`;
   }).join('');
 
-  // Missing list
-  const hasMissing = Object.entries(s.missing).filter(([,v])=>v>0);
+  const hasMissing = Object.entries(s.missing).filter(([,v]) => v > 0);
   document.getElementById('missing-list').innerHTML = hasMissing.length === 0
-    ? '<span class="text-accent">✓ No missing values</span>'
+    ? '<span class="text-accent" style="color:var(--accent)">✓ No missing cell spaces found.</span>'
     : hasMissing.map(([col, cnt]) => {
         const pct = (cnt / s.rows * 100).toFixed(1);
         return `<div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border);">
-          <span class="text-muted">${col}</span>
-          <span class="badge badge-missing">${cnt} (${pct}%)</span>
+          <span style="color:var(--muted)">${col}</span>
+          <span style="color:var(--danger)">${cnt} rows missing (${pct}%)</span>
         </div>`;
       }).join('');
 
-  // Text freq
   const tf = s.text_freq;
   const tfKeys = Object.keys(tf);
   document.getElementById('text-freq-body').innerHTML = tfKeys.length === 0
-    ? '<span class="text-muted">No text columns.</span>'
+    ? '<span class="text-muted">No text value groupings detected.</span>'
     : tfKeys.map(col => {
         const counts = tf[col];
-        return `<div style="margin-bottom:14px;">
-          <div style="font-size:11px; color:var(--accent); margin-bottom:6px;">${col}</div>
-          <div style="display:flex; flex-wrap:wrap; gap:5px;">
+        return `<div style="margin-bottom:12px;">
+          <div style="font-size:11.5px; color:var(--accent); margin-bottom:4px;">${col}</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
             ${Object.entries(counts).map(([v,c]) =>
-              `<span style="background:var(--surface3); border:1px solid var(--border); border-radius:3px; padding:2px 8px; font-size:11px;">
-                ${v} <strong style="color:var(--accent3)">${c}</strong>
+              `<span style="background:var(--surface2); border:1px solid var(--border); border-radius:3px; padding:2px 6px; font-size:10px; font-family:var(--font-mono)">
+                ${v} : <strong style="color:var(--accent3)">${c}</strong>
               </span>`).join('')}
           </div>
         </div>`;
       }).join('');
 }
 
-/* ─── Stats Table ────────────────────────────────────────────────────── */
-function renderStatsTable(s) {
+function renderCSVStatsTable(s) {
   const ns = s.numeric_stats;
   const cols = Object.keys(ns);
   if (cols.length === 0) {
-    document.getElementById('stats-table-wrap').innerHTML = '<div style="padding:16px;" class="text-muted">No numeric columns detected.</div>';
+    document.getElementById('stats-table-wrap').innerHTML = '<div style="padding:16px;" class="text-muted">No numeric columns found.</div>';
     return;
   }
   const headers = ['Column','Count','Mean','Median','Std','Min','Q25','Q75','Max'];
   document.getElementById('stats-table-wrap').innerHTML = `
-    <table class="stats-table">
+    <table>
       <thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
       <tbody>${cols.map(col => {
         const st = ns[col];
         return `<tr>
-          <td>${col}</td><td>${st.count}</td><td>${st.mean}</td><td>${st.median}</td>
+          <td style="color:var(--accent)">${col}</td><td>${st.count}</td><td>${st.mean}</td><td>${st.median}</td>
           <td>${st.std}</td><td>${st.min}</td><td>${st.q25}</td><td>${st.q75}</td><td>${st.max}</td>
         </tr>`;
       }).join('')}</tbody>
     </table>`;
 }
 
-/* ─── Preview ────────────────────────────────────────────────────────── */
-async function loadPreview() {
-  const n = document.getElementById('preview-n').value;
-  const res = await fetch(`/preview?n=${n}`);
-  const rows = await res.json();
-  if (!Array.isArray(rows)) { toast('Error loading preview', 'error'); return; }
-  renderPreviewTable(rows, Object.keys(rows[0] || {}));
-}
-
-function renderPreviewTable(rows, cols) {
-  if (!rows.length) {
-    document.getElementById('preview-table-wrap').innerHTML = '<div style="padding:16px" class="text-muted">No data.</div>';
+function renderCSVPreviewTable(rows, cols) {
+  const wrap = document.getElementById('preview-table-wrap');
+  if(!rows.length) {
+    wrap.innerHTML = '<div style="padding:16px" class="text-muted">Empty dataset.</div>';
     return;
   }
   const columns = cols || Object.keys(rows[0]);
-  document.getElementById('preview-table-wrap').innerHTML = `
+  wrap.innerHTML = `
     <table>
       <thead><tr>${columns.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
       <tbody>${rows.map(row=>`<tr>${columns.map(c=>`<td>${row[c] ?? ''}</td>`).join('')}</tr>`).join('')}</tbody>
     </table>`;
 }
 
-/* ─── Charts ─────────────────────────────────────────────────────────── */
-function switchChartTab(name, btn) {
-  document.querySelectorAll('.chart-tab').forEach(el => el.style.display = 'none');
-  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-  document.getElementById('ctab-' + name).style.display = 'block';
-  btn.classList.add('active');
+async function loadPreview() {
+  const n = document.getElementById('preview-n').value;
+  toast('Loading preview…');
+  const res = await fetch('/preview', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ csv_data: G.csvText, n: parseInt(n) })
+  });
+  const rows = await res.json();
+  if (rows.error) { toast(rows.error, 'error'); return; }
+  renderCSVPreviewTable(rows, Object.keys(rows[0] || {}));
 }
 
-async function postChart(endpoint, body, outId) {
-  const out = document.getElementById(outId);
-  out.innerHTML = '<div class="chart-placeholder text-muted">Rendering…</div>';
-  const res = await fetch(endpoint, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
-  const data = await res.json();
-  if (data.error) { toast(data.error, 'error'); out.innerHTML = `<div class="chart-placeholder" style="color:var(--danger)">${data.error}</div>`; return; }
-  out.innerHTML = `<img class="chart-img" src="data:image/png;base64,${data.image}" alt="chart">`;
-}
-
-const renderHistogram = () => postChart('/chart/histogram', { col: document.getElementById('hist-col').value, bins: +document.getElementById('hist-bins').value }, 'hist-out');
-const renderBar = () => postChart('/chart/bar', { col: document.getElementById('bar-col').value, top_n: +document.getElementById('bar-top').value }, 'bar-out');
-const renderScatter = () => postChart('/chart/scatter', { x: document.getElementById('scatter-x').value, y: document.getElementById('scatter-y').value, hue: document.getElementById('scatter-hue').value }, 'scatter-out');
-const renderBoxplot = () => postChart('/chart/boxplot', { col: document.getElementById('box-col').value, group: document.getElementById('box-group').value }, 'box-out');
-const renderLine = () => postChart('/chart/line', { x: document.getElementById('line-x').value, y: document.getElementById('line-y').value }, 'line-out');
-
-async function renderCorrelation() {
-  const out = document.getElementById('corr-out');
-  out.innerHTML = '<div class="chart-placeholder text-muted">Rendering…</div>';
-  const res = await fetch('/chart/correlation', { method:'POST', headers:{'Content-Type':'application/json'}, body:'{}' });
-  const data = await res.json();
-  if (data.error) { toast(data.error, 'error'); return; }
-  out.innerHTML = `<img class="chart-img" src="data:image/png;base64,${data.image}" alt="correlation">`;
-}
-
-async function renderMissingChart() {
-  const out = document.getElementById('missing-chart-out');
-  out.innerHTML = '<div class="chart-placeholder text-muted">Rendering…</div>';
-  const res = await fetch('/chart/missing');
-  const data = await res.json();
-  if (data.error) { toast(data.error, 'error'); return; }
-  if (!data.image) { out.innerHTML = `<div class="chart-placeholder text-accent">✓ ${data.message}</div>`; return; }
-  out.innerHTML = `<img class="chart-img" src="data:image/png;base64,${data.image}" alt="missing">`;
-}
-
-/* ─── Outliers ───────────────────────────────────────────────────────── */
 async function detectOutliers() {
   const col = document.getElementById('outlier-col').value;
-  const res = await fetch('/stats/outliers', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ col }) });
+  toast('Running Outlier scan…');
+  const res = await fetch('/stats/outliers', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ csv_data: G.csvText, col })
+  });
   const data = await res.json();
-  if (data.error) { toast(data.error, 'error'); return; }
+  if(data.error) { toast(data.error, 'error'); return; }
 
-  document.getElementById('outlier-results').innerHTML = `
-    <div class="stats-grid mb-16">
+  document.getElementById('stats-outlier-results').innerHTML = `
+    <h4 style="margin-bottom:10px; color:var(--text)">Outlier scan output: ${col}</h4>
+    <div class="stats-grid mb-12">
       <div class="stat-card"><div class="label">Outliers Found</div><div class="value" style="color:var(--danger)">${data.outlier_count}</div><div class="sub">${data.outlier_pct}% of data</div></div>
       <div class="stat-card"><div class="label">IQR</div><div class="value">${data.iqr}</div><div class="sub">Q3 − Q1</div></div>
       <div class="stat-card"><div class="label">Lower Fence</div><div class="value">${data.lower_fence}</div><div class="sub">Q1 − 1.5×IQR</div></div>
       <div class="stat-card"><div class="label">Upper Fence</div><div class="value">${data.upper_fence}</div><div class="sub">Q3 + 1.5×IQR</div></div>
     </div>
-    ${data.outlier_rows.length > 0 ? `<div class="table-wrap">${makeTable(data.outlier_rows)}</div>` : '<span class="text-accent">No outlier rows to display.</span>'}`;
+    ${data.outlier_rows.length > 0 ? `<div class="table-wrap"><table>
+      <thead><tr>${Object.keys(data.outlier_rows[0]).map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+      <tbody>${data.outlier_rows.map(row=>`<tr>${Object.values(row).map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table></div>` : '<p class="text-accent">✓ Zero outliers found in this fence boundaries.</p>'}`;
 }
 
-/* ─── Group By ───────────────────────────────────────────────────────── */
 async function runGroupBy() {
+  toast('Executing Aggregation…');
   const body = {
+    csv_data: G.csvText,
     group_col: document.getElementById('gb-group-col').value,
     agg_col: document.getElementById('gb-agg-col').value,
-    agg_func: document.getElementById('gb-func').value,
+    agg_func: document.getElementById('gb-func').value
   };
-  const res = await fetch('/stats/groupby', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  const res = await fetch('/stats/groupby', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
   const data = await res.json();
-  if (data.error) { toast(data.error, 'error'); return; }
-  document.getElementById('groupby-results').innerHTML = `<div class="table-wrap">${makeTable(data.rows, data.columns)}</div>`;
+  if(data.error) { toast(data.error, 'error'); return; }
+  
+  document.getElementById('stats-groupby-results').innerHTML = `
+    <h4 style="margin:16px 0 10px; color:var(--text)">Aggregation Outputs</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>${data.columns.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+        <tbody>${data.rows.map(row=>`<tr>${data.columns.map(c=>`<td>${row[c]}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table>
+    </div>`;
 }
 
-/* ─── Filter ─────────────────────────────────────────────────────────── */
-let filterCount = 0;
+/* ─── CSV Charting ─── */
+function switchChartControls(type) {
+  document.querySelectorAll('.chart-sub-ctrl').forEach(el => el.style.display = 'none');
+  const sub = document.getElementById('ctrl-' + type);
+  if(sub) sub.style.display = 'block';
+}
 
+async function postChartRequest(endpoint, body) {
+  const container = document.getElementById('chart-image-out');
+  container.innerHTML = '<div class="chart-placeholder">Compiling Matplotlib coordinates…</div>';
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ csv_data: G.csvText, ...body })
+    });
+    const data = await res.json();
+    if(data.error) {
+      toast(data.error, 'error');
+      container.innerHTML = `<div class="chart-placeholder" style="color:var(--danger)">${data.error}</div>`;
+      return;
+    }
+    if (!data.image) {
+      container.innerHTML = `<div class="chart-placeholder" style="color:var(--accent)">✓ ${data.message}</div>`;
+      return;
+    }
+    container.innerHTML = `<img src="data:image/png;base64,${data.image}" class="chart-img" alt="CSV visualization">`;
+  } catch(err) {
+    toast(err, 'error');
+  }
+}
+
+const renderHistogram = () => postChartRequest('/chart/histogram', { col: document.getElementById('hist-col').value, bins: +document.getElementById('hist-bins').value });
+const renderBar = () => postChartRequest('/chart/bar', { col: document.getElementById('bar-col').value, top_n: +document.getElementById('bar-top').value });
+const renderScatter = () => postChartRequest('/chart/scatter', { x: document.getElementById('scatter-x').value, y: document.getElementById('scatter-y').value, hue: document.getElementById('scatter-hue').value });
+const renderBoxplot = () => postChartRequest('/chart/boxplot', { col: document.getElementById('box-col').value, group: document.getElementById('box-group').value });
+const renderLine = () => postChartRequest('/chart/line', { x: document.getElementById('line-x').value, y: document.getElementById('line-y').value });
+const renderCorrelation = () => postChartRequest('/chart/correlation', {});
+const renderMissingChart = () => postChartRequest('/chart/missing', {});
+
+/* ─── CSV Filtering ─── */
+let filterCount = 0;
 function addFilter() {
-  const cols = G.summary ? G.summary.columns : [];
+  if(!G.csvSummary) return;
   filterCount++;
-  const id = `filter-${filterCount}`;
-  const div = document.createElement('div');
-  div.className = 'filter-row';
-  div.id = id;
-  div.innerHTML = `
-    <select onchange="updateFilterRow('${id}', this)" style="max-width:160px;">
-      ${cols.map(c=>`<option value="${c}">${c}</option>`).join('')}
+  const id = `flt-${filterCount}`;
+  const row = document.createElement('div');
+  row.className = 'filter-row';
+  row.id = id;
+  row.innerHTML = `
+    <select class="f-col">
+      ${G.csvSummary.columns.map(c=>`<option value="${c}">${c}</option>`).join('')}
     </select>
-    <select id="${id}-op">
+    <select class="f-op">
       <option value="contains">contains</option>
       <option value="equals">equals</option>
       <option value="gt">&gt;</option>
@@ -1099,47 +1317,64 @@ function addFilter() {
       <option value="not_null">is not null</option>
       <option value="is_null">is null</option>
     </select>
-    <input id="${id}-val" placeholder="value" style="max-width:160px;">
-    <button class="btn btn-danger" onclick="document.getElementById('${id}').remove()">✕</button>`;
-  document.getElementById('filter-rows').appendChild(div);
+    <input class="f-val" placeholder="value">
+    <button class="btn btn-danger" style="width:auto; padding:4px 8px;" onclick="document.getElementById('${id}').remove()">✕</button>`;
+  document.getElementById('filter-rows').appendChild(row);
 }
 
 async function runFilter() {
   const rows = document.querySelectorAll('.filter-row');
   const filters = [];
   rows.forEach(row => {
-    const id = row.id;
-    const col = row.querySelector('select').value;
-    const op = document.getElementById(id + '-op').value;
-    const val = (document.getElementById(id + '-val') || {}).value || '';
-    filters.push({ col, op, val });
+    filters.push({
+      col: row.querySelector('.f-col').value,
+      op: row.querySelector('.f-op').value,
+      val: row.querySelector('.f-val').value
+    });
   });
 
-  const sortEl = document.getElementById('filter-sort');
+  toast('Querying records…');
   const body = {
+    csv_data: G.csvText,
     filters,
-    sort_col: sortEl.value,
+    sort_col: document.getElementById('filter-sort').value,
     sort_asc: document.getElementById('filter-sort-dir').value === 'asc',
-    limit: +document.getElementById('filter-limit').value,
+    limit: +document.getElementById('filter-limit').value
   };
 
-  const res = await fetch('/filter', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
-  const data = await res.json();
-  if (data.error) { toast(data.error, 'error'); return; }
-
-  document.getElementById('filter-results').innerHTML = `
-    <div class="mb-12" style="color:var(--muted); font-size:11px;">Showing ${data.shown} of ${data.total} matching rows</div>
-    <div class="table-wrap">${makeTable(data.rows, data.columns)}</div>`;
-  toast(`${data.total} rows matched`);
+  try {
+    const res = await fetch('/filter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if(data.error) { toast(data.error, 'error'); return; }
+    
+    document.getElementById('filter-meta').textContent = `Showing ${data.shown} of ${data.total} matching database rows`;
+    
+    const tableWrap = document.getElementById('filter-table-wrap');
+    if(!data.rows.length) {
+      tableWrap.innerHTML = '<div class="chart-placeholder">Zero query matches returned.</div>';
+    } else {
+      tableWrap.innerHTML = `<table>
+        <thead><tr>${data.columns.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+        <tbody>${data.rows.map(row=>`<tr>${data.columns.map(c=>`<td>${row[c] ?? ''}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table>`;
+    }
+  } catch(err) {
+    toast(err, 'error');
+  }
 }
 
 function resetFilter() {
   document.getElementById('filter-rows').innerHTML = '';
-  document.getElementById('filter-results').innerHTML = '';
+  document.getElementById('filter-table-wrap').innerHTML = '';
+  document.getElementById('filter-meta').textContent = '';
   filterCount = 0;
 }
 
-/* ─── Clean ──────────────────────────────────────────────────────────── */
+/* ─── CSV Cleaning ─── */
 async function cleanOp(op) {
   await applyCleanOps([op]);
 }
@@ -1150,53 +1385,843 @@ async function cleanColOp(kind, extra = {}) {
 }
 
 async function applyCleanOps(operations) {
-  const res = await fetch('/clean', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ operations }) });
-  const data = await res.json();
-  if (data.error) { toast(data.error, 'error'); return; }
+  toast('Running clean commands…');
+  try {
+    const res = await fetch('/clean', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ csv_data: G.csvText, operations })
+    });
+    const data = await res.json();
+    if(data.error) { toast(data.error, 'error'); return; }
 
-  G.summary = data.summary;
-  populateSelects(data.summary);
-  renderOverview(data.summary);
-  renderStatsTable(data.summary);
-  renderPreviewTable(data.preview, data.summary.columns);
-
-  // Update topbar
-  document.getElementById('tb-rows').textContent = data.summary.rows.toLocaleString();
-  document.getElementById('tb-cols').textContent = data.summary.cols;
-
-  const logBox = document.getElementById('clean-log');
-  logBox.style.display = 'block';
-  logBox.textContent = data.log.join('\n');
-  toast(data.log[0] || 'Done');
+    G.csvText = data.csv_data;
+    G.csvSummary = data.summary;
+    
+    // Refresh elements
+    document.getElementById('tb-rows').textContent = data.summary.rows.toLocaleString();
+    document.getElementById('tb-cols').textContent = data.summary.cols;
+    populateCSVSelects(data.summary);
+    renderCSVOverview(data.summary);
+    renderCSVStatsTable(data.summary);
+    renderCSVPreviewTable(data.preview, data.summary.columns);
+    
+    const logBox = document.getElementById('clean-log');
+    logBox.textContent = data.log.join('\n');
+    toast('Cleaning mutations applied.');
+  } catch(err) {
+    toast(err, 'error');
+  }
 }
 
-/* ─── View switching ─────────────────────────────────────────────────── */
-function showView(name) {
-  if (!G.summary && name !== 'overview') return;
-  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-  document.getElementById('view-' + name).classList.add('active');
-  const navBtn = document.getElementById('nav-' + name);
-  if (navBtn) navBtn.classList.add('active');
-
-  if (name === 'preview') loadPreview();
+/* ─── CSV Stateless Export ─── */
+async function exportData(endpoint, filename) {
+  toast('Compiling download bundle…');
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ csv_data: G.csvText })
+    });
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+    toast('Downloaded successfully.');
+  } catch(err) {
+    toast('Export failed: ' + err, 'error');
+  }
 }
 
-/* ─── Table helper ───────────────────────────────────────────────────── */
-function makeTable(rows, cols) {
-  if (!rows || !rows.length) return '<div class="text-muted" style="padding:12px;">No rows.</div>';
-  const columns = cols || Object.keys(rows[0]);
-  return `<table>
-    <thead><tr>${columns.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
-    <tbody>${rows.map(row=>`<tr>${columns.map(c=>`<td>${row[c] ?? ''}</td>`).join('')}</tr>`).join('')}</tbody>
-  </table>`;
+/* ─── PDF Workspace Dynamic Handlers ─── */
+function setupPDFWorkspace(tool) {
+  const ctrl = document.getElementById('pdf-ctrl-container');
+  const prev = document.getElementById('pdf-preview-container');
+  
+  // reset file arrays
+  G.pdfFiles = [];
+  G.signatureImage = null;
+
+  let ctrlHTML = '';
+  let prevHTML = `<div class="panel-header"><span class="panel-title">Visual Workspace Preview</span></div>
+                  <div class="chart-out" id="pdf-view-out">
+                    <div class="chart-placeholder">Upload a PDF or graphic file to begin operations.</div>
+                  </div>`;
+
+  if (tool === 'pdf_merge') {
+    ctrlHTML = `
+      <div class="panel-header"><span class="panel-title">PDF Merger Panel</span></div>
+      <div class="dropzone" onclick="document.getElementById('pdf-m-files').click()"
+           ondragover="e=>{ e.preventDefault(); this.classList.add('drag'); }"
+           ondragleave="this.classList.remove('drag')"
+           ondrop="handlePDFMultiDrop(event)">
+        <div class="up-icon">📂</div>
+        <h4>Upload PDF documents</h4>
+        <p>Drop files here or click to browse (Select multiple)</p>
+        <input type="file" id="pdf-m-files" accept=".pdf" class="file-input" multiple onchange="uploadPDFMulti(this)">
+      </div>
+      <button class="btn btn-primary" id="btn-merge-action" onclick="runPDFMerge()" style="display:none;">Merge Documents</button>
+    `;
+    prevHTML = `
+      <div class="panel-header"><span class="panel-title">File order directory</span></div>
+      <p class="text-muted" style="margin-bottom:10px; font-size:11px;">Drag and drop elements to rearrange the merge order.</p>
+      <div class="order-list" id="pdf-merge-list"></div>
+      <div class="chart-placeholder" id="pdf-merge-empty">No files loaded yet.</div>
+    `;
+  } 
+  else if (tool === 'pdf_split') {
+    ctrlHTML = `
+      <div class="panel-header"><span class="panel-title">PDF Splitter</span></div>
+      ${pdfSingleDropHTML()}
+      <div class="form-group">
+        <label>Page split ranges</label>
+        <input type="text" id="split-ranges" placeholder="e.g. 1-3, 4, 5-8">
+        <p class="text-muted" style="font-size:10px; margin-top:2px;">Ranges are comma-separated page spans.</p>
+      </div>
+      <button class="btn btn-primary" onclick="runPDFSplit()">Execute Page Split</button>
+    `;
+  }
+  else if (tool === 'pdf_delete') {
+    ctrlHTML = `
+      <div class="panel-header"><span class="panel-title">Delete Pages</span></div>
+      ${pdfSingleDropHTML()}
+      <div class="form-group">
+        <label>Page index to delete</label>
+        <input type="text" id="delete-indices" placeholder="e.g. 2, 4, 6">
+        <p class="text-muted" style="font-size:10px; margin-top:2px;">Comma-separated page numbers.</p>
+      </div>
+      <button class="btn btn-danger" onclick="runPDFDelete()">Execute Delete</button>
+    `;
+  }
+  else if (tool === 'pdf_rotate') {
+    ctrlHTML = `
+      <div class="panel-header"><span class="panel-title">Rotate Page canvas</span></div>
+      ${pdfSingleDropHTML()}
+      <div class="form-group">
+        <label>Rotate selection (Degrees)</label>
+        <select id="rotate-angle">
+          <option value="90">90° Clockwise</option>
+          <option value="180">180° Half Turn</option>
+          <option value="270">270° Counter-Clockwise</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Pages (optional)</label>
+        <input type="text" id="rotate-pages" placeholder="e.g. 1, 3 (Leave empty for all)">
+      </div>
+      <button class="btn btn-primary" onclick="runPDFRotate()">Execute Rotation</button>
+    `;
+  }
+  else if (tool === 'pdf_crop') {
+    ctrlHTML = `
+      <div class="panel-header"><span class="panel-title">Crop Margins</span></div>
+      ${pdfSingleDropHTML()}
+      <div class="form-row">
+        <div class="form-group"><label>Left (pt)</label><input type="number" id="crop-l" value="20"></div>
+        <div class="form-group"><label>Right (pt)</label><input type="number" id="crop-r" value="20"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Top (pt)</label><input type="number" id="crop-t" value="20"></div>
+        <div class="form-group"><label>Bottom (pt)</label><input type="number" id="crop-b" value="20"></div>
+      </div>
+      <div class="form-group">
+        <label>Pages (optional)</label>
+        <input type="text" id="crop-pages" placeholder="Leave empty for all">
+      </div>
+      <button class="btn btn-primary" onclick="runPDFCrop()">Execute Margin Crop</button>
+    `;
+  }
+  else if (tool === 'pdf_arrange') {
+    ctrlHTML = `
+      <div class="panel-header"><span class="panel-title">Rearrange Sequence</span></div>
+      ${pdfSingleDropHTML()}
+      <div class="form-group">
+        <label>New sequence order</label>
+        <input type="text" id="arrange-order" placeholder="e.g. 3, 1, 2, 4">
+        <p class="text-muted" style="font-size:10px; margin-top:2px;">Comma-separated sequence of new page indexes.</p>
+      </div>
+      <button class="btn btn-primary" onclick="runPDFArrange()">Execute Sorting</button>
+    `;
+  }
+  else if (tool === 'pdf_num') {
+    ctrlHTML = `
+      <div class="panel-header"><span class="panel-title">Page Stamp Numbers</span></div>
+      ${pdfSingleDropHTML()}
+      <div class="form-group">
+        <label>Alignment style</label>
+        <select id="num-style">
+          <option value="bottom_right">Bottom Right corner</option>
+          <option value="bottom_center">Bottom Center margin</option>
+          <option value="bottom_left">Bottom Left corner</option>
+          <option value="top_right">Top Right corner</option>
+          <option value="top_center">Top Center margin</option>
+          <option value="top_left">Top Left corner</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="runPDFNumbering()">Stamp Page Numbers</button>
+    `;
+  }
+  else if (tool === 'pdf_encrypt') {
+    ctrlHTML = `
+      <div class="panel-header"><span class="panel-title">Password Protect</span></div>
+      ${pdfSingleDropHTML()}
+      <div class="form-group">
+        <label>Encryption Password</label>
+        <input type="password" id="protect-pass" placeholder="Secure phrase keys">
+      </div>
+      <button class="btn btn-primary" onclick="runPDFSecurity('encrypt')">Apply Encryption</button>
+    `;
+  }
+  else if (tool === 'pdf_decrypt') {
+    ctrlHTML = `
+      <div class="panel-header"><span class="panel-title">Remove Security</span></div>
+      ${pdfSingleDropHTML()}
+      <div class="form-group">
+        <label>Decryption Password</label>
+        <input type="password" id="unlock-pass" placeholder="Current file password">
+      </div>
+      <button class="btn btn-primary" onclick="runPDFSecurity('decrypt')">Remove Restrictions</button>
+    `;
+  }
+  else if (tool === 'pdf_convert_from') {
+    ctrlHTML = `
+      <div class="panel-header"><span class="panel-title">Export PDF Elements</span></div>
+      ${pdfSingleDropHTML()}
+      <div class="form-group">
+        <label>Target Format</label>
+        <select id="conv-from-fmt" onchange="toggleFormatOption(this.value)">
+          <option value="images">Render to Image grid (ZIP / PNG)</option>
+          <option value="text">Text Document (.txt)</option>
+          <option value="word">Word Layout document (.docx)</option>
+          <option value="excel">Excel table grid (.xlsx)</option>
+          <option value="html">Semantic HTML page (.html)</option>
+        </select>
+      </div>
+      <div class="form-group" id="img-fmt-row">
+        <label>Image Codec</label>
+        <select id="conv-img-codec">
+          <option value="PNG">PNG Image (Lossless)</option>
+          <option value="JPG">JPEG Image (Compressed)</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="runPDFConvertFrom()">Extract Elements</button>
+    `;
+  }
+  else if (tool === 'pdf_convert_to') {
+    ctrlHTML = `
+      <div class="panel-header"><span class="panel-title">Convert to PDF</span></div>
+      <div class="dropzone" onclick="document.getElementById('pdf-to-file').click()"
+           ondragover="e=>{ e.preventDefault(); this.classList.add('drag'); }"
+           ondragleave="this.classList.remove('drag')"
+           ondrop="handlePDFToDrop(event)">
+        <div class="up-icon">🗏</div>
+        <h4>Upload source file</h4>
+        <p>Drop Image, Word (docx), Excel (xlsx), HTML, Text, or RTF here</p>
+        <input type="file" id="pdf-to-file" accept=".jpg,.jpeg,.png,.bmp,.gif,.docx,.xlsx,.html,.txt,.rtf" class="file-input" onchange="uploadPDFTo(this)">
+      </div>
+      <div class="form-group">
+        <label>Detected Source Format</label>
+        <span class="file-badge" id="source-format-badge">none</span>
+      </div>
+      <button class="btn btn-primary" onclick="runPDFConvertTo()">Compile to PDF</button>
+    `;
+  }
+  else if (tool === 'pdf_sign') {
+    ctrlHTML = `
+      <div class="panel-header"><span class="panel-title">Visual Sign PDF</span></div>
+      ${pdfSingleDropHTML()}
+      
+      <div class="form-group">
+        <label>Draw Signature</label>
+        <div class="canvas-container">
+          <canvas id="signature-pad"></canvas>
+        </div>
+        <div class="canvas-tools">
+          <div style="display:flex; gap:6px;">
+            <div class="color-dot active" style="background:#000" onclick="setSignColor('#000', this)"></div>
+            <div class="color-dot" style="background:#7c3aed" onclick="setSignColor('#7c3aed', this)"></div>
+            <div class="color-dot" style="background:#00d4aa" onclick="setSignColor('#00d4aa', this)"></div>
+          </div>
+          <button class="btn btn-secondary" style="width:auto; padding:3px 8px; font-size:10px;" onclick="clearSignCanvas()">Clear</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Select signing page</label>
+        <input type="number" id="sign-page-num" value="1" min="1" onchange="updateSignPreviewPage()">
+      </div>
+      <button class="btn btn-primary" onclick="runPDFSign()">Overlay Signature</button>
+    `;
+    prevHTML = `
+      <div class="panel-header"><span class="panel-title">Signature Placement Area</span></div>
+      <p class="text-muted" style="margin-bottom:10px; font-size:11px;">Double click on the document page below to place and drag your signature token.</p>
+      <div class="sign-preview-box" id="pdf-sign-box">
+        <div class="chart-placeholder">Upload a PDF to render visual signing preview.</div>
+      </div>
+    `;
+  }
+
+  ctrl.innerHTML = ctrlHTML;
+  prev.innerHTML = prevHTML;
+
+  // Init signature pad if sign tool
+  if(tool === 'pdf_sign') initSignaturePad();
 }
 
-/* ─── Drag & drop setup ──────────────────────────────────────────────── */
-const uz = document.getElementById('upload-zone');
-uz.addEventListener('dragover', e => { e.preventDefault(); uz.classList.add('drag'); });
-uz.addEventListener('dragleave', () => uz.classList.remove('drag'));
-uz.addEventListener('drop', handleDrop);
+function pdfSingleDropHTML() {
+  return `
+    <div class="dropzone" onclick="document.getElementById('pdf-s-file').click()"
+         ondragover="e=>{ e.preventDefault(); this.classList.add('drag'); }"
+         ondragleave="this.classList.remove('drag')"
+         ondrop="handlePDFSingleDrop(event)">
+      <div class="up-icon">🗎</div>
+      <h4>Upload PDF document</h4>
+      <p>Drop file here or click to browse (up to 4MB supported)</p>
+      <input type="file" id="pdf-s-file" accept=".pdf" class="file-input" onchange="uploadPDFSingle(this)">
+    </div>
+    <div class="form-group" style="display:none;" id="pdf-file-details">
+      <label>Selected Document</label>
+      <span class="file-badge" id="pdf-filename-badge">none</span>
+    </div>
+  `;
+}
+
+function toggleFormatOption(val) {
+  document.getElementById('img-fmt-row').style.display = val === 'images' ? 'block' : 'none';
+}
+
+/* ─── PDF Workspace File Inputs ─── */
+function handlePDFSingleDrop(e) {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if(file && file.name.endsWith('.pdf')) loadPDFSingleFile(file);
+  else toast('PDF documents only', 'error');
+}
+
+function uploadPDFSingle(input) {
+  if (input.files[0]) loadPDFSingleFile(input.files[0]);
+}
+
+async function loadPDFSingleFile(file) {
+  G.pdfFiles = [{ name: file.name, size: file.size, fileObject: file }];
+  const badge = document.getElementById('pdf-filename-badge');
+  if(badge) {
+    badge.textContent = file.name;
+    document.getElementById('pdf-file-details').style.display = 'block';
+  }
+  toast(`Selected: ${file.name}`);
+  
+  if (G.currentTool === 'pdf_sign') {
+    // Generate page image preview from Flask server
+    await renderSignPreviewPage(file, 1);
+  }
+}
+
+function handlePDFMultiDrop(e) {
+  e.preventDefault();
+  const files = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.pdf'));
+  if (files.length) loadPDFMultiFiles(files);
+  else toast('PDF documents only', 'error');
+}
+
+function uploadPDFMulti(input) {
+  if(input.files.length) loadPDFMultiFiles(Array.from(input.files));
+}
+
+function loadPDFMultiFiles(files) {
+  files.forEach(f => {
+    G.pdfFiles.push({ name: f.name, size: f.size, fileObject: f });
+  });
+  renderPDFFileList();
+}
+
+function renderPDFFileList() {
+  const list = document.getElementById('pdf-merge-list');
+  const empty = document.getElementById('pdf-merge-empty');
+  const btn = document.getElementById('btn-merge-action');
+  
+  if(!G.pdfFiles.length) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    btn.style.display = 'none';
+    return;
+  }
+  
+  empty.style.display = 'none';
+  btn.style.display = 'block';
+  
+  list.innerHTML = G.pdfFiles.map((f, idx) => `
+    <div class="order-item" draggable="true" data-idx="${idx}" ondragstart="handleDragStart(event)" ondragover="handleDragOver(event)" ondrop="handleItemDrop(event)" ondragend="handleDragEnd(event)">
+      <span title="${f.name}">${idx+1}. ${f.name} (${(f.size/1024).toFixed(1)} KB)</span>
+      <div class="handle">☰</div>
+    </div>
+  `).join('');
+}
+
+// Drag & drop sorting handlers
+let draggingEl = null;
+function handleDragStart(e) {
+  draggingEl = e.currentTarget;
+  e.currentTarget.classList.add('dragging');
+}
+function handleDragOver(e) { e.preventDefault(); }
+function handleItemDrop(e) {
+  e.preventDefault();
+  const target = e.currentTarget;
+  if(draggingEl && draggingEl !== target) {
+    const dragIdx = parseInt(draggingEl.getAttribute('data-idx'));
+    const targetIdx = parseInt(target.getAttribute('data-idx'));
+    
+    // Swap position in G.pdfFiles array
+    const temp = G.pdfFiles[dragIdx];
+    G.pdfFiles.splice(dragIdx, 1);
+    G.pdfFiles.splice(targetIdx, 0, temp);
+    
+    renderPDFFileList();
+  }
+}
+function handleDragEnd(e) { e.currentTarget.classList.remove('dragging'); }
+
+/* ─── PDF Visual Sign Handlers ─── */
+let signCtx, isDrawing = false, signColor = '#000';
+function initSignaturePad() {
+  const pad = document.getElementById('signature-pad');
+  if(!pad) return;
+  
+  // Resize canvas according to display width
+  pad.width = pad.parentElement.clientWidth;
+  pad.height = 150;
+  
+  signCtx = pad.getContext('2d');
+  signCtx.strokeStyle = signColor;
+  signCtx.lineWidth = 2.5;
+  signCtx.lineCap = 'round';
+  
+  pad.addEventListener('mousedown', startDrawing);
+  pad.addEventListener('mousemove', draw);
+  pad.addEventListener('mouseup', stopDrawing);
+  pad.addEventListener('mouseleave', stopDrawing);
+  
+  pad.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    const rect = pad.getBoundingClientRect();
+    startDrawing({ clientX: t.clientX, clientY: t.clientY, rect });
+  });
+  pad.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    draw({ clientX: t.clientX, clientY: t.clientY });
+  });
+  pad.addEventListener('touchend', stopDrawing);
+}
+
+function startDrawing(e) {
+  isDrawing = true;
+  const pad = document.getElementById('signature-pad');
+  const rect = e.rect || pad.getBoundingClientRect();
+  signCtx.beginPath();
+  signCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+}
+
+function draw(e) {
+  if(!isDrawing) return;
+  const pad = document.getElementById('signature-pad');
+  const rect = pad.getBoundingClientRect();
+  signCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+  signCtx.stroke();
+}
+
+function stopDrawing() { isDrawing = false; }
+function clearSignCanvas() {
+  const pad = document.getElementById('signature-pad');
+  signCtx.clearRect(0, 0, pad.width, pad.height);
+}
+
+function setSignColor(col, el) {
+  signColor = col;
+  signCtx.strokeStyle = col;
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// Render preview image from document using backend
+async function renderSignPreviewPage(file, pageNum) {
+  const container = document.getElementById('pdf-sign-box');
+  container.innerHTML = '<div class="chart-placeholder">Rendering preview page...</div>';
+  
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('format', 'images');
+  fd.append('img_format', 'PNG');
+  
+  try {
+    const res = await fetch('/pdf/convert-from', { method: 'POST', body: fd });
+    if(res.status === 400 || res.status === 500) {
+      const err = await res.json();
+      container.innerHTML = `<div class="chart-placeholder" style="color:var(--danger)">${err.error}</div>`;
+      return;
+    }
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    
+    container.innerHTML = `
+      <div class="pdf-render-container" id="pdf-render-wrap" ondblclick="placeSignatureToken(event)">
+        <img src="${url}" class="pdf-render-img" id="sign-preview-img">
+        <div class="sig-token" id="signature-token" style="display:none;" onmousedown="dragStart(event)">
+          <span>SIGNATURE TOKEN</span>
+        </div>
+      </div>
+    `;
+    toast('Page rendered. Double click page to place signature token.');
+  } catch(err) {
+    container.innerHTML = `<div class="chart-placeholder" style="color:var(--danger)">Rendering failed: ${err}</div>`;
+  }
+}
+
+async function updateSignPreviewPage() {
+  if(!G.pdfFiles.length) return;
+  const p = +document.getElementById('sign-page-num').value;
+  await renderSignPreviewPage(G.pdfFiles[0].fileObject, p);
+}
+
+// Place and drag token on canvas preview
+let tokenXRatio = 0.3, tokenYRatio = 0.3;
+function placeSignatureToken(e) {
+  const wrap = document.getElementById('pdf-render-wrap');
+  const token = document.getElementById('signature-token');
+  const rect = wrap.getBoundingClientRect();
+  
+  const x = e.clientX - rect.left - 50; // center token (width 100)
+  const y = e.clientY - rect.top - 25; // center token (height 50)
+  
+  token.style.left = x + 'px';
+  token.style.top = y + 'px';
+  token.style.display = 'flex';
+  
+  tokenXRatio = x / rect.width;
+  tokenYRatio = y / rect.height;
+}
+
+let activeDrag = false, startX, startY, startLeft, startTop;
+function dragStart(e) {
+  e.preventDefault();
+  activeDrag = true;
+  startX = e.clientX;
+  startY = e.clientY;
+  const token = document.getElementById('signature-token');
+  startLeft = parseInt(token.style.left || 0);
+  startTop = parseInt(token.style.top || 0);
+  
+  document.addEventListener('mousemove', dragMove);
+  document.addEventListener('mouseup', dragEnd);
+}
+
+function dragMove(e) {
+  if(!activeDrag) return;
+  const wrap = document.getElementById('pdf-render-wrap');
+  const token = document.getElementById('signature-token');
+  const rect = wrap.getBoundingClientRect();
+  
+  const dx = e.clientX - startX;
+  const dy = e.clientY - startY;
+  
+  let newLeft = startLeft + dx;
+  let newTop = startTop + dy;
+  
+  // clamp
+  newLeft = Math.max(0, Math.min(newLeft, rect.width - 100));
+  newTop = Math.max(0, Math.min(newTop, rect.height - 50));
+  
+  token.style.left = newLeft + 'px';
+  token.style.top = newTop + 'px';
+  
+  tokenXRatio = newLeft / rect.width;
+  tokenYRatio = newTop / rect.height;
+}
+
+function dragEnd() {
+  activeDrag = false;
+  document.removeEventListener('mousemove', dragMove);
+  document.removeEventListener('mouseup', dragEnd);
+}
+
+/* ─── PDF Convert To Handlers ─── */
+function handlePDFToDrop(e) {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if(file) loadPDFToFile(file);
+}
+
+function uploadPDFTo(input) {
+  if(input.files[0]) loadPDFToFile(input.files[0]);
+}
+
+function loadPDFToFile(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  const mapping = {
+    'docx': 'word', 'xlsx': 'excel', 'html': 'html', 'txt': 'text', 'rtf': 'rtf',
+    'jpg': 'image', 'jpeg': 'image', 'png': 'image', 'bmp': 'image', 'gif': 'image'
+  };
+  
+  const fmt = mapping[ext];
+  if(!fmt) { toast('Unsupported source file format.', 'error'); return; }
+  
+  G.pdfFiles = [{ name: file.name, size: file.size, fileObject: file, sourceFormat: fmt }];
+  document.getElementById('source-format-badge').textContent = `${ext.toUpperCase()} File (${fmt})`;
+  toast(`Selected source: ${file.name}`);
+}
+
+/* ─── Trigger Server Actions (stateless POST endpoints) ─── */
+
+async function runPDFMerge() {
+  if(!G.pdfFiles.length) { toast('Upload PDF files first', 'error'); return; }
+  toast('Merging PDF documents…');
+  
+  const fd = new FormData();
+  G.pdfFiles.forEach(f => {
+    fd.append('files', f.fileObject);
+  });
+  
+  await postFileDownload('/pdf/merge', fd, 'merged_document.pdf');
+}
+
+async function runPDFSplit() {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  const ranges = document.getElementById('split-ranges').value;
+  if(!ranges) { toast('Ranges value required', 'error'); return; }
+  
+  // parse range format (e.g. 1-3, 5)
+  const rangeArr = [];
+  try {
+    ranges.split(',').forEach(part => {
+      const cleanPart = part.trim();
+      if(cleanPart.includes('-')) {
+        const bounds = cleanPart.split('-');
+        rangeArr.push([parseInt(bounds[0]), parseInt(bounds[1])]);
+      } else {
+        rangeArr.push([parseInt(cleanPart), parseInt(cleanPart)]);
+      }
+    });
+  } catch(e) {
+    toast('Invalid ranges syntax formatting', 'error');
+    return;
+  }
+  
+  const fd = new FormData();
+  fd.append('file', G.pdfFiles[0].fileObject);
+  fd.append('action', 'split');
+  fd.append('ranges', JSON.stringify(rangeArr));
+  
+  // split endpoint returns ZIP file if ranges count > 1
+  const downloadName = rangeArr.length > 1 ? 'split_pages.zip' : 'split_page.pdf';
+  await postFileDownload('/pdf/organize', fd, downloadName);
+}
+
+async function runPDFDelete() {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  const val = document.getElementById('delete-indices').value;
+  if(!val) { toast('Index sequence required', 'error'); return; }
+  
+  const pages = val.split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v));
+  
+  const fd = new FormData();
+  fd.append('file', G.pdfFiles[0].fileObject);
+  fd.append('action', 'delete_pages');
+  fd.append('pages', JSON.stringify(pages));
+  
+  await postFileDownload('/pdf/organize', fd, 'pages_deleted.pdf');
+}
+
+async function runPDFRotate() {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  const angle = document.getElementById('rotate-angle').value;
+  const pInput = document.getElementById('rotate-pages').value;
+  const pages = pInput ? pInput.split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v)) : [];
+  
+  const fd = new FormData();
+  fd.append('file', G.pdfFiles[0].fileObject);
+  fd.append('action', 'rotate');
+  fd.append('angle', angle);
+  fd.append('pages', JSON.stringify(pages));
+  
+  await postFileDownload('/pdf/organize', fd, 'rotated.pdf');
+}
+
+async function runPDFCrop() {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  const l = document.getElementById('crop-l').value;
+  const r = document.getElementById('crop-r').value;
+  const t = document.getElementById('crop-t').value;
+  const b = document.getElementById('crop-b').value;
+  const pInput = document.getElementById('crop-pages').value;
+  const pages = pInput ? pInput.split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v)) : [];
+  
+  const fd = new FormData();
+  fd.append('file', G.pdfFiles[0].fileObject);
+  fd.append('action', 'crop');
+  fd.append('left', l);
+  fd.append('right', r);
+  fd.append('top', t);
+  fd.append('bottom', b);
+  fd.append('pages', JSON.stringify(pages));
+  
+  await postFileDownload('/pdf/organize', fd, 'cropped.pdf');
+}
+
+async function runPDFArrange() {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  const val = document.getElementById('arrange-order').value;
+  if(!val) { toast('Rearrange page index order required', 'error'); return; }
+  
+  const order = val.split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v));
+  
+  const fd = new FormData();
+  fd.append('file', G.pdfFiles[0].fileObject);
+  fd.append('action', 'rearrange');
+  fd.append('order', JSON.stringify(order));
+  
+  await postFileDownload('/pdf/organize', fd, 'rearranged.pdf');
+}
+
+async function runPDFNumbering() {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  const style = document.getElementById('num-style').value;
+  
+  const fd = new FormData();
+  fd.append('file', G.pdfFiles[0].fileObject);
+  fd.append('action', 'add_page_numbers');
+  fd.append('style', style);
+  
+  await postFileDownload('/pdf/organize', fd, 'numbered.pdf');
+}
+
+async function runPDFSecurity(action) {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  const pId = action === 'encrypt' ? 'protect-pass' : 'unlock-pass';
+  const pass = document.getElementById(pId).value;
+  if(!pass) { toast('Password is required', 'error'); return; }
+  
+  const fd = new FormData();
+  fd.append('file', G.pdfFiles[0].fileObject);
+  fd.append('action', action);
+  fd.append('password', pass);
+  
+  await postFileDownload('/pdf/security', fd, 'secured_document.pdf');
+}
+
+async function runPDFConvertFrom() {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  const fmt = document.getElementById('conv-from-fmt').value;
+  const codec = document.getElementById('conv-img-codec').value;
+  
+  const fd = new FormData();
+  fd.append('file', G.pdfFiles[0].fileObject);
+  fd.append('format', fmt);
+  fd.append('img_format', codec);
+  
+  const nameMapping = {
+    'images': 'images.zip', 'text': 'extracted_text.txt',
+    'word': 'converted.docx', 'excel': 'converted.xlsx', 'html': 'converted.html'
+  };
+  
+  await postFileDownload('/pdf/convert-from', fd, nameMapping[fmt]);
+}
+
+async function runPDFConvertTo() {
+  if(!G.pdfFiles.length) { toast('Upload source file first', 'error'); return; }
+  const src = G.pdfFiles[0];
+  
+  const fd = new FormData();
+  fd.append('file', src.fileObject);
+  fd.append('source_format', src.sourceFormat);
+  
+  await postFileDownload('/pdf/convert-to', fd, 'converted_from_source.pdf');
+}
+
+// Client-side visual signature post submission
+async function runPDFSign() {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  const pad = document.getElementById('signature-pad');
+  
+  // Extract drawn path from canvas as PNG Blob
+  toast('Overlaying signature graphics…');
+  pad.toBlob(async (sigBlob) => {
+    if(!sigBlob || sigBlob.size < 200) {
+      toast('Please draw a signature path on the canvas first.', 'error');
+      return;
+    }
+    
+    const pageNum = +document.getElementById('sign-page-num').value;
+    
+    // We get original page size details (normally letter size 612x792 pt, or A4 595x842 pt)
+    // We map frontend ratios mathematically into point dimensions
+    const imgElement = document.getElementById('sign-preview-img');
+    const widthPts = imgElement.naturalWidth * 0.5; // pypdfum2 scale 2 ratio
+    const heightPts = imgElement.naturalHeight * 0.5;
+    
+    const xPts = tokenXRatio * widthPts;
+    // Map bottom-left axis layout orientation in PDF formatting
+    const yPts = (1.0 - tokenYRatio - (50 / imgElement.clientHeight)) * heightPts;
+    const wPts = (100 / imgElement.clientWidth) * widthPts;
+    const hPts = (50 / imgElement.clientHeight) * heightPts;
+    
+    const fd = new FormData();
+    fd.append('file', G.pdfFiles[0].fileObject);
+    fd.append('signature', sigBlob, 'signature.png');
+    fd.append('page', pageNum);
+    fd.append('x', xPts);
+    fd.append('y', yPts);
+    fd.append('width', wPts);
+    fd.append('height', hPts);
+    
+    await postFileDownload('/pdf/sign', fd, 'signed_document.pdf');
+  }, 'image/png');
+}
+
+async function postFileDownload(endpoint, formData, downloadName) {
+  toast('Processing file...');
+  try {
+    const res = await fetch(endpoint, { method: 'POST', body: formData });
+    if(res.status === 400 || res.status === 500) {
+      const data = await res.json();
+      toast(data.error || 'Server processing error', 'error');
+      return;
+    }
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = downloadName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+    toast('Downloaded successfully.');
+  } catch(err) {
+    toast('Processing failed: ' + err, 'error');
+  }
+}
+
+/* ─── Directory Filters ─── */
+function filterCatalog(category, tabEl) {
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  tabEl.classList.add('active');
+  
+  const cards = document.querySelectorAll('#catalog-grid .tool-card');
+  cards.forEach(card => {
+    if(category === 'All' || card.getAttribute('data-cat') === category) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
 </script>
 </body>
 </html>

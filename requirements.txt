@@ -1,0 +1,13 @@
+flask
+pandas
+matplotlib
+seaborn
+openpyxl
+scipy
+pypdf
+pypdfium2
+reportlab
+pillow
+pdfplumber
+python-docx
+xhtml2pdf

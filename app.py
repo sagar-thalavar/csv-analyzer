@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-CSV Analyzer - Flask Web App
-Enhanced with pandas, visualizations, data cleaning, filtering & querying.
+CSV Analyzer & PDF Tools Suite - Flask Web App
+Enhanced with pandas, visualizations, data cleaning, filtering & stateless PDF operations.
 """
 
 from __future__ import annotations
@@ -10,7 +10,7 @@ import io
 import json
 import os
 import base64
-import tempfile
+import zipfile
 from collections import Counter
 from datetime import datetime
 from pathlib import Path
@@ -24,15 +24,13 @@ import pandas as pd
 import numpy as np
 from flask import (
     Flask, request, render_template, jsonify,
-    send_file, session
+    send_file
 )
 
-app = Flask(__name__)
-app.secret_key = "csv-analyzer-secret-2024"
-app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50MB
+import pdf_tools
 
-UPLOAD_FOLDER = Path(tempfile.gettempdir()) / "csv_analyzer_uploads"
-UPLOAD_FOLDER.mkdir(exist_ok=True)
+app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50MB
 
 # ─── Palette ──────────────────────────────────────────────────────────────────
 PALETTE = ["#00d4aa", "#7c3aed", "#f59e0b", "#ef4444", "#3b82f6", "#10b981", "#f97316", "#8b5cf6"]
@@ -61,11 +59,16 @@ def fig_to_b64(fig) -> str:
     return encoded
 
 
-def load_df() -> pd.DataFrame | None:
-    path = session.get("csv_path")
-    if not path or not Path(path).exists():
-        return None
-    return pd.read_csv(path)
+def load_df_from_req() -> tuple[pd.DataFrame | None, str | None]:
+    body = request.json or {}
+    csv_data = body.get("csv_data")
+    if not csv_data:
+        return None, "No CSV data received"
+    try:
+        df = pd.read_csv(io.StringIO(csv_data))
+        return df, None
+    except Exception as e:
+        return None, f"Failed to parse CSV: {str(e)}"
 
 
 def df_summary(df: pd.DataFrame) -> dict:
@@ -79,13 +82,13 @@ def df_summary(df: pd.DataFrame) -> dict:
         s = df[col].dropna()
         stats[col] = {
             "count": int(s.count()),
-            "mean": round(float(s.mean()), 3),
-            "median": round(float(s.median()), 3),
-            "std": round(float(s.std()), 3),
-            "min": round(float(s.min()), 3),
-            "max": round(float(s.max()), 3),
-            "q25": round(float(s.quantile(0.25)), 3),
-            "q75": round(float(s.quantile(0.75)), 3),
+            "mean": round(float(s.mean()), 3) if not s.empty else 0,
+            "median": round(float(s.median()), 3) if not s.empty else 0,
+            "std": round(float(s.std()), 3) if len(s) > 1 else 0,
+            "min": round(float(s.min()), 3) if not s.empty else 0,
+            "max": round(float(s.max()), 3) if not s.empty else 0,
+            "q25": round(float(s.quantile(0.25)), 3) if not s.empty else 0,
+            "q75": round(float(s.quantile(0.75)), 3) if not s.empty else 0,
         }
 
     text_freq = {}
@@ -107,12 +110,14 @@ def df_summary(df: pd.DataFrame) -> dict:
     }
 
 
-# ─── Routes ───────────────────────────────────────────────────────────────────
+# ─── Base Route ───────────────────────────────────────────────────────────────
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
+
+# ─── Stateless CSV Analyzer API Routes ────────────────────────────────────────
 
 @app.route("/upload", methods=["POST"])
 def upload():
@@ -122,46 +127,39 @@ def upload():
     if not f.filename.endswith(".csv"):
         return jsonify({"error": "Only CSV files are supported"}), 400
 
-    save_path = UPLOAD_FOLDER / f.filename
-    f.save(str(save_path))
-    session["csv_path"] = str(save_path)
-    session["filename"] = f.filename
+    try:
+        csv_bytes = f.read()
+        csv_text = csv_bytes.decode("utf-8", errors="ignore")
+        df = pd.read_csv(io.StringIO(csv_text))
+        summary = df_summary(df)
+        preview = df.head(10).fillna("").to_dict(orient="records")
 
-    df = pd.read_csv(str(save_path))
-    summary = df_summary(df)
-    preview = df.head(10).fillna("").to_dict(orient="records")
-
-    return jsonify({
-        "summary": summary,
-        "preview": preview,
-        "filename": f.filename,
-    })
-
-
-@app.route("/summary")
-def summary():
-    df = load_df()
-    if df is None:
-        return jsonify({"error": "No file loaded"}), 400
-    return jsonify(df_summary(df))
+        return jsonify({
+            "summary": summary,
+            "preview": preview,
+            "filename": f.filename,
+            "csv_data": csv_text
+        })
+    except Exception as e:
+        return jsonify({"error": f"Failed to parse CSV: {str(e)}"}), 400
 
 
-@app.route("/preview")
+@app.route("/preview", methods=["POST"])
 def preview():
-    df = load_df()
-    if df is None:
-        return jsonify({"error": "No file loaded"}), 400
-    n = int(request.args.get("n", 10))
+    df, err = load_df_from_req()
+    if err:
+        return jsonify({"error": err}), 400
+    
+    body = request.json or {}
+    n = int(body.get("n", 10))
     return jsonify(df.head(n).fillna("").to_dict(orient="records"))
 
 
-# ─── Filtering & Querying ────────────────────────────────────────────────────
-
 @app.route("/filter", methods=["POST"])
 def filter_data():
-    df = load_df()
-    if df is None:
-        return jsonify({"error": "No file loaded"}), 400
+    df, err = load_df_from_req()
+    if err:
+        return jsonify({"error": err}), 400
 
     body = request.json or {}
     filters = body.get("filters", [])
@@ -211,13 +209,11 @@ def filter_data():
     })
 
 
-# ─── Data Cleaning ────────────────────────────────────────────────────────────
-
 @app.route("/clean", methods=["POST"])
 def clean_data():
-    df = load_df()
-    if df is None:
-        return jsonify({"error": "No file loaded"}), 400
+    df, err = load_df_from_req()
+    if err:
+        return jsonify({"error": err}), 400
 
     body = request.json or {}
     ops = body.get("operations", [])
@@ -294,25 +290,27 @@ def clean_data():
                 df[col] = df[col].clip(lo, hi)
                 log.append(f"Clipped {before_outliers} outliers in '{col}' to [{lo:.2f}, {hi:.2f}].")
 
-    # Save cleaned version
-    path = session.get("csv_path")
-    if path:
-        df.to_csv(path, index=False)
+    # Serialize cleaned dataframe back to CSV text
+    out_buf = io.StringIO()
+    df.to_csv(out_buf, index=False)
+    cleaned_csv_data = out_buf.getvalue()
 
     return jsonify({
         "log": log,
         "summary": df_summary(df),
         "preview": df.head(10).fillna("").to_dict(orient="records"),
+        "csv_data": cleaned_csv_data
     })
 
 
-# ─── Visualizations ──────────────────────────────────────────────────────────
+# ─── CSV Visualization Routes ───────────────────────────────────────────────
 
 @app.route("/chart/histogram", methods=["POST"])
 def chart_histogram():
-    df = load_df()
-    if df is None:
-        return jsonify({"error": "No file loaded"}), 400
+    df, err = load_df_from_req()
+    if err:
+        return jsonify({"error": err}), 400
+    
     col = request.json.get("col")
     bins = int(request.json.get("bins", 20))
     if col not in df.columns:
@@ -343,9 +341,10 @@ def chart_histogram():
 
 @app.route("/chart/bar", methods=["POST"])
 def chart_bar():
-    df = load_df()
-    if df is None:
-        return jsonify({"error": "No file loaded"}), 400
+    df, err = load_df_from_req()
+    if err:
+        return jsonify({"error": err}), 400
+    
     col = request.json.get("col")
     top_n = int(request.json.get("top_n", 15))
     if col not in df.columns:
@@ -367,9 +366,10 @@ def chart_bar():
 
 @app.route("/chart/scatter", methods=["POST"])
 def chart_scatter():
-    df = load_df()
-    if df is None:
-        return jsonify({"error": "No file loaded"}), 400
+    df, err = load_df_from_req()
+    if err:
+        return jsonify({"error": err}), 400
+    
     x_col = request.json.get("x")
     y_col = request.json.get("y")
     hue_col = request.json.get("hue")
@@ -398,9 +398,10 @@ def chart_scatter():
 
 @app.route("/chart/correlation", methods=["POST"])
 def chart_correlation():
-    df = load_df()
-    if df is None:
-        return jsonify({"error": "No file loaded"}), 400
+    df, err = load_df_from_req()
+    if err:
+        return jsonify({"error": err}), 400
+    
     numeric = df.select_dtypes(include="number")
     if numeric.shape[1] < 2:
         return jsonify({"error": "Need at least 2 numeric columns"}), 400
@@ -418,9 +419,10 @@ def chart_correlation():
 
 @app.route("/chart/boxplot", methods=["POST"])
 def chart_boxplot():
-    df = load_df()
-    if df is None:
-        return jsonify({"error": "No file loaded"}), 400
+    df, err = load_df_from_req()
+    if err:
+        return jsonify({"error": err}), 400
+    
     col = request.json.get("col")
     group_col = request.json.get("group")
     if col not in df.columns:
@@ -450,9 +452,10 @@ def chart_boxplot():
 
 @app.route("/chart/line", methods=["POST"])
 def chart_line():
-    df = load_df()
-    if df is None:
-        return jsonify({"error": "No file loaded"}), 400
+    df, err = load_df_from_req()
+    if err:
+        return jsonify({"error": err}), 400
+    
     x_col = request.json.get("x")
     y_col = request.json.get("y")
     if x_col not in df.columns or y_col not in df.columns:
@@ -472,11 +475,12 @@ def chart_line():
     return jsonify({"image": fig_to_b64(fig)})
 
 
-@app.route("/chart/missing", methods=["GET"])
+@app.route("/chart/missing", methods=["POST"])
 def chart_missing():
-    df = load_df()
-    if df is None:
-        return jsonify({"error": "No file loaded"}), 400
+    df, err = load_df_from_req()
+    if err:
+        return jsonify({"error": err}), 400
+    
     missing = df.isnull().sum()
     missing = missing[missing > 0]
     if missing.empty:
@@ -495,18 +499,22 @@ def chart_missing():
     return jsonify({"image": fig_to_b64(fig)})
 
 
-# ─── Advanced Stats ───────────────────────────────────────────────────────────
+# ─── CSV Stats Routes ───────────────────────────────────────────────────────
 
 @app.route("/stats/outliers", methods=["POST"])
 def stats_outliers():
-    df = load_df()
-    if df is None:
-        return jsonify({"error": "No file loaded"}), 400
+    df, err = load_df_from_req()
+    if err:
+        return jsonify({"error": err}), 400
+    
     col = request.json.get("col")
     if col not in df.select_dtypes(include="number").columns:
         return jsonify({"error": "Column must be numeric"}), 400
 
     s = df[col].dropna()
+    if s.empty:
+        return jsonify({"error": "Selected column contains no numeric elements."}), 400
+
     q1, q3 = s.quantile(0.25), s.quantile(0.75)
     iqr = q3 - q1
     lo, hi = q1 - 1.5 * iqr, q3 + 1.5 * iqr
@@ -527,9 +535,10 @@ def stats_outliers():
 
 @app.route("/stats/groupby", methods=["POST"])
 def stats_groupby():
-    df = load_df()
-    if df is None:
-        return jsonify({"error": "No file loaded"}), 400
+    df, err = load_df_from_req()
+    if err:
+        return jsonify({"error": err}), 400
+    
     group_col = request.json.get("group_col")
     agg_col = request.json.get("agg_col")
     agg_func = request.json.get("agg_func", "mean")
@@ -551,13 +560,14 @@ def stats_groupby():
     })
 
 
-# ─── Export ───────────────────────────────────────────────────────────────────
+# ─── CSV Export Routes ───────────────────────────────────────────────────────
 
-@app.route("/export/csv")
+@app.route("/export/csv", methods=["POST"])
 def export_csv():
-    df = load_df()
-    if df is None:
-        return jsonify({"error": "No file loaded"}), 400
+    df, err = load_df_from_req()
+    if err:
+        return jsonify({"error": err}), 400
+    
     buf = io.StringIO()
     df.to_csv(buf, index=False)
     buf.seek(0)
@@ -569,11 +579,12 @@ def export_csv():
     )
 
 
-@app.route("/export/excel")
+@app.route("/export/excel", methods=["POST"])
 def export_excel():
-    df = load_df()
-    if df is None:
-        return jsonify({"error": "No file loaded"}), 400
+    df, err = load_df_from_req()
+    if err:
+        return jsonify({"error": err}), 400
+    
     buf = io.BytesIO()
     with pd.ExcelWriter(buf, engine="openpyxl") as writer:
         df.to_excel(writer, index=False, sheet_name="Data")
@@ -592,13 +603,292 @@ def export_excel():
     )
 
 
-@app.route("/export/json")
+@app.route("/export/json", methods=["POST"])
 def export_json():
-    df = load_df()
-    if df is None:
-        return jsonify({"error": "No file loaded"}), 400
+    df, err = load_df_from_req()
+    if err:
+        return jsonify({"error": err}), 400
+    
     buf = io.BytesIO(df.to_json(orient="records", indent=2).encode())
     return send_file(buf, mimetype="application/json", as_attachment=True, download_name="data.json")
+
+
+# ─── Stateless PDF Routes ────────────────────────────────────────────────────
+
+@app.route("/pdf/merge", methods=["POST"])
+def pdf_merge_route():
+    files = request.files.getlist("files")
+    if not files or len(files) < 2:
+        return jsonify({"error": "Provide at least 2 PDF files to merge"}), 400
+    
+    try:
+        bytes_list = [f.read() for f in files if f.filename.endswith(".pdf")]
+        merged = pdf_tools.merge_pdfs(bytes_list)
+        return send_file(
+            io.BytesIO(merged),
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name="merged.pdf"
+        )
+    except Exception as e:
+        return jsonify({"error": f"Merge failed: {str(e)}"}), 500
+
+
+@app.route("/pdf/organize", methods=["POST"])
+def pdf_organize_route():
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+    f = request.files["file"]
+    action = request.form.get("action")
+    
+    try:
+        f_bytes = f.read()
+        
+        if action == "split":
+            ranges_json = request.form.get("ranges")
+            ranges = json.loads(ranges_json) # expect [[start, end], [start, end]]
+            split_files = pdf_tools.split_pdf(f_bytes, [(r[0], r[1]) for r in ranges])
+            
+            # If split generated only 1 file, return directly
+            if len(split_files) == 1:
+                return send_file(
+                    io.BytesIO(split_files[0]),
+                    mimetype="application/pdf",
+                    as_attachment=True,
+                    download_name="split.pdf"
+                )
+            
+            # package split files in zip
+            zip_buf = io.BytesIO()
+            with zipfile.ZipFile(zip_buf, "w") as zf:
+                for idx, split_bytes in enumerate(split_files):
+                    zf.writestr(f"split_part_{idx + 1}.pdf", split_bytes)
+            zip_buf.seek(0)
+            return send_file(
+                zip_buf,
+                mimetype="application/zip",
+                as_attachment=True,
+                download_name="split_pdfs.zip"
+            )
+            
+        elif action == "delete_pages":
+            pages = json.loads(request.form.get("pages", "[]"))
+            res = pdf_tools.delete_pdf_pages(f_bytes, pages)
+            
+        elif action == "rotate":
+            pages = json.loads(request.form.get("pages", "[]"))
+            angle = int(request.form.get("angle", 90))
+            res = pdf_tools.rotate_pdf_pages(f_bytes, pages, angle)
+            
+        elif action == "crop":
+            pages = json.loads(request.form.get("pages", "[]"))
+            left = float(request.form.get("left", 0))
+            right = float(request.form.get("right", 0))
+            top = float(request.form.get("top", 0))
+            bottom = float(request.form.get("bottom", 0))
+            res = pdf_tools.crop_pdf_pages(f_bytes, pages, left, right, top, bottom)
+            
+        elif action == "extract_pages":
+            pages = json.loads(request.form.get("pages", "[]"))
+            res = pdf_tools.extract_pdf_pages(f_bytes, pages)
+            
+        elif action == "rearrange":
+            order = json.loads(request.form.get("order", "[]"))
+            res = pdf_tools.rearrange_pdf_pages(f_bytes, order)
+            
+        elif action == "add_pages":
+            positions = json.loads(request.form.get("positions", "[]"))
+            res = pdf_tools.add_blank_pages(f_bytes, positions)
+            
+        elif action == "add_page_numbers":
+            style = request.form.get("style", "bottom_right")
+            res = pdf_tools.add_page_numbers(f_bytes, style)
+            
+        else:
+            return jsonify({"error": f"Invalid action: {action}"}), 400
+
+        return send_file(
+            io.BytesIO(res),
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name="edited.pdf"
+        )
+    except Exception as e:
+        return jsonify({"error": f"PDF Organize failed: {str(e)}"}), 500
+
+
+@app.route("/pdf/convert-from", methods=["POST"])
+def pdf_convert_from_route():
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+    f = request.files["file"]
+    fmt = request.form.get("format", "text")
+    
+    try:
+        f_bytes = f.read()
+        
+        if fmt == "images":
+            img_format = request.form.get("img_format", "PNG")
+            img_list = pdf_tools.pdf_to_images(f_bytes, img_format)
+            
+            if len(img_list) == 1:
+                return send_file(
+                    io.BytesIO(img_list[0]),
+                    mimetype=f"image/{img_format.lower()}",
+                    as_attachment=True,
+                    download_name=f"page_1.{img_format.lower()}"
+                )
+                
+            zip_buf = io.BytesIO()
+            with zipfile.ZipFile(zip_buf, "w") as zf:
+                for idx, img_bytes in enumerate(img_list):
+                    zf.writestr(f"page_{idx + 1}.{img_format.lower()}", img_bytes)
+            zip_buf.seek(0)
+            return send_file(
+                zip_buf,
+                mimetype="application/zip",
+                as_attachment=True,
+                download_name="pdf_images.zip"
+            )
+            
+        elif fmt == "text":
+            txt = pdf_tools.pdf_to_text(f_bytes)
+            return send_file(
+                io.BytesIO(txt.encode("utf-8")),
+                mimetype="text/plain",
+                as_attachment=True,
+                download_name="extracted_text.txt"
+            )
+            
+        elif fmt == "word":
+            docx = pdf_tools.pdf_to_word(f_bytes)
+            return send_file(
+                io.BytesIO(docx),
+                mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                as_attachment=True,
+                download_name="converted.docx"
+            )
+            
+        elif fmt == "excel":
+            xlsx = pdf_tools.pdf_to_excel(f_bytes)
+            return send_file(
+                io.BytesIO(xlsx),
+                mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                as_attachment=True,
+                download_name="converted.xlsx"
+            )
+            
+        elif fmt == "html":
+            html = pdf_tools.pdf_to_html(f_bytes)
+            return send_file(
+                io.BytesIO(html.encode("utf-8")),
+                mimetype="text/html",
+                as_attachment=True,
+                download_name="converted.html"
+            )
+            
+        else:
+            return jsonify({"error": f"Invalid format conversion target: {fmt}"}), 400
+            
+    except Exception as e:
+        return jsonify({"error": f"Conversion failed: {str(e)}"}), 500
+
+
+@app.route("/pdf/convert-to", methods=["POST"])
+def pdf_convert_to_route():
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+    f = request.files["file"]
+    source_fmt = request.form.get("source_format")
+    
+    try:
+        f_bytes = f.read()
+        
+        if source_fmt in ("jpg", "png", "bmp", "gif", "tiff", "image"):
+            # Pillow handles multiple formats easily
+            res = pdf_tools.images_to_pdf([f_bytes])
+        elif source_fmt == "text":
+            text_str = f_bytes.decode("utf-8", errors="ignore")
+            res = pdf_tools.text_to_pdf(text_str)
+        elif source_fmt == "word":
+            res = pdf_tools.docx_to_pdf(f_bytes)
+        elif source_fmt == "excel":
+            res = pdf_tools.xlsx_to_pdf(f_bytes)
+        elif source_fmt == "html":
+            html_str = f_bytes.decode("utf-8", errors="ignore")
+            res = pdf_tools.html_to_pdf(html_str)
+        elif source_fmt == "rtf":
+            res = pdf_tools.rtf_to_pdf(f_bytes)
+        else:
+            return jsonify({"error": f"Unsupported source format: {source_fmt}"}), 400
+            
+        return send_file(
+            io.BytesIO(res),
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name="converted.pdf"
+        )
+    except Exception as e:
+        return jsonify({"error": f"Convert to PDF failed: {str(e)}"}), 500
+
+
+@app.route("/pdf/security", methods=["POST"])
+def pdf_security_route():
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+    f = request.files["file"]
+    action = request.form.get("action")
+    password = request.form.get("password", "")
+    
+    if not password:
+        return jsonify({"error": "Password is required"}), 400
+        
+    try:
+        f_bytes = f.read()
+        if action == "encrypt":
+            res = pdf_tools.encrypt_pdf(f_bytes, password)
+        elif action == "decrypt":
+            res = pdf_tools.decrypt_pdf(f_bytes, password)
+        else:
+            return jsonify({"error": f"Invalid security action: {action}"}), 400
+            
+        return send_file(
+            io.BytesIO(res),
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name="secured.pdf"
+        )
+    except Exception as e:
+        return jsonify({"error": f"Security action failed: {str(e)}"}), 500
+
+
+@app.route("/pdf/sign", methods=["POST"])
+def pdf_sign_route():
+    if "file" not in request.files or "signature" not in request.files:
+        return jsonify({"error": "Both PDF document and signature graphic files are required"}), 400
+        
+    f_doc = request.files["file"]
+    f_sig = request.files["signature"]
+    
+    try:
+        page_num = int(request.form.get("page", 1))
+        x = float(request.form.get("x", 100))
+        y = float(request.form.get("y", 100))
+        width = float(request.form.get("width", 150))
+        height = float(request.form.get("height", 80))
+        
+        doc_bytes = f_doc.read()
+        sig_bytes = f_sig.read()
+        
+        res = pdf_tools.sign_pdf(doc_bytes, sig_bytes, page_num, x, y, width, height)
+        return send_file(
+            io.BytesIO(res),
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name="signed.pdf"
+        )
+    except Exception as e:
+        return jsonify({"error": f"Signing failed: {str(e)}"}), 500
 
 
 if __name__ == "__main__":
