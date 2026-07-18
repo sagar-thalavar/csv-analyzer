@@ -385,6 +385,8 @@
     height: 50px;
     user-select: none;
     z-index: 999;
+    left: 0;
+    top: 0;
   }
   .sig-token span { font-size: 10px; font-weight: 800; color: var(--accent-orange); text-shadow: 0 1px 1px #fff; }
   
@@ -458,6 +460,96 @@
   #toast.show { opacity: 1; transform: translateY(0); }
   #toast.success { border-color: var(--accent-green); color: var(--text); }
   #toast.error { border-color: var(--danger); color: var(--danger); }
+
+  /* ── Modal Alert Dialog ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 26, 36, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    animation: modalFadeIn 0.2s ease;
+  }
+  .modal-overlay.visible { display: flex; }
+
+  @keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes modalSlideUp {
+    from { opacity: 0; transform: translateY(20px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .modal-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 8px 0 var(--border);
+    text-align: center;
+    animation: modalSlideUp 0.25s ease;
+  }
+
+  .modal-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 26px;
+  }
+  .modal-icon.error { background: #fef2f2; border: 2px solid var(--danger); }
+  .modal-icon.warning { background: #fffbeb; border: 2px solid #f59e0b; }
+  .modal-icon.info { background: #eff6ff; border: 2px solid #3b82f6; }
+
+  .modal-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+  }
+
+  .modal-message {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .modal-dismiss {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 32px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: 0 3px 0 var(--border);
+  }
+  .modal-dismiss:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 0 var(--border);
+  }
+  .modal-dismiss:active {
+    transform: translateY(2px);
+    box-shadow: none;
+  }
+  .modal-dismiss.error { background: var(--danger); color: #fff; }
+  .modal-dismiss.warning { background: #f59e0b; color: #fff; }
+  .modal-dismiss.info { background: #3b82f6; color: #fff; }
 
   /* Custom Scrollbar */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -688,7 +780,7 @@
                 </div>
               </div>
               
-              <div class="divider" style="height:2px; background:var(--border); margin:16px 0;"></div>
+              <div class="divider" style="height:2px; background:var(--border); margin:12px 0;"></div>
               
               <div class="form-group">
                 <label>Column targets</label>
@@ -856,6 +948,16 @@
 <!-- Toast element -->
 <div id="toast"></div>
 
+<!-- Modal Alert Dialog -->
+<div class="modal-overlay" id="modal-alert" onclick="dismissModal(event)">
+  <div class="modal-card">
+    <div class="modal-icon error" id="modal-icon">⚠</div>
+    <div class="modal-title" id="modal-title">Warning</div>
+    <div class="modal-message" id="modal-message">Something went wrong.</div>
+    <button class="modal-dismiss error" id="modal-btn" onclick="closeModal()">Got it</button>
+  </div>
+</div>
+
 <!-- JS Code logic -->
 <script>
 // Configure PDF.js global library worker path
@@ -930,11 +1032,50 @@ function showTool(toolName) {
 
 /* ─── Toast Alerts ─── */
 function toast(msg, type = 'success') {
+  if (type === 'error') {
+    // Show modal dialog for errors/warnings
+    showModal(msg, 'error');
+    return;
+  }
+  // Keep subtle toast for success/info
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'show ' + type;
   clearTimeout(t._to);
   t._to = setTimeout(() => t.className = '', 3000);
+}
+
+function showModal(msg, type = 'error') {
+  const overlay = document.getElementById('modal-alert');
+  const icon = document.getElementById('modal-icon');
+  const title = document.getElementById('modal-title');
+  const message = document.getElementById('modal-message');
+  const btn = document.getElementById('modal-btn');
+
+  const config = {
+    error:   { icon: '✕', title: 'Something went wrong', btnText: 'Got it' },
+    warning: { icon: '⚠', title: 'Heads up', btnText: 'Understood' },
+    info:    { icon: 'ℹ', title: 'Notice', btnText: 'Okay' }
+  };
+  const c = config[type] || config.error;
+
+  icon.className = 'modal-icon ' + type;
+  icon.textContent = c.icon;
+  title.textContent = c.title;
+  message.textContent = msg;
+  btn.className = 'modal-dismiss ' + type;
+  btn.textContent = c.btnText;
+
+  overlay.classList.add('visible');
+}
+
+function closeModal() {
+  document.getElementById('modal-alert').classList.remove('visible');
+}
+
+function dismissModal(e) {
+  // Close if user clicks the dark overlay background (not the card itself)
+  if (e.target === e.currentTarget) closeModal();
 }
 
 /* ─── CSV Workspace Handlers ─── */
@@ -945,7 +1086,6 @@ function handleCSVDrop(e) {
   else toast('Invalid file type. CSV files only.', 'error');
 }
 
-// Keep file uploads standard
 function uploadCSV(input) {
   if (input.files[0]) uploadCSVFile(input.files[0]);
 }
@@ -1573,6 +1713,7 @@ function handlePDFMultiDrop(e) {
   else toast('PDF documents only', 'error');
 }
 
+// Keep standard multi uploads
 function uploadPDFMulti(input) {
   if(input.files.length) loadPDFMultiFiles(Array.from(input.files));
 }
@@ -1665,12 +1806,13 @@ function renderDynamicControls(tool) {
     html = `
       <div class="form-group">
         <label>Rotate Angle</label>
-        <select id="rotate-angle">
+        <select id="rotate-angle" onchange="applyRotatePreview()">
           <option value="90">90° Clockwise</option>
           <option value="180">180° Half Turn</option>
           <option value="270">270° Counter-Clockwise</option>
         </select>
       </div>
+      ${G.pdfPageCount > 1 ? `
       <div class="form-group">
         <label>Apply to</label>
         <select id="rotate-scope" onchange="toggleScopeInputs('rotate', this.value)">
@@ -1681,8 +1823,11 @@ function renderDynamicControls(tool) {
       <div id="rotate-specific-container" style="display:none; margin-bottom:16px;">
         <label>Select Pages</label>
         <div id="rotate-pages-container" style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;"></div>
-        <button type="button" class="btn btn-secondary" onclick="addRotatePageRow()" style="font-size:11px; padding:6px 12px; width:auto;">+ Add Page</button>
-      </div>
+        <button type="button" class="btn btn-secondary" id="btn-add-rotate-page" onclick="addRotatePageRow()" style="font-size:11px; padding:6px 12px; width:auto;">+ Add Page</button>
+      </div>` : `
+      <input type="hidden" id="rotate-scope" value="all">
+      <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">Single page document — rotation applies to the entire page.</p>
+      `}
       <button class="btn btn-primary" onclick="runPDFRotate()">Execute Rotation</button>
     `;
   }
@@ -1857,7 +2002,8 @@ function renderDynamicControls(tool) {
   } else if (tool === 'pdf_delete') {
     addDeletePageRow(1);
   } else if (tool === 'pdf_rotate') {
-    addRotatePageRow(1);
+    if (G.pdfPageCount > 1) addRotatePageRow(1);
+    setTimeout(() => applyRotatePreview(), 100);
   } else if (tool === 'pdf_crop') {
     addCropPageRow(1);
   } else if (tool === 'pdf_arrange') {
@@ -1909,6 +2055,14 @@ function addDeletePageRow(val = 1) {
 function addRotatePageRow(val = 1) {
   const container = document.getElementById('rotate-pages-container');
   if (!container) return;
+  
+  // Prevent adding more page rows than pages in the document
+  const existingRows = container.querySelectorAll('.rotate-page-row').length;
+  if (existingRows >= G.pdfPageCount) {
+    toast(`Cannot add more — this document only has ${G.pdfPageCount} page${G.pdfPageCount > 1 ? 's' : ''}.`, 'error');
+    return;
+  }
+  
   const row = document.createElement('div');
   row.className = 'rotate-page-row';
   row.style.display = 'flex';
@@ -1920,6 +2074,44 @@ function addRotatePageRow(val = 1) {
     <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()" style="width:auto; padding:8px 12px;">✕</button>
   `;
   container.appendChild(row);
+}
+
+// Live CSS rotation preview on the PDF canvases
+function applyRotatePreview() {
+  const angleEl = document.getElementById('rotate-angle');
+  if (!angleEl) return;
+  const angle = parseInt(angleEl.value);
+  
+  const scopeEl = document.getElementById('rotate-scope');
+  const scope = scopeEl ? scopeEl.value : 'all';
+  
+  // Collect which pages to rotate
+  let pagesToRotate = [];
+  if (scope === 'all') {
+    for (let i = 1; i <= G.pdfPageCount; i++) pagesToRotate.push(i);
+  } else {
+    const rows = document.querySelectorAll('.rotate-page-row');
+    rows.forEach(row => {
+      pagesToRotate.push(parseInt(row.querySelector('.rotate-page-val').value));
+    });
+  }
+  const rotateSet = new Set(pagesToRotate);
+  
+  // Apply CSS transform to matching page canvases, reset others
+  for (let p = 1; p <= G.pdfPageCount; p++) {
+    const wrapper = document.getElementById(`page-wrapper-${p}`);
+    if (!wrapper) continue;
+    const canvas = wrapper.querySelector('canvas');
+    if (!canvas) continue;
+    
+    if (rotateSet.has(p)) {
+      canvas.style.transition = 'transform 0.4s ease';
+      canvas.style.transform = `rotate(${angle}deg)`;
+    } else {
+      canvas.style.transition = 'transform 0.4s ease';
+      canvas.style.transform = 'rotate(0deg)';
+    }
+  }
 }
 
 function addCropPageRow(val = 1) {
@@ -2160,7 +2352,7 @@ function resetCameraPhoto() {
   document.getElementById('btn-start-camera').style.display = 'block';
 }
 
-/* ─── Client-side Rendering & Lazy Loading Previewers ─── */
+/* ─── Client-side Rendering & Scrollable PDF Previewer ─── */
 let renderedPages = {}; // Cache rendered states to prevent redundant drawing
 
 async function renderPageCanvas(pageNum) {
@@ -2173,9 +2365,9 @@ async function renderPageCanvas(pageNum) {
   try {
     const page = await G.pdfDoc.getPage(pageNum);
     
-    // Scale view to match target width of 280px maintaining aspect ratio
+    // Use the wrapper's actual width for scaling (fall back to 500)
     const unscaledViewport = page.getViewport({ scale: 1.0 });
-    const targetWidth = 280;
+    const targetWidth = Math.min(wrapper.clientWidth || 500, 500);
     const scale = targetWidth / unscaledViewport.width;
     const viewport = page.getViewport({ scale: scale });
     
@@ -2183,8 +2375,8 @@ async function renderPageCanvas(pageNum) {
     canvas.width = viewport.width;
     canvas.height = viewport.height;
     canvas.style.display = 'block';
-    canvas.style.maxWidth = '100%';
-    canvas.style.height = 'auto';
+    canvas.style.width = targetWidth + 'px';
+    canvas.style.height = Math.round(viewport.height) + 'px';
     canvas.style.border = '1px solid #ddd';
     canvas.style.borderRadius = '4px';
     
@@ -2198,7 +2390,7 @@ async function renderPageCanvas(pageNum) {
     
     // Hide loading text and mount canvas view
     const loader = wrapper.querySelector('.page-loader-text');
-    if (loader) loader.style.display = 'none';
+    if (loader) loader.remove();
     wrapper.appendChild(canvas);
   } catch(err) {
     console.error(`Failed to render page ${pageNum}:`, err);
@@ -2216,16 +2408,12 @@ function handlePreviewScroll() {
   let activePageNum = 1;
   pageContainers.forEach(container => {
     const pageNum = parseInt(container.getAttribute('data-page'));
-    const top = container.offsetTop - wrap.offsetTop;
-    const bottom = top + container.clientHeight;
+    // Use offsetTop relative to the scroll wrapper
+    const top = container.offsetTop;
+    const bottom = top + container.offsetHeight;
     
     if (scrollPos >= top && scrollPos <= bottom) {
       activePageNum = pageNum;
-    }
-    
-    // Lazy loading viewport window checks (+/- 600px padding)
-    if (bottom >= wrap.scrollTop - 600 && top <= wrap.scrollTop + wrap.clientHeight + 600) {
-      renderPageCanvas(pageNum);
     }
   });
   
@@ -2238,18 +2426,56 @@ function handlePreviewScroll() {
   }
 }
 
-// Render dynamic scrollable layouts for workspaces
-function renderPDFPreviewLayout(containerId) {
+// Apply current tool settings as a live preview (called by the ↻ button)
+async function rerenderAllPages() {
+  if (!G.pdfDoc) return;
+  
+  // First reset all CSS transforms back to normal
+  for (let p = 1; p <= G.pdfPageCount; p++) {
+    const wrapper = document.getElementById(`page-wrapper-${p}`);
+    if (!wrapper) continue;
+    const canvas = wrapper.querySelector('canvas');
+    if (canvas) {
+      canvas.style.transition = 'none';
+      canvas.style.transform = 'rotate(0deg)';
+    }
+  }
+  
+  // Apply tool-specific preview effects
+  if (G.currentTool === 'pdf_rotate') {
+    applyRotatePreview();
+  }
+  
+  toast('Preview updated.');
+}
+
+// Pre-calculate page dimensions and build the scrollable layout, then render all pages eagerly
+async function renderPDFPreviewLayout(containerId) {
   const container = document.getElementById(containerId);
-  if (!container) return;
+  if (!container || !G.pdfDoc) return;
   
   renderedPages = {}; // Clear cache
   
-  let pagesHTML = '';
+  // Step 1: Pre-calculate the expected rendered height for each page using PDF.js viewport
+  // This is critical — without explicit heights, the scroll container can't overflow properly.
+  const pageDims = [];
+  const renderWidth = 500; // target canvas width in px
   for (let p = 1; p <= G.pdfPageCount; p++) {
+    const page = await G.pdfDoc.getPage(p);
+    const vp = page.getViewport({ scale: 1.0 });
+    const scale = renderWidth / vp.width;
+    const scaledHeight = Math.round(vp.height * scale);
+    pageDims.push({ pageNum: p, width: renderWidth, height: scaledHeight });
+  }
+  
+  // Step 2: Build the HTML with explicit min-height on each page wrapper
+  let pagesHTML = '';
+  for (const dim of pageDims) {
     pagesHTML += `
-      <div class="pdf-page-container" id="page-wrapper-${p}" data-page="${p}" style="position:relative; width:100%; max-width:280px; background:#fff; display:flex; flex-direction:column; align-items:center; overflow:hidden;">
-        <div class="page-loader-text" style="padding:50px; font-size:11px; color:var(--muted); font-weight:700; font-family:var(--font-mono);">Rendering Page ${p}...</div>
+      <div class="pdf-page-container" id="page-wrapper-${dim.pageNum}" data-page="${dim.pageNum}" 
+           style="position:relative; width:${dim.width}px; min-height:${dim.height}px; background:#fff; 
+                  display:flex; flex-direction:column; align-items:center; overflow:hidden; flex-shrink:0;">
+        <div class="page-loader-text" style="padding:40px; font-size:11px; color:var(--muted); font-weight:700; font-family:var(--font-mono);">Rendering Page ${dim.pageNum}...</div>
       </div>
     `;
   }
@@ -2257,7 +2483,10 @@ function renderPDFPreviewLayout(containerId) {
   container.innerHTML = `
     <div class="panel-header" style="display:flex; justify-content:space-between; align-items:center;">
       <span class="panel-title">Visual Workspace Preview</span>
-      <span id="txt-active-page-num" style="font-weight:800; font-family:var(--font-mono); font-size:12px; background:var(--bg); border:2px solid var(--border); border-radius:8px; padding:4px 8px;">Page 1 of ${G.pdfPageCount}</span>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button type="button" onclick="rerenderAllPages()" title="Re-render pages" style="width:32px; height:32px; border-radius:8px; border:2px solid var(--border); background:var(--bg); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; box-shadow:0 2px 0 var(--border); transition:transform 0.1s,box-shadow 0.1s;" onmousedown="this.style.transform='translateY(2px)';this.style.boxShadow='none'" onmouseup="this.style.transform='';this.style.boxShadow='0 2px 0 var(--border)'" onmouseleave="this.style.transform='';this.style.boxShadow='0 2px 0 var(--border)'">&#x21bb;</button>
+        <span id="txt-active-page-num" style="font-weight:800; font-family:var(--font-mono); font-size:12px; background:var(--bg); border:2px solid var(--border); border-radius:8px; padding:4px 8px;">Page 1 of ${G.pdfPageCount}</span>
+      </div>
     </div>
     
     <div style="display:flex; flex-direction:column; align-items:center; flex:1; position:relative; width:100%;">
@@ -2268,18 +2497,24 @@ function renderPDFPreviewLayout(containerId) {
         <span>SIGNATURE TOKEN</span>
       </div>` : ''}
       
-      <!-- Infinite Scrollable PDF Document viewer -->
-      <div class="pdf-render-scroll-wrap" onscroll="handlePreviewScroll()" style="max-height:480px; overflow-y:auto; border:2px solid var(--border); border-radius:12px; background:#fff; width:100%; display:flex; flex-direction:column; gap:24px; align-items:center; padding:24px 16px; box-shadow:inset 0 2px 6px rgba(0,0,0,0.06);">
+      <!-- Scrollable PDF Document viewer — overflow-y is ALWAYS scroll so scrollbar is visible -->
+      <div class="pdf-render-scroll-wrap" onscroll="handlePreviewScroll()" 
+           style="height:520px; overflow-y:scroll; border:2px solid var(--border); border-radius:12px; 
+                  background:#f5f5f0; width:100%; display:flex; flex-direction:column; gap:20px; 
+                  align-items:center; padding:20px 16px; box-shadow:inset 0 2px 6px rgba(0,0,0,0.06);">
         ${pagesHTML}
       </div>
       
     </div>
   `;
   
-  // Trigger initial scroll calculation loop
-  setTimeout(() => {
-    handlePreviewScroll();
-  }, 50);
+  // Step 3: Eagerly render ALL pages sequentially (no lazy loading needed for typical docs)
+  for (let p = 1; p <= G.pdfPageCount; p++) {
+    await renderPageCanvas(p);
+  }
+  
+  // Trigger initial page number detection
+  handlePreviewScroll();
 }
 
 // Drag & drop handlers for visual signature token placement
@@ -2369,7 +2604,7 @@ async function updateSignPreviewPage() {
     const wrapper = document.getElementById(`page-wrapper-${p}`);
     const scrollWrap = document.querySelector('.pdf-render-scroll-wrap');
     if (wrapper && scrollWrap) {
-      scrollWrap.scrollTop = wrapper.offsetTop - scrollWrap.offsetTop - 16;
+      scrollWrap.scrollTop = wrapper.offsetTop - 16;
     }
   } else {
     pInput.value = activeSignPage;
@@ -2433,6 +2668,12 @@ async function runPDFSplit() {
     rangeArr.push([fromVal, toVal]);
   }
   
+  // Validate: a single range covering the entire document is pointless
+  if (rangeArr.length === 1 && rangeArr[0][0] === 1 && rangeArr[0][1] === G.pdfPageCount) {
+    toast(`Splitting from page 1 to ${G.pdfPageCount} is the entire document — that's not a split. Use a smaller range or add multiple ranges.`, 'error');
+    return;
+  }
+  
   const mergeChecked = document.getElementById('merge-ranges-check').checked;
   
   const fd = new FormData();
@@ -2454,6 +2695,13 @@ async function runPDFDelete() {
   rows.forEach(row => {
     pages.push(parseInt(row.querySelector('.delete-page-val').value));
   });
+  
+  // Validate: cannot delete ALL pages
+  const uniquePages = new Set(pages.filter(p => p >= 1 && p <= G.pdfPageCount));
+  if (uniquePages.size >= G.pdfPageCount) {
+    toast(`Cannot delete all ${G.pdfPageCount} pages. At least one page must remain.`, 'error');
+    return;
+  }
   
   const fd = new FormData();
   fd.append('file', G.pdfFiles[0].fileObject);

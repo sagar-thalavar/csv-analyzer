@@ -53,6 +53,12 @@ def delete_pdf_pages(pdf_bytes: bytes, pages_to_delete: list[int]) -> bytes:
     reader = pypdf.PdfReader(io.BytesIO(pdf_bytes))
     writer = pypdf.PdfWriter()
     delete_set = set(pages_to_delete)
+    total_pages = len(reader.pages)
+    
+    # Validate: cannot delete ALL pages
+    remaining = total_pages - len(delete_set & set(range(1, total_pages + 1)))
+    if remaining <= 0:
+        raise ValueError(f"Cannot delete all {total_pages} pages. At least one page must remain in the document.")
     
     for idx, page in enumerate(reader.pages):
         page_num = idx + 1
