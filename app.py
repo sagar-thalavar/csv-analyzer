@@ -647,7 +647,18 @@ def pdf_organize_route():
         if action == "split":
             ranges_json = request.form.get("ranges")
             ranges = json.loads(ranges_json) # expect [[start, end], [start, end]]
+            merge_ranges = request.form.get("merge_ranges") == "true"
+            
             split_files = pdf_tools.split_pdf(f_bytes, [(r[0], r[1]) for r in ranges])
+            
+            if merge_ranges:
+                res = pdf_tools.merge_pdfs(split_files)
+                return send_file(
+                    io.BytesIO(res),
+                    mimetype="application/pdf",
+                    as_attachment=True,
+                    download_name="split_merged.pdf"
+                )
             
             # If split generated only 1 file, return directly
             if len(split_files) == 1:

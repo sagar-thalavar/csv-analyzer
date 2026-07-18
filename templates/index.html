@@ -1330,9 +1330,6 @@ function setupPDFWorkspace(tool) {
   const ctrl = document.getElementById('pdf-ctrl-container');
   const prev = document.getElementById('pdf-preview-container');
   
-  G.pdfFiles = [];
-  G.signatureImage = null;
-
   let ctrlHTML = '';
   let prevHTML = `<div class="panel-header"><span class="panel-title">Visual Workspace Preview</span></div>
                   <div class="chart-out" id="pdf-view-out">
@@ -1350,6 +1347,10 @@ function setupPDFWorkspace(tool) {
         <p>Drop files here or click to browse (Select multiple)</p>
         <input type="file" id="pdf-m-files" accept=".pdf" class="file-input" multiple onchange="uploadPDFMulti(this)">
       </div>
+      <div class="form-group" id="pdf-file-details" style="display:none;">
+        <label>Selected Documents</label>
+        <span class="file-badge" id="pdf-filename-badge" style="position:static; padding:6px 12px; font-weight:700; border:2px solid var(--border); border-radius:8px; display:inline-block;">none</span>
+      </div>
       <button class="btn btn-primary" id="btn-merge-action" onclick="runPDFMerge()" style="display:none;">Merge Documents</button>
     `;
     prevHTML = `
@@ -1359,101 +1360,33 @@ function setupPDFWorkspace(tool) {
       <div class="chart-placeholder" id="pdf-merge-empty">No files loaded yet.</div>
     `;
   } 
-  else if (tool === 'pdf_split') {
+  else {
     ctrlHTML = `
-      <div class="panel-header"><span class="panel-title">PDF Splitter</span></div>
+      <div class="panel-header"><span class="panel-title">${tool === 'pdf_split' ? 'PDF Splitter' : tool === 'pdf_delete' ? 'Delete Pages' : tool === 'pdf_rotate' ? 'Rotate Page canvas' : tool === 'pdf_crop' ? 'Crop Margins' : tool === 'pdf_arrange' ? 'Rearrange Sequence' : 'Page Stamp Numbers'}</span></div>
       ${pdfSingleDropHTML()}
-      <div class="form-group">
-        <label>Page split ranges</label>
-        <input type="text" id="split-ranges" placeholder="e.g. 1-3, 4, 5-8">
-        <p class="text-muted" style="font-size:11px; margin-top:2px;">Ranges are comma-separated page spans.</p>
-      </div>
-      <button class="btn btn-primary" onclick="runPDFSplit()">Execute Page Split</button>
-    `;
-  }
-  else if (tool === 'pdf_delete') {
-    ctrlHTML = `
-      <div class="panel-header"><span class="panel-title">Delete Pages</span></div>
-      ${pdfSingleDropHTML()}
-      <div class="form-group">
-        <label>Page index to delete</label>
-        <input type="text" id="delete-indices" placeholder="e.g. 2, 4, 6">
-        <p class="text-muted" style="font-size:11px; margin-top:2px;">Comma-separated page numbers.</p>
-      </div>
-      <button class="btn btn-danger" onclick="runPDFDelete()">Execute Delete</button>
-    `;
-  }
-  else if (tool === 'pdf_rotate') {
-    ctrlHTML = `
-      <div class="panel-header"><span class="panel-title">Rotate Page canvas</span></div>
-      ${pdfSingleDropHTML()}
-      <div class="form-group">
-        <label>Rotate selection (Degrees)</label>
-        <select id="rotate-angle">
-          <option value="90">90 Clockwise</option>
-          <option value="180">180 Half Turn</option>
-          <option value="270">270 Counter-Clockwise</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Pages (optional)</label>
-        <input type="text" id="rotate-pages" placeholder="e.g. 1, 3 (Leave empty for all)">
-      </div>
-      <button class="btn btn-primary" onclick="runPDFRotate()">Execute Rotation</button>
-    `;
-  }
-  else if (tool === 'pdf_crop') {
-    ctrlHTML = `
-      <div class="panel-header"><span class="panel-title">Crop Margins</span></div>
-      ${pdfSingleDropHTML()}
-      <div class="form-row">
-        <div class="form-group"><label>Left (pt)</label><input type="number" id="crop-l" value="20"></div>
-        <div class="form-group"><label>Right (pt)</label><input type="number" id="crop-r" value="20"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Top (pt)</label><input type="number" id="crop-t" value="20"></div>
-        <div class="form-group"><label>Bottom (pt)</label><input type="number" id="crop-b" value="20"></div>
-      </div>
-      <div class="form-group">
-        <label>Pages (optional)</label>
-        <input type="text" id="crop-pages" placeholder="Leave empty for all">
-      </div>
-      <button class="btn btn-primary" onclick="runPDFCrop()">Execute Margin Crop</button>
-    `;
-  }
-  else if (tool === 'pdf_arrange') {
-    ctrlHTML = `
-      <div class="panel-header"><span class="panel-title">Rearrange Sequence</span></div>
-      ${pdfSingleDropHTML()}
-      <div class="form-group">
-        <label>New sequence order</label>
-        <input type="text" id="arrange-order" placeholder="e.g. 3, 1, 2, 4">
-        <p class="text-muted" style="font-size:11px; margin-top:2px;">Comma-separated sequence of new page indexes.</p>
-      </div>
-      <button class="btn btn-primary" onclick="runPDFArrange()">Execute Sorting</button>
-    `;
-  }
-  else if (tool === 'pdf_num') {
-    ctrlHTML = `
-      <div class="panel-header"><span class="panel-title">Page Stamp Numbers</span></div>
-      ${pdfSingleDropHTML()}
-      <div class="form-group">
-        <label>Alignment style</label>
-        <select id="num-style">
-          <option value="bottom_right">Bottom Right corner</option>
-          <option value="bottom_center">Bottom Center margin</option>
-          <option value="bottom_left">Bottom Left corner</option>
-          <option value="top_right">Top Right corner</option>
-          <option value="top_center">Top Center margin</option>
-          <option value="top_left">Top Left corner</option>
-        </select>
-      </div>
-      <button class="btn btn-primary" onclick="runPDFNumbering()">Stamp Page Numbers</button>
+      <div id="dynamic-pdf-controls" style="margin-top:16px;"></div>
     `;
   }
 
   ctrl.innerHTML = ctrlHTML;
   prev.innerHTML = prevHTML;
+
+  // If file is already uploaded, populate badge and render controls dynamically
+  if (tool !== 'pdf_merge' && G.pdfFiles.length > 0) {
+    setTimeout(() => {
+      const badge = document.getElementById('pdf-filename-badge');
+      if (badge) {
+        badge.textContent = G.pdfFiles[0].name;
+        document.getElementById('pdf-file-details').style.display = 'block';
+      }
+      renderDynamicControls(tool);
+      fetchPagePreview();
+    }, 20);
+  } else if (tool === 'pdf_merge' && G.pdfFiles.length > 0) {
+    setTimeout(() => {
+      renderPDFFileList();
+    }, 20);
+  }
 }
 
 /* ─── PDF Workspace Dynamic Handlers (Security & Sign) ─── */
@@ -1461,129 +1394,38 @@ function setupPDFSecurityWorkspace(tool) {
   const ctrl = document.getElementById('pdf-sec-ctrl-container');
   const prev = document.getElementById('pdf-sec-preview-container');
   
-  G.pdfFiles = [];
-  G.signatureImage = null;
-  signatureUploadBlob = null;
-  signatureCameraBlob = null;
-
   let ctrlHTML = '';
   let prevHTML = `<div class="panel-header"><span class="panel-title">Visual Workspace Preview</span></div>
                   <div class="chart-out" id="pdf-sec-view-out">
                     <div class="chart-placeholder">Upload a PDF file to begin security operations. All actions run statelessly in memory.</div>
                   </div>`;
 
-  if (tool === 'pdf_encrypt') {
-    ctrlHTML = `
-      <div class="panel-header"><span class="panel-title">Password Protect</span></div>
-      ${pdfSingleDropHTML()}
-      <div class="form-group">
-        <label>Encryption Password</label>
-        <input type="password" id="protect-pass" placeholder="Secure phrase keys">
-      </div>
-      <button class="btn btn-primary" onclick="runPDFSecurity('encrypt')">Apply Encryption</button>
-    `;
-  }
-  else if (tool === 'pdf_decrypt') {
-    ctrlHTML = `
-      <div class="panel-header"><span class="panel-title">Remove Security</span></div>
-      ${pdfSingleDropHTML()}
-      <div class="form-group">
-        <label>Decryption Password</label>
-        <input type="password" id="unlock-pass" placeholder="Current file password">
-      </div>
-      <button class="btn btn-primary" onclick="runPDFSecurity('decrypt')">Remove Restrictions</button>
-    `;
-  }
-  else if (tool === 'pdf_sign') {
-    ctrlHTML = `
-      <div class="panel-header"><span class="panel-title">Visual Sign PDF</span></div>
-      ${pdfSingleDropHTML()}
-      
-      <div class="form-group">
-        <label>Signature Mode</label>
-        <div style="display:flex; gap:6px; margin-bottom:12px;">
-          <button type="button" class="btn btn-secondary sig-tab-btn active" id="tab-draw" onclick="switchSigTab('draw')" style="padding:6px 12px; font-size:11px; width:auto; flex:1;">Draw</button>
-          <button type="button" class="btn btn-secondary sig-tab-btn" id="tab-write" onclick="switchSigTab('write')" style="padding:6px 12px; font-size:11px; width:auto; flex:1;">Write</button>
-          <button type="button" class="btn btn-secondary sig-tab-btn" id="tab-upload" onclick="switchSigTab('upload')" style="padding:6px 12px; font-size:11px; width:auto; flex:1;">Upload</button>
-          <button type="button" class="btn btn-secondary sig-tab-btn" id="tab-camera" onclick="switchSigTab('camera')" style="padding:6px 12px; font-size:11px; width:auto; flex:1;">Camera</button>
-        </div>
-
-        <!-- DRAW TAB PANEL -->
-        <div id="sig-pane-draw" class="sig-pane">
-          <div class="canvas-container">
-            <canvas id="signature-pad"></canvas>
-          </div>
-          <div class="canvas-tools">
-            <div style="display:flex; gap:6px;">
-              <div class="color-dot active" style="background:#000" onclick="setSignColor('#000', this)"></div>
-              <div class="color-dot" style="background:#7c3aed" onclick="setSignColor('#7c3aed', this)"></div>
-              <div class="color-dot" style="background:#fa5a00" onclick="setSignColor('#fa5a00', this)"></div>
-            </div>
-            <button type="button" class="btn btn-secondary" style="width:auto; padding:3px 10px; font-size:11px;" onclick="clearSignCanvas()">Clear</button>
-          </div>
-        </div>
-
-        <!-- WRITE TAB PANEL -->
-        <div id="sig-pane-write" class="sig-pane" style="display:none;">
-          <input type="text" id="sig-write-input" placeholder="Type your signature..." oninput="updateWrittenSignature(this.value)" style="margin-bottom:8px;">
-          <div style="background:#fff; border:2px solid var(--border); border-radius:8px; padding:16px; text-align:center;">
-            <canvas id="write-canvas" style="display:none;"></canvas>
-            <div id="write-preview" style="font-family:'Caveat', cursive; font-size:32px; color:#000; min-height:50px;"></div>
-          </div>
-        </div>
-
-        <!-- UPLOAD TAB PANEL -->
-        <div id="sig-pane-upload" class="sig-pane" style="display:none;">
-          <div class="dropzone" onclick="document.getElementById('sig-upload-file').click()" style="padding:20px 10px; margin-bottom:0;">
-            <h4>Upload Photo</h4>
-            <p>Drop image or click to browse</p>
-            <input type="file" id="sig-upload-file" accept="image/*" class="file-input" onchange="loadUploadedSignature(this)">
-          </div>
-          <div id="upload-preview-container" style="display:none; margin-top:8px; text-align:center;">
-            <img id="upload-preview-img" style="max-height:80px; border:2px solid var(--border); border-radius:8px;">
-          </div>
-        </div>
-
-        <!-- CAMERA TAB PANEL -->
-        <div id="sig-pane-camera" class="sig-pane" style="display:none;">
-          <button type="button" class="btn btn-secondary" id="btn-start-camera" onclick="startCamera()">Open Web Camera</button>
-          <div id="camera-stream-container" style="display:none; text-align:center;">
-            <video id="camera-video" width="100%" height="auto" autoplay playsinline style="border:2px solid var(--border); border-radius:8px; background:#000; max-height:160px; margin-top:8px;"></video>
-            <button type="button" class="btn btn-primary" onclick="captureCameraPhoto()" style="margin-top:8px;">Take Photo & Crop</button>
-          </div>
-          <div id="camera-preview-container" style="display:none; text-align:center; margin-top:8px;">
-            <img id="camera-preview-img" style="max-height:80px; border:2px solid var(--border); border-radius:8px;">
-            <button type="button" class="btn btn-secondary" onclick="resetCameraPhoto()" style="margin-top:6px; font-size:11px; width:auto; padding:4px 10px;">Retake</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Select signing page</label>
-        <input type="number" id="sign-page-num" value="1" min="1" onchange="updateSignPreviewPage()">
-      </div>
-      <button class="btn btn-primary" onclick="runPDFSign()">Overlay Signature</button>
-    `;
-    prevHTML = `
-      <div class="panel-header"><span class="panel-title">Signature Placement Area</span></div>
-      <p class="text-muted" style="margin-bottom:10px; font-size:12px;">Double click on the document page below to place and drag your signature token.</p>
-      <div class="sign-preview-box" id="pdf-sign-box">
-        <div class="chart-placeholder">Upload a PDF to render visual signing preview.</div>
-      </div>
-    `;
-  }
+  ctrlHTML = `
+    <div class="panel-header"><span class="panel-title">${tool === 'pdf_encrypt' ? 'Password Protect' : tool === 'pdf_decrypt' ? 'Remove Security' : 'Visual Sign PDF'}</span></div>
+    ${pdfSingleDropHTML()}
+    <div id="dynamic-pdf-controls" style="margin-top:16px;"></div>
+  `;
 
   ctrl.innerHTML = ctrlHTML;
   prev.innerHTML = prevHTML;
 
-  if(tool === 'pdf_sign') initSignaturePad();
+  // If file is already uploaded, populate badge and render controls dynamically
+  if (G.pdfFiles.length > 0) {
+    setTimeout(() => {
+      const badge = document.getElementById('pdf-filename-badge');
+      if (badge) {
+        badge.textContent = G.pdfFiles[0].name;
+        document.getElementById('pdf-file-details').style.display = 'block';
+      }
+      renderDynamicControls(tool);
+      fetchPagePreview();
+    }, 20);
+  }
 }
 
 function setupPDFConversionWorkspace(tool) {
   const ctrl = document.getElementById('pdf-conv-ctrl-container');
   const prev = document.getElementById('pdf-conv-preview-container');
-  
-  G.pdfFiles = [];
   
   let ctrlHTML = '';
   let prevHTML = `<div class="panel-header"><span class="panel-title">Visual Workspace Preview</span></div>
@@ -1595,24 +1437,7 @@ function setupPDFConversionWorkspace(tool) {
     ctrlHTML = `
       <div class="panel-header"><span class="panel-title">Export PDF Elements</span></div>
       ${pdfSingleDropHTML()}
-      <div class="form-group">
-        <label>Target Format</label>
-        <select id="conv-from-fmt" onchange="toggleFormatOption(this.value)">
-          <option value="images">Render to Image grid (ZIP / PNG)</option>
-          <option value="text">Text Document (.txt)</option>
-          <option value="word">Word Layout document (.docx)</option>
-          <option value="excel">Excel table grid (.xlsx)</option>
-          <option value="html">Semantic HTML page (.html)</option>
-        </select>
-      </div>
-      <div class="form-group" id="img-fmt-row">
-        <label>Image Codec</label>
-        <select id="conv-img-codec">
-          <option value="PNG">PNG Image</option>
-          <option value="JPG">JPEG Image</option>
-        </select>
-      </div>
-      <button class="btn btn-primary" onclick="runPDFConvertFrom()">Extract Elements</button>
+      <div id="dynamic-pdf-controls" style="margin-top:16px;"></div>
     `;
   } 
   else if (tool === 'pdf_convert_to') {
@@ -1636,6 +1461,19 @@ function setupPDFConversionWorkspace(tool) {
 
   ctrl.innerHTML = ctrlHTML;
   prev.innerHTML = prevHTML;
+
+  // If file is already uploaded, populate badge and render controls dynamically
+  if (tool === 'pdf_convert_from' && G.pdfFiles.length > 0) {
+    setTimeout(() => {
+      const badge = document.getElementById('pdf-filename-badge');
+      if (badge) {
+        badge.textContent = G.pdfFiles[0].name;
+        document.getElementById('pdf-file-details').style.display = 'block';
+      }
+      renderDynamicControls(tool);
+      fetchPagePreview();
+    }, 20);
+  }
 }
 
 function pdfSingleDropHTML() {
@@ -1697,6 +1535,8 @@ async function loadPDFSingleFile(file) {
     console.error('Failed to fetch PDF info:', err);
   }
 
+  // Render inputs dynamically using the metadata
+  renderDynamicControls(G.currentTool);
   await fetchPagePreview();
 }
 
@@ -1763,6 +1603,365 @@ function handleItemDrop(e) {
   }
 }
 function handleDragEnd(e) { e.currentTarget.classList.remove('dragging'); }
+
+/* ─── Render Dynamic Bounded Controls Based on PDF Page Count ─── */
+function renderDynamicControls(tool) {
+  const container = document.getElementById('dynamic-pdf-controls');
+  if (!container) return;
+
+  let html = '';
+
+  if (tool === 'pdf_split') {
+    html = `
+      <div class="form-group">
+        <label>Split Ranges</label>
+        <div id="split-ranges-container" style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;"></div>
+        <button type="button" class="btn btn-secondary" onclick="addSplitRangeRow()" style="margin-bottom:12px; font-size:11px; padding:6px 12px; width:auto;">+ Add Range</button>
+      </div>
+      <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="merge-ranges-check" style="width:auto; margin:0;">
+        <label for="merge-ranges-check" style="margin:0; text-transform:none; font-size:13px; font-weight:500;">Merge all ranges into one PDF</label>
+      </div>
+      <button class="btn btn-primary" onclick="runPDFSplit()">Execute Page Split</button>
+    `;
+  }
+  else if (tool === 'pdf_delete') {
+    html = `
+      <div class="form-group">
+        <label>Select Pages to Delete</label>
+        <div id="delete-pages-container" style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;"></div>
+        <button type="button" class="btn btn-secondary" onclick="addDeletePageRow()" style="margin-bottom:12px; font-size:11px; padding:6px 12px; width:auto;">+ Add Page</button>
+      </div>
+      <button class="btn btn-danger" onclick="runPDFDelete()">Execute Delete</button>
+    `;
+  }
+  else if (tool === 'pdf_rotate') {
+    html = `
+      <div class="form-group">
+        <label>Rotate Angle</label>
+        <select id="rotate-angle">
+          <option value="90">90° Clockwise</option>
+          <option value="180">180° Half Turn</option>
+          <option value="270">270° Counter-Clockwise</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Apply to</label>
+        <select id="rotate-scope" onchange="toggleScopeInputs('rotate', this.value)">
+          <option value="all">All Pages</option>
+          <option value="specific">Specific Pages</option>
+        </select>
+      </div>
+      <div id="rotate-specific-container" style="display:none; margin-bottom:16px;">
+        <label>Select Pages</label>
+        <div id="rotate-pages-container" style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;"></div>
+        <button type="button" class="btn btn-secondary" onclick="addRotatePageRow()" style="font-size:11px; padding:6px 12px; width:auto;">+ Add Page</button>
+      </div>
+      <button class="btn btn-primary" onclick="runPDFRotate()">Execute Rotation</button>
+    `;
+  }
+  else if (tool === 'pdf_crop') {
+    html = `
+      <div class="form-row">
+        <div class="form-group"><label>Left Margin (pt)</label><input type="number" id="crop-l" value="20" min="0"></div>
+        <div class="form-group"><label>Right Margin (pt)</label><input type="number" id="crop-r" value="20" min="0"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Top Margin (pt)</label><input type="number" id="crop-t" value="20" min="0"></div>
+        <div class="form-group"><label>Bottom Margin (pt)</label><input type="number" id="crop-b" value="20" min="0"></div>
+      </div>
+      <div class="form-group">
+        <label>Apply to</label>
+        <select id="crop-scope" onchange="toggleScopeInputs('crop', this.value)">
+          <option value="all">All Pages</option>
+          <option value="specific">Specific Pages</option>
+        </select>
+      </div>
+      <div id="crop-specific-container" style="display:none; margin-bottom:16px;">
+        <label>Select Pages</label>
+        <div id="crop-pages-container" style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;"></div>
+        <button type="button" class="btn btn-secondary" onclick="addCropPageRow()" style="font-size:11px; padding:6px 12px; width:auto;">+ Add Page</button>
+      </div>
+      <button class="btn btn-primary" onclick="runPDFCrop()">Execute Margin Crop</button>
+    `;
+  }
+  else if (tool === 'pdf_arrange') {
+    html = `
+      <div class="form-group">
+        <label>New Sequence Slot List</label>
+        <div id="arrange-sequence-container" style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;"></div>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn btn-secondary" onclick="addArrangeSlotRow()" style="font-size:11px; padding:6px 12px; width:auto;">+ Add Slot</button>
+          <button type="button" class="btn btn-secondary" onclick="resetArrangeSlotsToDefault()" style="font-size:11px; padding:6px 12px; width:auto;">Reset Default Sequence</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="runPDFArrange()">Execute Sorting</button>
+    `;
+  }
+  else if (tool === 'pdf_num') {
+    html = `
+      <div class="form-group">
+        <label>Alignment style</label>
+        <select id="num-style">
+          <option value="bottom_right">Bottom Right corner</option>
+          <option value="bottom_center">Bottom Center margin</option>
+          <option value="bottom_left">Bottom Left corner</option>
+          <option value="top_right">Top Right corner</option>
+          <option value="top_center">Top Center margin</option>
+          <option value="top_left">Top Left corner</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="runPDFNumbering()">Stamp Page Numbers</button>
+    `;
+  }
+  else if (tool === 'pdf_encrypt') {
+    html = `
+      <div class="form-group">
+        <label>Encryption Password</label>
+        <input type="password" id="protect-pass" placeholder="Secure phrase keys">
+      </div>
+      <button class="btn btn-primary" onclick="runPDFSecurity('encrypt')">Apply Encryption</button>
+    `;
+  }
+  else if (tool === 'pdf_decrypt') {
+    html = `
+      <div class="form-group">
+        <label>Decryption Password</label>
+        <input type="password" id="unlock-pass" placeholder="Current file password">
+      </div>
+      <button class="btn btn-primary" onclick="runPDFSecurity('decrypt')">Remove Restrictions</button>
+    `;
+  }
+  else if (tool === 'pdf_convert_from') {
+    html = `
+      <div class="form-group">
+        <label>Target Format</label>
+        <select id="conv-from-fmt" onchange="toggleFormatOption(this.value)">
+          <option value="images">Render to Image grid (ZIP / PNG)</option>
+          <option value="text">Text Document (.txt)</option>
+          <option value="word">Word Layout document (.docx)</option>
+          <option value="excel">Excel table grid (.xlsx)</option>
+          <option value="html">Semantic HTML page (.html)</option>
+        </select>
+      </div>
+      <div class="form-group" id="img-fmt-row">
+        <label>Image Codec</label>
+        <select id="conv-img-codec">
+          <option value="PNG">PNG Image</option>
+          <option value="JPG">JPEG Image</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="runPDFConvertFrom()">Extract Elements</button>
+    `;
+  }
+  else if (tool === 'pdf_sign') {
+    html = `
+      <div class="form-group">
+        <label>Signature Mode</label>
+        <div style="display:flex; gap:6px; margin-bottom:12px;">
+          <button type="button" class="btn btn-secondary sig-tab-btn active" id="tab-draw" onclick="switchSigTab('draw')" style="padding:6px 12px; font-size:11px; width:auto; flex:1;">Draw</button>
+          <button type="button" class="btn btn-secondary sig-tab-btn" id="tab-write" onclick="switchSigTab('write')" style="padding:6px 12px; font-size:11px; width:auto; flex:1;">Write</button>
+          <button type="button" class="btn btn-secondary sig-tab-btn" id="tab-upload" onclick="switchSigTab('upload')" style="padding:6px 12px; font-size:11px; width:auto; flex:1;">Upload</button>
+          <button type="button" class="btn btn-secondary sig-tab-btn" id="tab-camera" onclick="switchSigTab('camera')" style="padding:6px 12px; font-size:11px; width:auto; flex:1;">Camera</button>
+        </div>
+
+        <!-- DRAW TAB PANEL -->
+        <div id="sig-pane-draw" class="sig-pane">
+          <div class="canvas-container">
+            <canvas id="signature-pad"></canvas>
+          </div>
+          <div class="canvas-tools">
+            <div style="display:flex; gap:6px;">
+              <div class="color-dot active" style="background:#000" onclick="setSignColor('#000', this)"></div>
+              <div class="color-dot" style="background:#7c3aed" onclick="setSignColor('#7c3aed', this)"></div>
+              <div class="color-dot" style="background:#fa5a00" onclick="setSignColor('#fa5a00', this)"></div>
+            </div>
+            <button type="button" class="btn btn-secondary" style="width:auto; padding:3px 10px; font-size:11px;" onclick="clearSignCanvas()">Clear</button>
+          </div>
+        </div>
+
+        <!-- WRITE TAB PANEL -->
+        <div id="sig-pane-write" class="sig-pane" style="display:none;">
+          <input type="text" id="sig-write-input" placeholder="Type your signature..." oninput="updateWrittenSignature(this.value)" style="margin-bottom:8px;">
+          <div style="background:#fff; border:2px solid var(--border); border-radius:8px; padding:16px; text-align:center;">
+            <canvas id="write-canvas" style="display:none;"></canvas>
+            <div id="write-preview" style="font-family:'Caveat', cursive; font-size:32px; color:#000; min-height:50px;"></div>
+          </div>
+        </div>
+
+        <!-- UPLOAD TAB PANEL -->
+        <div id="sig-pane-upload" class="sig-pane" style="display:none;">
+          <div class="dropzone" onclick="document.getElementById('sig-upload-file').click()" style="padding:20px 10px; margin-bottom:0;">
+            <h4>Upload Photo</h4>
+            <p>Drop image or click to browse</p>
+            <input type="file" id="sig-upload-file" accept="image/*" class="file-input" onchange="loadUploadedSignature(this)">
+          </div>
+          <div id="upload-preview-container" style="display:none; margin-top:8px; text-align:center;">
+            <img id="upload-preview-img" style="max-height:80px; border:2px solid var(--border); border-radius:8px;">
+          </div>
+        </div>
+
+        <!-- CAMERA TAB PANEL -->
+        <div id="sig-pane-camera" class="sig-pane" style="display:none;">
+          <button type="button" class="btn btn-secondary" id="btn-start-camera" onclick="startCamera()">Open Web Camera</button>
+          <div id="camera-stream-container" style="display:none; text-align:center;">
+            <video id="camera-video" width="100%" height="auto" autoplay playsinline style="border:2px solid var(--border); border-radius:8px; background:#000; max-height:160px; margin-top:8px;"></video>
+            <button type="button" class="btn btn-primary" onclick="captureCameraPhoto()" style="margin-top:8px;">Take Photo & Crop</button>
+          </div>
+          <div id="camera-preview-container" style="display:none; text-align:center; margin-top:8px;">
+            <img id="camera-preview-img" style="max-height:80px; border:2px solid var(--border); border-radius:8px;">
+            <button type="button" class="btn btn-secondary" onclick="resetCameraPhoto()" style="margin-top:6px; font-size:11px; width:auto; padding:4px 10px;">Retake</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Select signing page</label>
+        <input type="number" id="sign-page-num" value="1" min="1" max="${G.pdfPageCount}" onchange="updateSignPreviewPage()">
+      </div>
+      <button class="btn btn-primary" onclick="runPDFSign()">Overlay Signature</button>
+    `;
+  }
+
+  container.innerHTML = html;
+
+  // Initialize helper sub-elements
+  if (tool === 'pdf_split') {
+    addSplitRangeRow(1, G.pdfPageCount);
+  } else if (tool === 'pdf_delete') {
+    addDeletePageRow(1);
+  } else if (tool === 'pdf_rotate') {
+    addRotatePageRow(1);
+  } else if (tool === 'pdf_crop') {
+    addCropPageRow(1);
+  } else if (tool === 'pdf_arrange') {
+    resetArrangeSlotsToDefault();
+  } else if (tool === 'pdf_sign') {
+    initSignaturePad();
+  }
+}
+
+/* ─── Helpers for Dynamic Rows ─── */
+function addSplitRangeRow(fromVal = 1, toVal = 1) {
+  const container = document.getElementById('split-ranges-container');
+  if (!container) return;
+  const row = document.createElement('div');
+  row.className = 'form-row split-range-row';
+  row.style.alignItems = 'center';
+  row.style.gap = '8px';
+  row.style.marginBottom = '6px';
+  row.innerHTML = `
+    <div class="form-group" style="margin:0; flex:1;">
+      <label style="font-size:10px;">From</label>
+      <input type="number" class="range-from" min="1" max="${G.pdfPageCount}" value="${fromVal}" onchange="validateRangeRow(this)">
+    </div>
+    <div class="form-group" style="margin:0; flex:1;">
+      <label style="font-size:10px;">To</label>
+      <input type="number" class="range-to" min="1" max="${G.pdfPageCount}" value="${toVal}" onchange="validateRangeRow(this)">
+    </div>
+    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()" style="width:auto; padding:8px 12px; margin-top:16px;">✕</button>
+  `;
+  container.appendChild(row);
+}
+
+function addDeletePageRow(val = 1) {
+  const container = document.getElementById('delete-pages-container');
+  if (!container) return;
+  const row = document.createElement('div');
+  row.className = 'delete-page-row';
+  row.style.display = 'flex';
+  row.style.gap = '8px';
+  row.style.alignItems = 'center';
+  row.style.marginBottom = '6px';
+  row.innerHTML = `
+    <input type="number" class="delete-page-val" min="1" max="${G.pdfPageCount}" value="${val}" style="flex:1;" onchange="validateRangeRow(this)">
+    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()" style="width:auto; padding:8px 12px;">✕</button>
+  `;
+  container.appendChild(row);
+}
+
+function addRotatePageRow(val = 1) {
+  const container = document.getElementById('rotate-pages-container');
+  if (!container) return;
+  const row = document.createElement('div');
+  row.className = 'rotate-page-row';
+  row.style.display = 'flex';
+  row.style.gap = '8px';
+  row.style.alignItems = 'center';
+  row.style.marginBottom = '6px';
+  row.innerHTML = `
+    <input type="number" class="rotate-page-val" min="1" max="${G.pdfPageCount}" value="${val}" style="flex:1;" onchange="validateRangeRow(this)">
+    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()" style="width:auto; padding:8px 12px;">✕</button>
+  `;
+  container.appendChild(row);
+}
+
+function addCropPageRow(val = 1) {
+  const container = document.getElementById('crop-pages-container');
+  if (!container) return;
+  const row = document.createElement('div');
+  row.className = 'crop-page-row';
+  row.style.display = 'flex';
+  row.style.gap = '8px';
+  row.style.alignItems = 'center';
+  row.style.marginBottom = '6px';
+  row.innerHTML = `
+    <input type="number" class="crop-page-val" min="1" max="${G.pdfPageCount}" value="${val}" style="flex:1;" onchange="validateRangeRow(this)">
+    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()" style="width:auto; padding:8px 12px;">✕</button>
+  `;
+  container.appendChild(row);
+}
+
+function toggleScopeInputs(prefix, val) {
+  const container = document.getElementById(prefix + '-specific-container');
+  if (container) {
+    container.style.display = val === 'specific' ? 'block' : 'none';
+  }
+}
+
+function addArrangeSlotRow(val = 1) {
+  const container = document.getElementById('arrange-sequence-container');
+  if (!container) return;
+  const slotIdx = container.children.length + 1;
+  const row = document.createElement('div');
+  row.className = 'arrange-slot-row';
+  row.style.display = 'flex';
+  row.style.gap = '8px';
+  row.style.alignItems = 'center';
+  row.style.marginBottom = '6px';
+  row.innerHTML = `
+    <span style="font-family:var(--font-mono); font-size:11px; width:60px;">Slot ${slotIdx}:</span>
+    <select class="arrange-page-val" style="flex:1;">
+      ${Array.from({length: G.pdfPageCount}, (_, i) => `<option value="${i+1}" ${i+1 === val ? 'selected' : ''}>Page ${i+1}</option>`).join('')}
+    </select>
+    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove(); updateArrangeSlotLabels();" style="width:auto; padding:8px 12px;">✕</button>
+  `;
+  container.appendChild(row);
+}
+
+function updateArrangeSlotLabels() {
+  const container = document.getElementById('arrange-sequence-container');
+  if (!container) return;
+  Array.from(container.children).forEach((row, index) => {
+    row.querySelector('span').textContent = `Slot ${index + 1}:`;
+  });
+}
+
+function resetArrangeSlotsToDefault() {
+  const container = document.getElementById('arrange-sequence-container');
+  if (!container) return;
+  container.innerHTML = '';
+  for (let i = 1; i <= G.pdfPageCount; i++) {
+    addArrangeSlotRow(i);
+  }
+}
+
+function validateRangeRow(input) {
+  let val = parseInt(input.value);
+  if (isNaN(val) || val < 1) val = 1;
+  if (val > G.pdfPageCount) val = G.pdfPageCount;
+  input.value = val;
+}
 
 /* ─── PDF Visual Sign Handlers ─── */
 let signCtx, isDrawing = false, signColor = '#000';
@@ -2070,40 +2269,43 @@ async function runPDFMerge() {
 
 async function runPDFSplit() {
   if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
-  const ranges = document.getElementById('split-ranges').value;
-  if(!ranges) { toast('Ranges value required', 'error'); return; }
+  
+  const rows = document.querySelectorAll('.split-range-row');
+  if (rows.length === 0) { toast('Please add at least one page range.', 'error'); return; }
   
   const rangeArr = [];
-  try {
-    ranges.split(',').forEach(part => {
-      const cleanPart = part.trim();
-      if(cleanPart.includes('-')) {
-        const bounds = cleanPart.split('-');
-        rangeArr.push([parseInt(bounds[0]), parseInt(bounds[1])]);
-      } else {
-        rangeArr.push([parseInt(cleanPart), parseInt(cleanPart)]);
-      }
-    });
-  } catch(e) {
-    toast('Invalid ranges syntax formatting', 'error');
-    return;
+  for (const row of rows) {
+    const fromVal = parseInt(row.querySelector('.range-from').value);
+    const toVal = parseInt(row.querySelector('.range-to').value);
+    
+    if (fromVal > toVal) {
+      toast(`Invalid range: From page (${fromVal}) cannot be greater than To page (${toVal}).`, 'error');
+      return;
+    }
+    rangeArr.push([fromVal, toVal]);
   }
+  
+  const mergeChecked = document.getElementById('merge-ranges-check').checked;
   
   const fd = new FormData();
   fd.append('file', G.pdfFiles[0].fileObject);
   fd.append('action', 'split');
   fd.append('ranges', JSON.stringify(rangeArr));
+  fd.append('merge_ranges', mergeChecked ? 'true' : 'false');
   
-  const downloadName = rangeArr.length > 1 ? 'split_pages.zip' : 'split_page.pdf';
+  const downloadName = (rangeArr.length > 1 && !mergeChecked) ? 'split_pages.zip' : 'split_page.pdf';
   await postFileDownload('/pdf/organize', fd, downloadName);
 }
 
 async function runPDFDelete() {
   if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
-  const val = document.getElementById('delete-indices').value;
-  if(!val) { toast('Index sequence required', 'error'); return; }
+  const rows = document.querySelectorAll('.delete-page-row');
+  if (rows.length === 0) { toast('Please specify at least one page to delete.', 'error'); return; }
   
-  const pages = val.split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v));
+  const pages = [];
+  rows.forEach(row => {
+    pages.push(parseInt(row.querySelector('.delete-page-val').value));
+  });
   
   const fd = new FormData();
   fd.append('file', G.pdfFiles[0].fileObject);
@@ -2116,8 +2318,16 @@ async function runPDFDelete() {
 async function runPDFRotate() {
   if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
   const angle = document.getElementById('rotate-angle').value;
-  const pInput = document.getElementById('rotate-pages').value;
-  const pages = pInput ? pInput.split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v)) : [];
+  const scope = document.getElementById('rotate-scope').value;
+  
+  let pages = [];
+  if (scope === 'specific') {
+    const rows = document.querySelectorAll('.rotate-page-row');
+    rows.forEach(row => {
+      pages.push(parseInt(row.querySelector('.rotate-page-val').value));
+    });
+    if (pages.length === 0) { toast('Please specify at least one page to rotate.', 'error'); return; }
+  }
   
   const fd = new FormData();
   fd.append('file', G.pdfFiles[0].fileObject);
@@ -2134,8 +2344,16 @@ async function runPDFCrop() {
   const r = document.getElementById('crop-r').value;
   const t = document.getElementById('crop-t').value;
   const b = document.getElementById('crop-b').value;
-  const pInput = document.getElementById('crop-pages').value;
-  const pages = pInput ? pInput.split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v)) : [];
+  const scope = document.getElementById('crop-scope').value;
+  
+  let pages = [];
+  if (scope === 'specific') {
+    const rows = document.querySelectorAll('.crop-page-row');
+    rows.forEach(row => {
+      pages.push(parseInt(row.querySelector('.crop-page-val').value));
+    });
+    if (pages.length === 0) { toast('Please specify at least one page to crop.', 'error'); return; }
+  }
   
   const fd = new FormData();
   fd.append('file', G.pdfFiles[0].fileObject);
@@ -2151,10 +2369,13 @@ async function runPDFCrop() {
 
 async function runPDFArrange() {
   if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
-  const val = document.getElementById('arrange-order').value;
-  if(!val) { toast('Rearrange page index order required', 'error'); return; }
+  const rows = document.querySelectorAll('.arrange-slot-row');
+  if (rows.length === 0) { toast('Please specify at least one page slot in sequence.', 'error'); return; }
   
-  const order = val.split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v));
+  const order = [];
+  rows.forEach(row => {
+    order.push(parseInt(row.querySelector('.arrange-page-val').value));
+  });
   
   const fd = new FormData();
   fd.append('file', G.pdfFiles[0].fileObject);
