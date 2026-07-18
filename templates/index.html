@@ -18,6 +18,7 @@
     --accent-green: #a3d9a5; /* ClickCraft green */
     --accent-yellow: #fde047; /* Yellow card */
     --accent-purple: #c7d2fe; /* Purple card */
+    --accent-coral: #fca5a5; /* Coral card */
     --danger: #ef4444;
     --font-mono: 'JetBrains Mono', monospace;
     --font-display: 'Outfit', sans-serif;
@@ -93,37 +94,6 @@
     text-transform: uppercase;
   }
 
-  .navbar-menu {
-    display: flex;
-    gap: 16px;
-  }
-
-  .navbar-link {
-    font-family: var(--font-display);
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--muted);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px 16px;
-    border-radius: 12px;
-    transition: all 0.15s;
-    border: 2px solid transparent;
-  }
-
-  .navbar-link:hover {
-    color: var(--text);
-    background: var(--bg);
-  }
-
-  .navbar-link.active {
-    color: var(--text);
-    background: var(--surface);
-    border-color: var(--border);
-    box-shadow: 0 2px 0 var(--border);
-  }
-
   .navbar-cta {
     background: var(--accent-orange);
     color: #ffffff;
@@ -178,7 +148,7 @@
   /* ── shaped cards (Dashboard) ── */
   .tools-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 24px;
     margin-bottom: 40px;
   }
@@ -186,12 +156,12 @@
   .card-shape {
     border: 2px solid var(--border);
     border-radius: 24px;
-    padding: 32px;
+    padding: 28px;
     cursor: pointer;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 260px;
+    min-height: 280px;
     transition: transform 0.15s, box-shadow 0.15s;
     position: relative;
     box-shadow: 0 4px 0 var(--border);
@@ -205,11 +175,12 @@
   .card-yellow { background: var(--accent-yellow); }
   .card-green { background: var(--accent-green); }
   .card-purple { background: var(--accent-purple); }
+  .card-coral { background: var(--accent-coral); }
 
   .card-title {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 800;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     letter-spacing: -0.5px;
   }
 
@@ -224,7 +195,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    margin-top: 24px;
+    margin-top: 20px;
     background: var(--surface);
     border: 2px solid var(--border);
     border-radius: 12px;
@@ -499,12 +470,6 @@
       <h1>OmniFile</h1>
       <span>editfiles.sagarthalavar.in</span>
     </div>
-    <div class="navbar-menu">
-      <button class="navbar-link active" id="nav-dashboard" onclick="showDashboard()">All Tools</button>
-      <button class="navbar-link" id="nav-csv" onclick="showTool('csv_analyzer')">CSV Analyzer</button>
-      <button class="navbar-link" id="nav-pdf-edit" onclick="showTool('pdf_merge')">PDF Editor</button>
-      <button class="navbar-link" id="nav-pdf-conv" onclick="showTool('pdf_convert_from')">PDF Converter</button>
-    </div>
     <a href="https://sagarthalavar.in" target="_blank" class="navbar-cta">Back to Portfolio</a>
   </nav>
 
@@ -537,11 +502,20 @@
           <span class="card-action">Open workspace ↗</span>
         </div>
 
-        <!-- Purple Card: PDF Editor & Security -->
+        <!-- Purple Card: PDF Page Organizer -->
         <div class="card-shape card-purple" onclick="showTool('pdf_merge')">
           <div>
-            <h3 class="card-title">PDF Editor & Security</h3>
-            <p class="card-desc">Organize pages and lock credentials. Merge documents, slice split ranges, rotate canvases, crop bounds, stamp headers, encrypt secure passwords, and draw signatures visually.</p>
+            <h3 class="card-title">PDF Page Organizer</h3>
+            <p class="card-desc">Organize pages and compile sequences. Merge multiple documents, slice split ranges, delete pages, rotate canvases, crop bounds, and stamp page numbers.</p>
+          </div>
+          <span class="card-action">Open workspace ↗</span>
+        </div>
+
+        <!-- Coral Card: PDF Security & Sign -->
+        <div class="card-shape card-coral" onclick="showTool('pdf_sign')">
+          <div>
+            <h3 class="card-title">PDF Security & Sign</h3>
+            <p class="card-desc">Lock credentials and sign agreements. Draw signatures, place coordinates tokens visually, add strong password protection, and remove security restrictions.</p>
           </div>
           <span class="card-action">Open workspace ↗</span>
         </div>
@@ -812,7 +786,7 @@
       </div>
     </div>
 
-    <!-- ─── VIEW: GENERAL PDF TOOL WORKSPACE ─── -->
+    <!-- ─── VIEW: GENERAL PDF TOOL WORKSPACE (Organizer) ─── -->
     <div class="view" id="view-pdf_workspace">
       <div class="workspace">
         <div class="control-pane">
@@ -826,9 +800,6 @@
               <option value="pdf_crop">Crop PDF Margins</option>
               <option value="pdf_arrange">Rearrange PDF Pages</option>
               <option value="pdf_num">Add Page Numbers</option>
-              <option value="pdf_encrypt">Password Protect PDF</option>
-              <option value="pdf_decrypt">Unlock PDF Document</option>
-              <option value="pdf_sign">Visual Sign PDF</option>
             </select>
           </div>
           <div class="divider" style="height:2px; background:var(--border); margin:16px 0;"></div>
@@ -856,6 +827,25 @@
       </div>
     </div>
 
+    <!-- ─── VIEW: PDF SECURITY WORKSPACE ─── -->
+    <div class="view" id="view-pdf_security">
+      <div class="workspace">
+        <div class="control-pane">
+          <div class="form-group">
+            <label>Select Operation</label>
+            <select id="pdf-sec-select" onchange="showTool(this.value)">
+              <option value="pdf_sign">Visual Sign PDF</option>
+              <option value="pdf_encrypt">Password Protect PDF</option>
+              <option value="pdf_decrypt">Unlock PDF Document</option>
+            </select>
+          </div>
+          <div class="divider" style="height:2px; background:var(--border); margin:16px 0;"></div>
+          <div id="pdf-sec-ctrl-container"></div>
+        </div>
+        <div class="preview-pane" id="pdf-sec-preview-container"></div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -878,9 +868,7 @@ let G = {
 function showDashboard() {
   G.currentTool = 'dashboard';
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.navbar-link').forEach(btn => btn.classList.remove('active'));
   document.getElementById('view-dashboard').classList.add('active');
-  document.getElementById('nav-dashboard').classList.add('active');
   
   document.getElementById('current-tool-header').textContent = 'Platform Dashboard';
   document.getElementById('current-tool-subtitle').textContent = 'Select a utility module to get started';
@@ -890,7 +878,6 @@ function showDashboard() {
 function showTool(toolName) {
   G.currentTool = toolName;
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.navbar-link').forEach(btn => btn.classList.remove('active'));
 
   const titleEl = document.getElementById('current-tool-header');
   const subEl = document.getElementById('current-tool-subtitle');
@@ -900,21 +887,25 @@ function showTool(toolName) {
     titleEl.textContent = 'CSV Analyzer Workspace';
     subEl.textContent = 'Upload a local dataset to clean and analyze';
     document.getElementById('view-csv_analyzer').classList.add('active');
-    document.getElementById('nav-csv').classList.add('active');
   } 
   else if (['pdf_convert_from', 'pdf_convert_to'].includes(toolName)) {
     titleEl.textContent = 'PDF Conversion Suite';
     subEl.textContent = 'Change file formats bidirectional in-memory';
     document.getElementById('view-pdf_conversion').classList.add('active');
-    document.getElementById('nav-pdf-conv').classList.add('active');
     document.getElementById('pdf-conv-select').value = toolName;
     setupPDFConversionWorkspace(toolName);
   } 
+  else if (['pdf_encrypt', 'pdf_decrypt', 'pdf_sign'].includes(toolName)) {
+    titleEl.textContent = 'PDF Security Workspace';
+    subEl.textContent = 'Secure your documents and visual sign credentials';
+    document.getElementById('view-pdf_security').classList.add('active');
+    document.getElementById('pdf-sec-select').value = toolName;
+    setupPDFSecurityWorkspace(toolName);
+  }
   else {
-    titleEl.textContent = 'PDF Editor & Security Workspace';
-    subEl.textContent = 'Organize, secure, and visual sign your PDF documents';
+    titleEl.textContent = 'PDF Page Organizer Workspace';
+    subEl.textContent = 'Merge, split, rotate, crop, and arrange pages';
     document.getElementById('view-pdf_workspace').classList.add('active');
-    document.getElementById('nav-pdf-edit').classList.add('active');
     document.getElementById('pdf-op-select').value = toolName;
     setupPDFWorkspace(toolName);
   }
@@ -1331,7 +1322,7 @@ async function exportData(endpoint, filename) {
   }
 }
 
-/* ─── PDF Workspace Dynamic Handlers ─── */
+/* ─── PDF Workspace Dynamic Handlers (Page Organizer) ─── */
 function setupPDFWorkspace(tool) {
   const ctrl = document.getElementById('pdf-ctrl-container');
   const prev = document.getElementById('pdf-preview-container');
@@ -1457,7 +1448,26 @@ function setupPDFWorkspace(tool) {
       <button class="btn btn-primary" onclick="runPDFNumbering()">Stamp Page Numbers</button>
     `;
   }
-  else if (tool === 'pdf_encrypt') {
+
+  ctrl.innerHTML = ctrlHTML;
+  prev.innerHTML = prevHTML;
+}
+
+/* ─── PDF Workspace Dynamic Handlers (Security & Sign) ─── */
+function setupPDFSecurityWorkspace(tool) {
+  const ctrl = document.getElementById('pdf-sec-ctrl-container');
+  const prev = document.getElementById('pdf-sec-preview-container');
+  
+  G.pdfFiles = [];
+  G.signatureImage = null;
+
+  let ctrlHTML = '';
+  let prevHTML = `<div class="panel-header"><span class="panel-title">Visual Workspace Preview</span></div>
+                  <div class="chart-out" id="pdf-sec-view-out">
+                    <div class="chart-placeholder">Upload a PDF file to begin security operations. All actions run statelessly in memory.</div>
+                  </div>`;
+
+  if (tool === 'pdf_encrypt') {
     ctrlHTML = `
       <div class="panel-header"><span class="panel-title">Password Protect</span></div>
       ${pdfSingleDropHTML()}
@@ -1755,6 +1765,7 @@ function setSignColor(col, el) {
 // Render preview image from document using backend
 async function renderSignPreviewPage(file, pageNum) {
   const container = document.getElementById('pdf-sign-box');
+  if(!container) return;
   container.innerHTML = '<div class="chart-placeholder">Rendering preview page...</div>';
   
   const fd = new FormData();
