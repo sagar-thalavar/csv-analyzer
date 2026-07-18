@@ -498,7 +498,8 @@ def sign_pdf(pdf_bytes: bytes, signature_image_bytes: bytes, page_num: int, x: f
             c = canvas.Canvas(overlay_buf, pagesize=(p_width, p_height))
             
             # Save bytes to PIL and draw
-            sig_img = Image.open(io.BytesIO(signature_image_bytes))
+            from reportlab.lib.utils import ImageReader
+            sig_img = ImageReader(Image.open(io.BytesIO(signature_image_bytes)))
             c.drawImage(sig_img, x, y, width=width, height=height, mask="auto")
             c.showPage()
             c.save()

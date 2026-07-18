@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>OmniFile | CSV & PDF Tools Suite</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #faf6ee; /* Warm cream background */
@@ -695,7 +695,7 @@
                   <button class="btn btn-secondary" onclick="cleanColOp('fill_null_mean')">Mean Fill</button>
                   <button class="btn btn-secondary" onclick="cleanColOp('fill_null_median')">Median Fill</button>
                   <button class="btn btn-secondary" onclick="cleanColOp('lowercase')">Lower text</button>
-                  <button class="btn btn-secondary" onclick="cleanColOp('clip_outliers')">Clip Outliers</button>
+                  <button class="btn btn-secondary" onclick="cleanColOp('clip_outliers')">Clipped outliers</button>
                 </div>
                 <button class="btn btn-danger" onclick="cleanColOp('drop_col')">Drop Column</button>
               </div>
@@ -1460,6 +1460,8 @@ function setupPDFSecurityWorkspace(tool) {
   
   G.pdfFiles = [];
   G.signatureImage = null;
+  signatureUploadBlob = null;
+  signatureCameraBlob = null;
 
   let ctrlHTML = '';
   let prevHTML = `<div class="panel-header"><span class="panel-title">Visual Workspace Preview</span></div>
@@ -1495,17 +1497,61 @@ function setupPDFSecurityWorkspace(tool) {
       ${pdfSingleDropHTML()}
       
       <div class="form-group">
-        <label>Draw Signature</label>
-        <div class="canvas-container">
-          <canvas id="signature-pad"></canvas>
+        <label>Signature Mode</label>
+        <div style="display:flex; gap:6px; margin-bottom:12px;">
+          <button type="button" class="btn btn-secondary sig-tab-btn active" id="tab-draw" onclick="switchSigTab('draw')" style="padding:6px 12px; font-size:11px; width:auto; flex:1;">Draw</button>
+          <button type="button" class="btn btn-secondary sig-tab-btn" id="tab-write" onclick="switchSigTab('write')" style="padding:6px 12px; font-size:11px; width:auto; flex:1;">Write</button>
+          <button type="button" class="btn btn-secondary sig-tab-btn" id="tab-upload" onclick="switchSigTab('upload')" style="padding:6px 12px; font-size:11px; width:auto; flex:1;">Upload</button>
+          <button type="button" class="btn btn-secondary sig-tab-btn" id="tab-camera" onclick="switchSigTab('camera')" style="padding:6px 12px; font-size:11px; width:auto; flex:1;">Camera</button>
         </div>
-        <div class="canvas-tools">
-          <div style="display:flex; gap:6px;">
-            <div class="color-dot active" style="background:#000" onclick="setSignColor('#000', this)"></div>
-            <div class="color-dot" style="background:#7c3aed" onclick="setSignColor('#7c3aed', this)"></div>
-            <div class="color-dot" style="background:#fa5a00" onclick="setSignColor('#fa5a00', this)"></div>
+
+        <!-- DRAW TAB PANEL -->
+        <div id="sig-pane-draw" class="sig-pane">
+          <div class="canvas-container">
+            <canvas id="signature-pad"></canvas>
           </div>
-          <button class="btn btn-secondary" style="width:auto; padding:3px 10px; font-size:11px;" onclick="clearSignCanvas()">Clear</button>
+          <div class="canvas-tools">
+            <div style="display:flex; gap:6px;">
+              <div class="color-dot active" style="background:#000" onclick="setSignColor('#000', this)"></div>
+              <div class="color-dot" style="background:#7c3aed" onclick="setSignColor('#7c3aed', this)"></div>
+              <div class="color-dot" style="background:#fa5a00" onclick="setSignColor('#fa5a00', this)"></div>
+            </div>
+            <button type="button" class="btn btn-secondary" style="width:auto; padding:3px 10px; font-size:11px;" onclick="clearSignCanvas()">Clear</button>
+          </div>
+        </div>
+
+        <!-- WRITE TAB PANEL -->
+        <div id="sig-pane-write" class="sig-pane" style="display:none;">
+          <input type="text" id="sig-write-input" placeholder="Type your signature..." oninput="updateWrittenSignature(this.value)" style="margin-bottom:8px;">
+          <div style="background:#fff; border:2px solid var(--border); border-radius:8px; padding:16px; text-align:center;">
+            <canvas id="write-canvas" style="display:none;"></canvas>
+            <div id="write-preview" style="font-family:'Caveat', cursive; font-size:32px; color:#000; min-height:50px;"></div>
+          </div>
+        </div>
+
+        <!-- UPLOAD TAB PANEL -->
+        <div id="sig-pane-upload" class="sig-pane" style="display:none;">
+          <div class="dropzone" onclick="document.getElementById('sig-upload-file').click()" style="padding:20px 10px; margin-bottom:0;">
+            <h4>Upload Photo</h4>
+            <p>Drop image or click to browse</p>
+            <input type="file" id="sig-upload-file" accept="image/*" class="file-input" onchange="loadUploadedSignature(this)">
+          </div>
+          <div id="upload-preview-container" style="display:none; margin-top:8px; text-align:center;">
+            <img id="upload-preview-img" style="max-height:80px; border:2px solid var(--border); border-radius:8px;">
+          </div>
+        </div>
+
+        <!-- CAMERA TAB PANEL -->
+        <div id="sig-pane-camera" class="sig-pane" style="display:none;">
+          <button type="button" class="btn btn-secondary" id="btn-start-camera" onclick="startCamera()">Open Web Camera</button>
+          <div id="camera-stream-container" style="display:none; text-align:center;">
+            <video id="camera-video" width="100%" height="auto" autoplay playsinline style="border:2px solid var(--border); border-radius:8px; background:#000; max-height:160px; margin-top:8px;"></video>
+            <button type="button" class="btn btn-primary" onclick="captureCameraPhoto()" style="margin-top:8px;">Take Photo & Crop</button>
+          </div>
+          <div id="camera-preview-container" style="display:none; text-align:center; margin-top:8px;">
+            <img id="camera-preview-img" style="max-height:80px; border:2px solid var(--border); border-radius:8px;">
+            <button type="button" class="btn btn-secondary" onclick="resetCameraPhoto()" style="margin-top:6px; font-size:11px; width:auto; padding:4px 10px;">Retake</button>
+          </div>
         </div>
       </div>
 
@@ -1760,6 +1806,115 @@ function setSignColor(col, el) {
   signCtx.strokeStyle = col;
   document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
   el.classList.add('active');
+}
+
+// Signature Tab Selector switcher
+let currentSigTab = 'draw';
+function switchSigTab(tab) {
+  currentSigTab = tab;
+  document.querySelectorAll('.sig-tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  
+  document.querySelectorAll('.sig-pane').forEach(pane => pane.style.display = 'none');
+  document.getElementById('sig-pane-' + tab).style.display = 'block';
+  
+  // Stop camera if leaving camera tab
+  if (tab !== 'camera' && cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+    document.getElementById('camera-stream-container').style.display = 'none';
+    document.getElementById('camera-preview-container').style.display = 'none';
+    document.getElementById('btn-start-camera').style.display = 'block';
+  }
+}
+
+// Text Written signature generator
+function updateWrittenSignature(text) {
+  const preview = document.getElementById('write-preview');
+  preview.textContent = text || 'Type your signature...';
+  
+  const canvas = document.getElementById('write-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = 300;
+  canvas.height = 100;
+  
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#000000';
+  ctx.font = "italic 36px 'Caveat', cursive";
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text || '', canvas.width / 2, canvas.height / 2);
+}
+
+// Uploaded file signature handler
+let signatureUploadBlob = null;
+function loadUploadedSignature(input) {
+  if (input.files[0]) {
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('upload-preview-img').src = e.target.result;
+      document.getElementById('upload-preview-container').style.display = 'block';
+      signatureUploadBlob = file;
+      toast('Signature image uploaded.');
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// Camera photo signature crop handler
+let cameraStream = null;
+let signatureCameraBlob = null;
+async function startCamera() {
+  const container = document.getElementById('camera-stream-container');
+  const video = document.getElementById('camera-video');
+  const btn = document.getElementById('btn-start-camera');
+  
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    video.srcObject = cameraStream;
+    container.style.display = 'block';
+    btn.style.display = 'none';
+  } catch(err) {
+    toast('Could not access camera: ' + err, 'error');
+  }
+}
+
+function captureCameraPhoto() {
+  const video = document.getElementById('camera-video');
+  const canvas = document.createElement('canvas');
+  const vWidth = video.videoWidth || 640;
+  const vHeight = video.videoHeight || 480;
+  
+  // Crop a nice 2:1 aspect ratio center window from the video camera feed
+  const targetWidth = vWidth;
+  const targetHeight = vWidth / 2;
+  const startX = 0;
+  const startY = (vHeight - targetHeight) / 2;
+  
+  canvas.width = 300;
+  canvas.height = 150;
+  
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, startX, startY, targetWidth, targetHeight, 0, 0, canvas.width, canvas.height);
+  
+  canvas.toBlob(blob => {
+    signatureCameraBlob = blob;
+    document.getElementById('camera-preview-img').src = URL.createObjectURL(blob);
+    document.getElementById('camera-preview-container').style.display = 'block';
+    document.getElementById('camera-stream-container').style.display = 'none';
+    
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream = null;
+    }
+  }, 'image/png');
+}
+
+function resetCameraPhoto() {
+  signatureCameraBlob = null;
+  document.getElementById('camera-preview-container').style.display = 'none';
+  document.getElementById('btn-start-camera').style.display = 'block';
 }
 
 // Render preview image from document using backend
@@ -2055,36 +2210,63 @@ async function runPDFConvertTo() {
 
 async function runPDFSign() {
   if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
-  const pad = document.getElementById('signature-pad');
   
-  toast('Overlaying signature graphics…');
-  pad.toBlob(async (sigBlob) => {
-    if(!sigBlob || sigBlob.size < 200) {
-      toast('Please draw a signature path on the canvas first.', 'error');
+  let signatureBlob = null;
+  
+  if (currentSigTab === 'draw') {
+    const pad = document.getElementById('signature-pad');
+    signatureBlob = await new Promise(resolve => pad.toBlob(resolve, 'image/png'));
+    if (!signatureBlob || signatureBlob.size < 200) {
+      toast('Please draw a signature first.', 'error');
       return;
     }
-    
-    const pageNum = +document.getElementById('sign-page-num').value;
-    const imgElement = document.getElementById('sign-preview-img');
-    const widthPts = imgElement.naturalWidth * 0.5;
-    const heightPts = imgElement.naturalHeight * 0.5;
-    
-    const xPts = tokenXRatio * widthPts;
-    const yPts = (1.0 - tokenYRatio - (50 / imgElement.clientHeight)) * heightPts;
-    const wPts = (100 / imgElement.clientWidth) * widthPts;
-    const hPts = (50 / imgElement.clientHeight) * heightPts;
-    
-    const fd = new FormData();
-    fd.append('file', G.pdfFiles[0].fileObject);
-    fd.append('signature', sigBlob, 'signature.png');
-    fd.append('page', pageNum);
-    fd.append('x', xPts);
-    fd.append('y', yPts);
-    fd.append('width', wPts);
-    fd.append('height', hPts);
-    
-    await postFileDownload('/pdf/sign', fd, 'signed_document.pdf');
-  }, 'image/png');
+  } 
+  else if (currentSigTab === 'write') {
+    const canvas = document.getElementById('write-canvas');
+    const text = document.getElementById('sig-write-input').value;
+    if (!text) {
+      toast('Please type a signature text first.', 'error');
+      return;
+    }
+    signatureBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  } 
+  else if (currentSigTab === 'upload') {
+    if (!signatureUploadBlob) {
+      toast('Please upload a signature photo first.', 'error');
+      return;
+    }
+    signatureBlob = signatureUploadBlob;
+  } 
+  else if (currentSigTab === 'camera') {
+    if (!signatureCameraBlob) {
+      toast('Please take a camera photo first.', 'error');
+      return;
+    }
+    signatureBlob = signatureCameraBlob;
+  }
+
+  toast('Overlaying signature graphics…');
+  
+  const pageNum = +document.getElementById('sign-page-num').value;
+  const imgElement = document.getElementById('sign-preview-img');
+  const widthPts = imgElement.naturalWidth * 0.5;
+  const heightPts = imgElement.naturalHeight * 0.5;
+  
+  const xPts = tokenXRatio * widthPts;
+  const yPts = (1.0 - tokenYRatio - (50 / imgElement.clientHeight)) * heightPts;
+  const wPts = (100 / imgElement.clientWidth) * widthPts;
+  const hPts = (50 / imgElement.clientHeight) * heightPts;
+  
+  const fd = new FormData();
+  fd.append('file', G.pdfFiles[0].fileObject);
+  fd.append('signature', signatureBlob, 'signature.png');
+  fd.append('page', pageNum);
+  fd.append('x', xPts);
+  fd.append('y', yPts);
+  fd.append('width', wPts);
+  fd.append('height', hPts);
+  
+  await postFileDownload('/pdf/sign', fd, 'signed_document.pdf');
 }
 
 async function postFileDownload(endpoint, formData, downloadName) {
