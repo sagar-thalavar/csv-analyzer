@@ -891,5 +891,33 @@ def pdf_sign_route():
         return jsonify({"error": f"Signing failed: {str(e)}"}), 500
 
 
+@app.route("/pdf/info", methods=["POST"])
+def pdf_info_route():
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+    f = request.files["file"]
+    try:
+        reader = pypdf.PdfReader(io.BytesIO(f.read()))
+        return jsonify({
+            "pages": len(reader.pages),
+            "filename": f.filename
+        })
+    except Exception as e:
+        return jsonify({"error": f"Failed to read PDF metadata: {str(e)}"}), 500
+
+
+@app.route("/pdf/page-image", methods=["POST"])
+def pdf_page_image_route():
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+    f = request.files["file"]
+    page_num = int(request.form.get("page", 1))
+    try:
+        img_bytes = pdf_tools.render_pdf_page(f.read(), page_num - 1)
+        return send_file(io.BytesIO(img_bytes), mimetype="image/png")
+    except Exception as e:
+        return jsonify({"error": f"Failed to render page: {str(e)}"}), 500
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5050)

@@ -514,3 +514,18 @@ def sign_pdf(pdf_bytes: bytes, signature_image_bytes: bytes, page_num: int, x: f
     writer.write(out_buf)
     writer.close()
     return out_buf.getvalue()
+
+
+def render_pdf_page(pdf_bytes: bytes, page_idx: int) -> bytes:
+    pdf = pdfium.PdfDocument(pdf_bytes)
+    if page_idx < 0 or page_idx >= len(pdf):
+        pdf.close()
+        raise ValueError("Page index out of range")
+    page = pdf.get_page(page_idx)
+    # Render page at 2.0x scale (~150 DPI) for clarity
+    pil_img = page.render(scale=2).to_pil()
+    img_buf = io.BytesIO()
+    pil_img.save(img_buf, format="PNG")
+    page.close()
+    pdf.close()
+    return img_buf.getvalue()

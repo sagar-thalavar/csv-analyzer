@@ -365,6 +365,7 @@
     border-radius: 12px;
     overflow: auto;
     flex: 1;
+    min-height: 380px;
   }
   .pdf-render-container { position: relative; display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid var(--border); }
   .pdf-render-img { display: block; max-width: 100%; height: auto; user-select: none; }
@@ -862,6 +863,8 @@ let G = {
   csvFilename: '',
   pdfFiles: [], // Array of { name, size, bytes }
   signatureImage: null,
+  pdfPageCount: 1,
+  pdfCurrentPage: 1
 };
 
 /* ─── Navigation ─── */
@@ -1677,9 +1680,24 @@ async function loadPDFSingleFile(file) {
   }
   toast(`Selected: ${file.name}`);
   
-  if (G.currentTool === 'pdf_sign') {
-    await renderSignPreviewPage(file, 1);
+  // Set preview state
+  G.pdfPageCount = 1;
+  G.pdfCurrentPage = 1;
+
+  // Retrieve PDF page count metadata
+  const fd = new FormData();
+  fd.append('file', file);
+  try {
+    const res = await fetch('/pdf/info', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.pages) {
+      G.pdfPageCount = data.pages;
+    }
+  } catch(err) {
+    console.error('Failed to fetch PDF info:', err);
   }
+
+  await fetchPagePreview();
 }
 
 function handlePDFMultiDrop(e) {
@@ -1917,105 +1935,98 @@ function resetCameraPhoto() {
   document.getElementById('btn-start-camera').style.display = 'block';
 }
 
-// Render preview image from document using backend
-async function renderSignPreviewPage(file, pageNum) {
-  const container = document.getElementById('pdf-sign-box');
-  if(!container) return;
-  container.innerHTML = '<div class="chart-placeholder">Rendering preview page...</div>';
+// Render preview page on-demand from backend
+async function fetchPagePreview() {
+  if (!G.pdfFiles.length) return;
+  const file = G.pdfFiles[0].fileObject;
+  
+  let containerId = 'pdf-preview-container';
+  if (['pdf_encrypt', 'pdf_decrypt', 'pdf_sign'].includes(G.currentTool)) {
+    containerId = 'pdf-sec-preview-container';
+  } else if (['pdf_convert_from'].includes(G.currentTool)) {
+    containerId = 'pdf-conv-preview-container';
+  }
+  
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  
+  container.innerHTML = `
+    <div class="panel-header"><span class="panel-title">Visual Workspace Preview</span></div>
+    <div class="chart-placeholder">Rendering page ${G.pdfCurrentPage} of ${G.pdfPageCount}...</div>
+  `;
   
   const fd = new FormData();
   fd.append('file', file);
-  fd.append('format', 'images');
-  fd.append('img_format', 'PNG');
+  fd.append('page', G.pdfCurrentPage);
   
   try {
-    const res = await fetch('/pdf/convert-from', { method: 'POST', body: fd });
-    if(res.status === 400 || res.status === 500) {
+    const res = await fetch('/pdf/page-image', { method: 'POST', body: fd });
+    if (res.status === 400 || res.status === 500) {
       const err = await res.json();
-      container.innerHTML = `<div class="chart-placeholder" style="color:var(--danger)">${err.error}</div>`;
+      container.innerHTML = `<div class="panel-header"><span class="panel-title">Visual Workspace Preview</span></div>
+                             <div class="chart-placeholder" style="color:var(--danger)">${err.error}</div>`;
       return;
     }
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
     
-    container.innerHTML = `
-      <div class="pdf-render-container" id="pdf-render-wrap" ondblclick="placeSignatureToken(event)">
-        <img src="${url}" class="pdf-render-img" id="sign-preview-img">
+    renderPDFPreviewLayout(containerId, url);
+  } catch(err) {
+    container.innerHTML = `<div class="panel-header"><span class="panel-title">Visual Workspace Preview</span></div>
+                           <div class="chart-placeholder" style="color:var(--danger)">Rendering failed: ${err}</div>`;
+  }
+}
+
+// Render layout for single page preview with paginator controls
+function renderPDFPreviewLayout(containerId, imageUrl) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  
+  container.innerHTML = `
+    <div class="panel-header"><span class="panel-title">Visual Workspace Preview</span></div>
+    <div class="chart-out" style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1;">
+      <div class="pdf-render-container" id="pdf-render-wrap" ${G.currentTool === 'pdf_sign' ? 'ondblclick="placeSignatureToken(event)"' : ''} style="margin-bottom:16px; border:2px solid var(--border); border-radius:12px; background:#fff; overflow:hidden; max-width:100%; box-shadow:0 4px 0 var(--border);">
+        <img src="${imageUrl}" class="pdf-render-img" id="sign-preview-img" style="display:block; max-width:100%; height:auto;">
+        ${G.currentTool === 'pdf_sign' ? `
         <div class="sig-token" id="signature-token" style="display:none;" onmousedown="dragStart(event)">
           <span>SIGNATURE TOKEN</span>
-        </div>
+        </div>` : ''}
       </div>
-    `;
-    toast('Page rendered. Double click page to place signature token.');
-  } catch(err) {
-    container.innerHTML = `<div class="chart-placeholder" style="color:var(--danger)">Rendering failed: ${err}</div>`;
+      
+      <!-- Pager Controls -->
+      <div style="display:flex; align-items:center; justify-content:center; gap:16px; width:100%;">
+        <button type="button" class="btn btn-secondary" onclick="changePreviewPage(-1)" style="width:auto; padding:6px 16px; font-weight:700;">&larr; Prev Page</button>
+        <span style="font-weight:800; font-size:13px; font-family:var(--font-mono)">Page ${G.pdfCurrentPage} of ${G.pdfPageCount}</span>
+        <button type="button" class="btn btn-secondary" onclick="changePreviewPage(1)" style="width:auto; padding:6px 16px; font-weight:700;">Next Page &rarr;</button>
+      </div>
+    </div>
+  `;
+}
+
+async function changePreviewPage(delta) {
+  const newPage = G.pdfCurrentPage + delta;
+  if (newPage >= 1 && newPage <= G.pdfPageCount) {
+    G.pdfCurrentPage = newPage;
+    
+    // Keep sign-page-num input field in sync if it exists in DOM
+    const pageNumInput = document.getElementById('sign-page-num');
+    if (pageNumInput) {
+      pageNumInput.value = newPage;
+    }
+    await fetchPagePreview();
   }
 }
 
 async function updateSignPreviewPage() {
-  if(!G.pdfFiles.length) return;
-  const p = +document.getElementById('sign-page-num').value;
-  await renderSignPreviewPage(G.pdfFiles[0].fileObject, p);
-}
-
-// Place and drag token on canvas preview
-let tokenXRatio = 0.3, tokenYRatio = 0.3;
-function placeSignatureToken(e) {
-  const wrap = document.getElementById('pdf-render-wrap');
-  const token = document.getElementById('signature-token');
-  const rect = wrap.getBoundingClientRect();
-  
-  const x = e.clientX - rect.left - 50; // center token (width 100)
-  const y = e.clientY - rect.top - 25; // center token (height 50)
-  
-  token.style.left = x + 'px';
-  token.style.top = y + 'px';
-  token.style.display = 'flex';
-  
-  tokenXRatio = x / rect.width;
-  tokenYRatio = y / rect.height;
-}
-
-let activeDrag = false, startX, startY, startLeft, startTop;
-function dragStart(e) {
-  e.preventDefault();
-  activeDrag = true;
-  startX = e.clientX;
-  startY = e.clientY;
-  const token = document.getElementById('signature-token');
-  startLeft = parseInt(token.style.left || 0);
-  startTop = parseInt(token.style.top || 0);
-  
-  document.addEventListener('mousemove', dragMove);
-  document.addEventListener('mouseup', dragEnd);
-}
-
-function dragMove(e) {
-  if(!activeDrag) return;
-  const wrap = document.getElementById('pdf-render-wrap');
-  const token = document.getElementById('signature-token');
-  const rect = wrap.getBoundingClientRect();
-  
-  const dx = e.clientX - startX;
-  const dy = e.clientY - startY;
-  
-  let newLeft = startLeft + dx;
-  let newTop = startTop + dy;
-  
-  newLeft = Math.max(0, Math.min(newLeft, rect.width - 100));
-  newTop = Math.max(0, Math.min(newTop, rect.height - 50));
-  
-  token.style.left = newLeft + 'px';
-  token.style.top = newTop + 'px';
-  
-  tokenXRatio = newLeft / rect.width;
-  tokenYRatio = newTop / rect.height;
-}
-
-function dragEnd() {
-  activeDrag = false;
-  document.removeEventListener('mousemove', dragMove);
-  document.removeEventListener('mouseup', dragEnd);
+  const pInput = document.getElementById('sign-page-num');
+  if (!pInput) return;
+  const p = +pInput.value;
+  if (p >= 1 && p <= G.pdfPageCount) {
+    G.pdfCurrentPage = p;
+    await fetchPagePreview();
+  } else {
+    pInput.value = G.pdfCurrentPage;
+  }
 }
 
 /* ─── PDF Convert To Handlers ─── */
