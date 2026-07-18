@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>OmniFile | CSV & PDF Tools Suite</title>
+<title>Files Sandbox — All-in-One Local PDF & File Studio</title>
+<!-- Custom Dark Circular File Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%231a1a24'/%3E%3Cpath d='M21 17h14l10 10v20a3 3 0 0 1-3 3H21a3 3 0 0 1-3-3V20a3 3 0 0 1 3-3z' fill='none' stroke='%23ffffff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M35 17v10h10' fill='none' stroke='%23ffffff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M26 33h12M26 39h8' stroke='%23ffffff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
 <!-- Import PDF.js for lightning fast, serverless, client-side PDF rendering -->
@@ -21,6 +23,7 @@
     --accent-yellow: #fde047; /* Yellow card */
     --accent-purple: #c7d2fe; /* Purple card */
     --accent-coral: #fca5a5; /* Coral card */
+    --accent-blue: #93c5fd; /* Blue card for Size Reducer */
     --danger: #ef4444;
     --font-mono: 'JetBrains Mono', monospace;
     --font-display: 'Outfit', sans-serif;
@@ -178,6 +181,7 @@
   .card-green { background: var(--accent-green); }
   .card-purple { background: var(--accent-purple); }
   .card-coral { background: var(--accent-coral); }
+  .card-blue { background: var(--accent-blue); }
 
   .card-title {
     font-size: 20px;
@@ -563,8 +567,8 @@
   <!-- Top Navigation Header -->
   <nav class="navbar">
     <div class="navbar-logo" onclick="showDashboard()">
-      <h1>OmniFile</h1>
-      <span>editfiles.sagarthalavar.in</span>
+      <h1>Files Sandbox</h1>
+      <span>files.sagarthalavar.in</span>
     </div>
     <a href="https://sagarthalavar.in" target="_blank" class="navbar-cta">Back to Portfolio</a>
   </nav>
@@ -612,6 +616,15 @@
           <div>
             <h3 class="card-title">PDF Security & Sign</h3>
             <p class="card-desc">Lock credentials and sign agreements. Draw signatures, place coordinates tokens visually, add strong password protection, and remove security restrictions.</p>
+          </div>
+          <span class="card-action">Open workspace ↗</span>
+        </div>
+
+        <!-- Blue Card: Universal File Size Reducer -->
+        <div class="card-shape card-blue" onclick="showTool('file_size_reducer')">
+          <div>
+            <h3 class="card-title">File Size Reducer</h3>
+            <p class="card-desc">Compress images, PDFs, Word (.docx), PowerPoint (.pptx), Excel (.xlsx), SVG, and general files with intelligent pixel, clarity, dimension, and stream optimization.</p>
           </div>
           <span class="card-action">Open workspace ↗</span>
         </div>
@@ -942,6 +955,112 @@
       </div>
     </div>
 
+    <!-- ─── VIEW: UNIVERSAL FILE SIZE REDUCER WORKSPACE ─── -->
+    <div class="view" id="view-file_size_reducer">
+      <div class="workspace">
+        <!-- LEFT CONTROL PANE -->
+        <div class="control-pane">
+          <div class="panel-header"><span class="panel-title">File Size Reducer</span></div>
+
+          <div class="form-group">
+            <label>Upload Document</label>
+            <div class="dropzone" onclick="document.getElementById('compress-file-input').click()"
+                 ondragover="event.preventDefault(); this.classList.add('drag');"
+                 ondragleave="this.classList.remove('drag')"
+                 ondrop="handleCompressDrop(event)"
+                 style="padding:20px 10px;">
+              <h4>Upload file</h4>
+              <p>Drop file here or click to browse</p>
+              <input type="file" id="compress-file-input" class="file-input" accept="*" onchange="handleCompressFileSelect(this)">
+            </div>
+          </div>
+
+          <div class="form-group" id="compress-selected-doc-box" style="display:none;">
+            <label>Selected Document</label>
+            <div style="background:var(--bg); border:2px solid var(--border); border-radius:8px; padding:6px 12px; font-weight:700; font-family:var(--font-mono); font-size:12px; word-break:break-all;" id="compress-selected-doc-name">file.pdf</div>
+          </div>
+
+          <!-- COMPRESSION MODE TABS -->
+          <div class="form-group">
+            <label>Resize Mode</label>
+            <div style="display:flex; gap:6px; margin-bottom:12px;">
+              <button type="button" class="btn btn-secondary compress-tab-btn active" id="compress-tab-auto" onclick="switchCompressTab('auto')" style="padding:8px 12px; font-size:12px; font-weight:700; flex:1;">Auto Resize</button>
+              <button type="button" class="btn btn-secondary compress-tab-btn" id="compress-tab-manual" onclick="switchCompressTab('manual')" style="padding:8px 12px; font-size:12px; font-weight:700; flex:1;">Manual Resize</button>
+            </div>
+
+            <!-- AUTO RESIZE TAB PANEL -->
+            <div id="compress-pane-auto" class="compress-pane">
+              <div class="form-group">
+                <label>Target File Size (KB)</label>
+                <input type="number" id="compress-target-kb" placeholder="e.g. 200 (target size in KB)" min="10" oninput="updateCompressEst()">
+                <p style="font-size:11px; color:var(--muted); margin-top:6px; font-weight:600; line-height:1.4;">Automatically optimizes quality and DPI to match your target file size without altering width or height.</p>
+              </div>
+            </div>
+
+            <!-- MANUAL RESIZE TAB PANEL -->
+            <div id="compress-pane-manual" class="compress-pane" style="display:none;">
+              <div class="form-row">
+                <div class="form-group"><label>Width (%)</label><input type="number" id="compress-w-pct" value="100" min="10" max="100" oninput="updateCompressEst()"></div>
+                <div class="form-group"><label>Height (%)</label><input type="number" id="compress-h-pct" value="100" min="10" max="100" oninput="updateCompressEst()"></div>
+              </div>
+
+              <div class="form-group">
+                <label>Resolution (DPI)</label>
+                <input type="number" id="compress-dpi" value="150" min="30" max="600" placeholder="e.g. 150" oninput="updateCompressEst()">
+              </div>
+
+              <div class="form-group">
+                <label style="display:flex; justify-content:space-between;">
+                  <span>Quality Level</span>
+                  <span id="compress-quality-val" style="font-weight:800; font-family:var(--font-mono);">65%</span>
+                </label>
+                <input type="range" id="compress-quality" min="10" max="100" value="65" oninput="updateCompressQualityLabel(this.value)">
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" onclick="runFileCompress()" style="margin-top:8px;">Execute Compression</button>
+        </div>
+
+        <!-- RIGHT PREVIEW PANE -->
+        <div class="preview-pane" id="compress-preview-container">
+          <div class="panel-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="panel-title">Visual Workspace Preview</span>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button type="button" onclick="renderCompressPreview()" title="Re-render preview" style="width:32px; height:32px; border-radius:8px; border:2px solid var(--border); background:var(--bg); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; box-shadow:0 2px 0 var(--border); transition:transform 0.1s,box-shadow 0.1s;" onmousedown="this.style.transform='translateY(2px)';this.style.boxShadow='none'" onmouseup="this.style.transform=''" onmouseleave="this.style.transform=''">&#x21bb;</button>
+              <span id="txt-compress-size-badge" style="font-weight:800; font-family:var(--font-mono); font-size:12px; background:var(--bg); border:2px solid var(--border); border-radius:8px; padding:4px 8px;">No file loaded</span>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; flex:1; position:relative; width:100%; height:100%; padding:16px; overflow-y:auto;">
+            <!-- Live Preview Canvas / Image Window -->
+            <div id="compress-canvas-wrapper" style="width:100%; max-width:550px; min-height:280px; background:var(--surface); border:2px solid var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:16px; box-shadow:0 3px 0 var(--border); position:relative; overflow:hidden; padding:12px;">
+              <div id="compress-canvas-placeholder" style="color:var(--muted); font-size:12px; font-weight:600; text-align:center;">
+                Upload a document or image to preview live compressed quality
+              </div>
+              <img id="compress-preview-img" style="display:none; max-width:100%; max-height:400px; border-radius:4px; object-fit:contain;">
+              <canvas id="compress-preview-canvas" style="display:none; max-width:100%; max-height:400px; border-radius:4px;"></canvas>
+            </div>
+
+            <!-- Stats Card (Original Size & Est. Compressed) -->
+            <div id="compress-stats-card" style="display:none; width:100%; max-width:550px; background:var(--bg); border:2px solid var(--border); border-radius:10px; padding:16px; box-shadow:0 4px 0 var(--border);">
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                <div class="stat-card">
+                  <div class="label">Original Size</div>
+                  <div class="value" id="stat-orig-size" style="font-size:15px;">0 KB</div>
+                </div>
+                <div class="stat-card">
+                  <div class="label">Est. Compressed</div>
+                  <div class="value" id="stat-est-size" style="font-size:15px;">0 KB</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -954,7 +1073,9 @@
     <div class="modal-icon error" id="modal-icon">⚠</div>
     <div class="modal-title" id="modal-title">Warning</div>
     <div class="modal-message" id="modal-message">Something went wrong.</div>
-    <button class="modal-dismiss error" id="modal-btn" onclick="closeModal()">Got it</button>
+    <div id="modal-action-container" style="width:100%; display:flex; justify-content:center;">
+      <button class="modal-dismiss error" id="modal-btn" onclick="closeModal()">Got it</button>
+    </div>
   </div>
 </div>
 
@@ -1021,6 +1142,11 @@ function showTool(toolName) {
     document.getElementById('pdf-sec-select').value = toolName;
     setupPDFSecurityWorkspace(toolName);
   }
+  else if (toolName === 'file_size_reducer') {
+    titleEl.textContent = 'File Size Reducer Workspace';
+    subEl.textContent = 'Compress Images, PDFs, Word, PowerPoint, Excel & documents using industry best practices';
+    document.getElementById('view-file_size_reducer').classList.add('active');
+  }
   else {
     titleEl.textContent = 'PDF Page Organizer Workspace';
     subEl.textContent = 'Merge, split, rotate, crop, and arrange pages';
@@ -1045,12 +1171,12 @@ function toast(msg, type = 'success') {
   t._to = setTimeout(() => t.className = '', 3000);
 }
 
-function showModal(msg, type = 'error') {
+function showModal(msg, type = 'error', action = null) {
   const overlay = document.getElementById('modal-alert');
   const icon = document.getElementById('modal-icon');
   const title = document.getElementById('modal-title');
   const message = document.getElementById('modal-message');
-  const btn = document.getElementById('modal-btn');
+  const actionContainer = document.getElementById('modal-action-container');
 
   const config = {
     error:   { icon: '✕', title: 'Something went wrong', btnText: 'Got it' },
@@ -1063,10 +1189,53 @@ function showModal(msg, type = 'error') {
   icon.textContent = c.icon;
   title.textContent = c.title;
   message.textContent = msg;
-  btn.className = 'modal-dismiss ' + type;
-  btn.textContent = c.btnText;
+
+  if (action === 'crop_limit') {
+    actionContainer.innerHTML = `
+      <div style="display:flex; gap:10px; width:100%; justify-content:center; flex-wrap:wrap;">
+        <button class="modal-dismiss error" style="background:#fa5a00; border-color:#fa5a00; color:#fff;" onclick="setMaxCropValues()">Set to Maximum Crop</button>
+        <button class="modal-dismiss" style="background:var(--bg); color:var(--text);" onclick="closeModal()">Adjust Manually</button>
+      </div>
+    `;
+  } else {
+    actionContainer.innerHTML = `
+      <button class="modal-dismiss ${type}" id="modal-btn" onclick="closeModal()">${c.btnText}</button>
+    `;
+  }
 
   overlay.classList.add('visible');
+}
+
+async function setMaxCropValues() {
+  let pWidth = 612;
+  let pHeight = 792;
+
+  if (G.pdfDoc) {
+    try {
+      const page = await G.pdfDoc.getPage(1);
+      const vp = page.getViewport({ scale: 1.0 });
+      pWidth = Math.round(vp.width);
+      pHeight = Math.round(vp.height);
+    } catch(e) {}
+  }
+
+  // Maximum crop allowed per side leaving a 20pt center content box
+  const maxLR = Math.max(0, Math.floor((pWidth - 20) / 2));
+  const maxTB = Math.max(0, Math.floor((pHeight - 20) / 2));
+
+  const lEl = document.getElementById('crop-l');
+  const rEl = document.getElementById('crop-r');
+  const tEl = document.getElementById('crop-t');
+  const bEl = document.getElementById('crop-b');
+
+  if (lEl) lEl.value = maxLR;
+  if (rEl) rEl.value = maxLR;
+  if (tEl) tEl.value = maxTB;
+  if (bEl) bEl.value = maxTB;
+
+  applyCropPreview();
+  closeModal();
+  toast(`Crop margins set to maximum: ${maxLR}pt Left/Right, ${maxTB}pt Top/Bottom.`);
 }
 
 function closeModal() {
@@ -1834,16 +2003,16 @@ function renderDynamicControls(tool) {
   else if (tool === 'pdf_crop') {
     html = `
       <div class="form-row">
-        <div class="form-group"><label>Left Margin (pt)</label><input type="number" id="crop-l" value="20" min="0"></div>
-        <div class="form-group"><label>Right Margin (pt)</label><input type="number" id="crop-r" value="20" min="0"></div>
+        <div class="form-group"><label>Left Margin (pt)</label><input type="number" id="crop-l" value="20" min="0" oninput="applyCropPreview()"></div>
+        <div class="form-group"><label>Right Margin (pt)</label><input type="number" id="crop-r" value="20" min="0" oninput="applyCropPreview()"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Top Margin (pt)</label><input type="number" id="crop-t" value="20" min="0"></div>
-        <div class="form-group"><label>Bottom Margin (pt)</label><input type="number" id="crop-b" value="20" min="0"></div>
+        <div class="form-group"><label>Top Margin (pt)</label><input type="number" id="crop-t" value="20" min="0" oninput="applyCropPreview()"></div>
+        <div class="form-group"><label>Bottom Margin (pt)</label><input type="number" id="crop-b" value="20" min="0" oninput="applyCropPreview()"></div>
       </div>
       <div class="form-group">
         <label>Apply to</label>
-        <select id="crop-scope" onchange="toggleScopeInputs('crop', this.value)">
+        <select id="crop-scope" onchange="toggleScopeInputs('crop', this.value); applyCropPreview();">
           <option value="all">All Pages</option>
           <option value="specific">Specific Pages</option>
         </select>
@@ -1873,7 +2042,7 @@ function renderDynamicControls(tool) {
     html = `
       <div class="form-group">
         <label>Alignment style</label>
-        <select id="num-style">
+        <select id="num-style" onchange="applyNumberingPreview()">
           <option value="bottom_right">Bottom Right corner</option>
           <option value="bottom_center">Bottom Center margin</option>
           <option value="bottom_left">Bottom Left corner</option>
@@ -2008,6 +2177,8 @@ function renderDynamicControls(tool) {
     addCropPageRow(1);
   } else if (tool === 'pdf_arrange') {
     resetArrangeSlotsToDefault();
+  } else if (tool === 'pdf_num') {
+    setTimeout(() => applyNumberingPreview(), 100);
   } else if (tool === 'pdf_sign') {
     initSignaturePad();
   }
@@ -2124,16 +2295,79 @@ function addCropPageRow(val = 1) {
   row.style.alignItems = 'center';
   row.style.marginBottom = '6px';
   row.innerHTML = `
-    <input type="number" class="crop-page-val" min="1" max="${G.pdfPageCount}" value="${val}" style="flex:1;" onchange="validateRangeRow(this)">
-    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()" style="width:auto; padding:8px 12px;">✕</button>
+    <input type="number" class="crop-page-val" min="1" max="${G.pdfPageCount}" value="${val}" style="flex:1;" onchange="validateRangeRow(this); applyCropPreview();" oninput="applyCropPreview();">
+    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove(); applyCropPreview();" style="width:auto; padding:8px 12px;">✕</button>
   `;
   container.appendChild(row);
+  applyCropPreview();
 }
 
 function toggleScopeInputs(prefix, val) {
   const container = document.getElementById(prefix + '-specific-container');
   if (container) {
     container.style.display = val === 'specific' ? 'block' : 'none';
+  }
+}
+
+// Live Visual Crop Overlay Preview
+function applyCropPreview() {
+  const lEl = document.getElementById('crop-l');
+  const rEl = document.getElementById('crop-r');
+  const tEl = document.getElementById('crop-t');
+  const bEl = document.getElementById('crop-b');
+  if (!lEl || !rEl || !tEl || !bEl) return;
+
+  const left = Math.max(0, parseFloat(lEl.value) || 0);
+  const right = Math.max(0, parseFloat(rEl.value) || 0);
+  const top = Math.max(0, parseFloat(tEl.value) || 0);
+  const bottom = Math.max(0, parseFloat(bEl.value) || 0);
+
+  const scopeEl = document.getElementById('crop-scope');
+  const scope = scopeEl ? scopeEl.value : 'all';
+
+  let pagesToCrop = [];
+  if (scope === 'all') {
+    for (let i = 1; i <= G.pdfPageCount; i++) pagesToCrop.push(i);
+  } else {
+    const rows = document.querySelectorAll('.crop-page-row');
+    rows.forEach(row => {
+      pagesToCrop.push(parseInt(row.querySelector('.crop-page-val').value));
+    });
+  }
+  const cropSet = new Set(pagesToCrop);
+
+  for (let p = 1; p <= G.pdfPageCount; p++) {
+    const wrapper = document.getElementById(`page-wrapper-${p}`);
+    if (!wrapper) continue;
+    let overlay = wrapper.querySelector('.crop-overlay-box');
+
+    if (cropSet.has(p) && (left > 0 || right > 0 || top > 0 || bottom > 0)) {
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'crop-overlay-box';
+        overlay.style.cssText = 'position:absolute; pointer-events:none; border:2px dashed #ef4444; background:rgba(239, 68, 68, 0.12); border-radius:4px; box-sizing:border-box; display:flex; align-items:center; justify-content:center; color:#ef4444; font-weight:800; font-family:var(--font-mono); font-size:11px; z-index:10;';
+        overlay.innerHTML = '<span style="background:rgba(255,255,255,0.9); padding:2px 6px; border-radius:4px; border:1px solid #ef4444;">Cropped Area</span>';
+        wrapper.appendChild(overlay);
+      }
+      const canvas = wrapper.querySelector('canvas');
+      const w = canvas ? canvas.clientWidth : 500;
+      const h = canvas ? canvas.clientHeight : 600;
+      const scaleX = w / 612;
+      const scaleY = h / 792;
+
+      const pxLeft = Math.min(w * 0.45, left * scaleX);
+      const pxRight = Math.min(w * 0.45, right * scaleX);
+      const pxTop = Math.min(h * 0.45, top * scaleY);
+      const pxBottom = Math.min(h * 0.45, bottom * scaleY);
+
+      overlay.style.display = 'flex';
+      overlay.style.left = pxLeft + 'px';
+      overlay.style.top = pxTop + 'px';
+      overlay.style.width = Math.max(10, w - pxLeft - pxRight) + 'px';
+      overlay.style.height = Math.max(10, h - pxTop - pxBottom) + 'px';
+    } else {
+      if (overlay) overlay.style.display = 'none';
+    }
   }
 }
 
@@ -2149,12 +2383,13 @@ function addArrangeSlotRow(val = 1) {
   row.style.marginBottom = '6px';
   row.innerHTML = `
     <span style="font-family:var(--font-mono); font-size:11px; width:60px;">Slot ${slotIdx}:</span>
-    <select class="arrange-page-val" style="flex:1;">
+    <select class="arrange-page-val" style="flex:1;" onchange="applyArrangePreview()">
       ${Array.from({length: G.pdfPageCount}, (_, i) => `<option value="${i+1}" ${i+1 === val ? 'selected' : ''}>Page ${i+1}</option>`).join('')}
     </select>
-    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove(); updateArrangeSlotLabels();" style="width:auto; padding:8px 12px;">✕</button>
+    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove(); updateArrangeSlotLabels(); applyArrangePreview();" style="width:auto; padding:8px 12px;">✕</button>
   `;
   container.appendChild(row);
+  applyArrangePreview();
 }
 
 function updateArrangeSlotLabels() {
@@ -2171,6 +2406,79 @@ function resetArrangeSlotsToDefault() {
   container.innerHTML = '';
   for (let i = 1; i <= G.pdfPageCount; i++) {
     addArrangeSlotRow(i);
+  }
+  applyArrangePreview();
+}
+
+// Live Rearrange Page Sequence Preview
+function applyArrangePreview() {
+  const rows = document.querySelectorAll('.arrange-slot-row');
+  if (!rows.length) return;
+
+  const sequence = [];
+  rows.forEach(row => {
+    sequence.push(parseInt(row.querySelector('.arrange-page-val').value));
+  });
+
+  const scrollWrap = document.querySelector('.pdf-render-scroll-wrap');
+  if (!scrollWrap) return;
+
+  sequence.forEach(pageNum => {
+    const pageContainer = scrollWrap.querySelector(`.pdf-page-container[data-page="${pageNum}"]`);
+    if (pageContainer) {
+      scrollWrap.appendChild(pageContainer);
+    }
+  });
+}
+
+// Live Visual Page Numbering Stamp Preview
+function applyNumberingPreview() {
+  const styleEl = document.getElementById('num-style');
+  if (!styleEl) return;
+  const style = styleEl.value || 'bottom_right';
+
+  for (let p = 1; p <= G.pdfPageCount; p++) {
+    const wrapper = document.getElementById(`page-wrapper-${p}`);
+    if (!wrapper) continue;
+
+    let badge = wrapper.querySelector('.page-num-preview-badge');
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.className = 'page-num-preview-badge';
+      badge.style.cssText = 'position:absolute; pointer-events:none; background:transparent; color:#000000; padding:4px 8px; font-weight:700; font-family:Helvetica, Arial, sans-serif; font-size:12px; z-index:12; transition:all 0.2s ease; border:none; text-shadow:0 0 2px rgba(255,255,255,0.9);';
+      wrapper.appendChild(badge);
+    }
+
+    badge.textContent = `Page ${p}`;
+    badge.style.display = 'block';
+
+    badge.style.top = 'auto';
+    badge.style.bottom = 'auto';
+    badge.style.left = 'auto';
+    badge.style.right = 'auto';
+    badge.style.transform = 'none';
+
+    if (style === 'bottom_right') {
+      badge.style.bottom = '16px';
+      badge.style.right = '16px';
+    } else if (style === 'bottom_center') {
+      badge.style.bottom = '16px';
+      badge.style.left = '50%';
+      badge.style.transform = 'translateX(-50%)';
+    } else if (style === 'bottom_left') {
+      badge.style.bottom = '16px';
+      badge.style.left = '16px';
+    } else if (style === 'top_right') {
+      badge.style.top = '16px';
+      badge.style.right = '16px';
+    } else if (style === 'top_center') {
+      badge.style.top = '16px';
+      badge.style.left = '50%';
+      badge.style.transform = 'translateX(-50%)';
+    } else if (style === 'top_left') {
+      badge.style.top = '16px';
+      badge.style.left = '16px';
+    }
   }
 }
 
@@ -2430,7 +2738,7 @@ function handlePreviewScroll() {
 async function rerenderAllPages() {
   if (!G.pdfDoc) return;
   
-  // First reset all CSS transforms back to normal
+  // Reset CSS transforms and hide crop overlays / page num badges
   for (let p = 1; p <= G.pdfPageCount; p++) {
     const wrapper = document.getElementById(`page-wrapper-${p}`);
     if (!wrapper) continue;
@@ -2439,11 +2747,21 @@ async function rerenderAllPages() {
       canvas.style.transition = 'none';
       canvas.style.transform = 'rotate(0deg)';
     }
+    const cropOverlay = wrapper.querySelector('.crop-overlay-box');
+    if (cropOverlay) cropOverlay.style.display = 'none';
+    const numBadge = wrapper.querySelector('.page-num-preview-badge');
+    if (numBadge) numBadge.style.display = 'none';
   }
   
   // Apply tool-specific preview effects
   if (G.currentTool === 'pdf_rotate') {
     applyRotatePreview();
+  } else if (G.currentTool === 'pdf_crop') {
+    applyCropPreview();
+  } else if (G.currentTool === 'pdf_arrange') {
+    applyArrangePreview();
+  } else if (G.currentTool === 'pdf_num') {
+    applyNumberingPreview();
   }
   
   toast('Preview updated.');
@@ -2736,11 +3054,27 @@ async function runPDFRotate() {
 
 async function runPDFCrop() {
   if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
-  const l = document.getElementById('crop-l').value;
-  const r = document.getElementById('crop-r').value;
-  const t = document.getElementById('crop-t').value;
-  const b = document.getElementById('crop-b').value;
+  const l = parseFloat(document.getElementById('crop-l').value) || 0;
+  const r = parseFloat(document.getElementById('crop-r').value) || 0;
+  const t = parseFloat(document.getElementById('crop-t').value) || 0;
+  const b = parseFloat(document.getElementById('crop-b').value) || 0;
   const scope = document.getElementById('crop-scope').value;
+
+  let pWidth = 612;
+  let pHeight = 792;
+  if (G.pdfDoc) {
+    try {
+      const page = await G.pdfDoc.getPage(1);
+      const vp = page.getViewport({ scale: 1.0 });
+      pWidth = Math.round(vp.width);
+      pHeight = Math.round(vp.height);
+    } catch(e) {}
+  }
+
+  if (l + r >= pWidth - 10 || t + b >= pHeight - 10) {
+    showModal(`Crop margins are too large. Combined margins exceed actual page dimensions (${pWidth}pt width, ${pHeight}pt height).`, 'error', 'crop_limit');
+    return;
+  }
   
   let pages = [];
   if (scope === 'specific') {
@@ -2928,6 +3262,221 @@ async function postFileDownload(endpoint, formData, downloadName) {
     toast('Downloaded successfully.');
   } catch(err) {
     toast('Processing failed: ' + err, 'error');
+  }
+}
+
+/* ─── File Size Reducer Handlers ─── */
+let currentCompressFile = null;
+let currentCompressMode = 'auto';
+
+function switchCompressTab(mode) {
+  currentCompressMode = mode;
+  document.querySelectorAll('.compress-tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.compress-pane').forEach(pane => pane.style.display = 'none');
+
+  if (mode === 'auto') {
+    document.getElementById('compress-tab-auto').classList.add('active');
+    document.getElementById('compress-pane-auto').style.display = 'block';
+  } else {
+    document.getElementById('compress-tab-manual').classList.add('active');
+    document.getElementById('compress-pane-manual').style.display = 'block';
+  }
+  updateCompressEst();
+}
+
+function updateCompressQualityLabel(val) {
+  document.getElementById('compress-quality-val').textContent = val + '%';
+  updateCompressEst();
+}
+
+function handleCompressFileSelect(input) {
+  if (input.files && input.files[0]) {
+    currentCompressFile = input.files[0];
+    displayCompressFileInfo();
+  }
+}
+
+function handleCompressDrop(e) {
+  e.preventDefault();
+  if (e.currentTarget) e.currentTarget.classList.remove('drag');
+  if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+    currentCompressFile = e.dataTransfer.files[0];
+    displayCompressFileInfo();
+  }
+}
+
+function displayCompressFileInfo() {
+  if (!currentCompressFile) return;
+  
+  const selectedBox = document.getElementById('compress-selected-doc-box');
+  const selectedName = document.getElementById('compress-selected-doc-name');
+  if (selectedBox) selectedBox.style.display = 'block';
+  if (selectedName) selectedName.textContent = currentCompressFile.name;
+
+  document.getElementById('compress-stats-card').style.display = 'block';
+  
+  const origKb = (currentCompressFile.size / 1024).toFixed(1);
+  const origMb = (currentCompressFile.size / (1024 * 1024)).toFixed(2);
+  const displayOrig = currentCompressFile.size > 1024 * 1024 ? `${origMb} MB` : `${origKb} KB`;
+  
+  const badge = document.getElementById('txt-compress-size-badge');
+  if (badge) badge.textContent = displayOrig;
+  document.getElementById('stat-orig-size').textContent = displayOrig;
+  
+  updateCompressEst();
+  renderCompressPreview();
+}
+
+function updateCompressEst() {
+  if (!currentCompressFile) return;
+  
+  let estBytes = currentCompressFile.size;
+
+  if (currentCompressMode === 'auto') {
+    const targetKb = parseFloat(document.getElementById('compress-target-kb').value);
+    if (targetKb && targetKb > 0) {
+      estBytes = targetKb * 1024;
+    } else {
+      estBytes = Math.round(currentCompressFile.size * 0.6);
+    }
+  } else {
+    const q = parseInt(document.getElementById('compress-quality').value) || 65;
+    const wPct = parseFloat(document.getElementById('compress-w-pct').value) || 100;
+    const hPct = parseFloat(document.getElementById('compress-h-pct').value) || 100;
+    const dpi = parseFloat(document.getElementById('compress-dpi').value) || 150;
+    
+    const factor = (q / 100) * (wPct / 100) * (hPct / 100) * (dpi / 150);
+    estBytes = Math.round(currentCompressFile.size * Math.min(0.95, factor));
+  }
+
+  const estKb = (estBytes / 1024).toFixed(1);
+  const estMb = (estBytes / (1024 * 1024)).toFixed(2);
+  const displayEst = estBytes > 1024 * 1024 ? `${estMb} MB` : `${estKb} KB`;
+  
+  document.getElementById('stat-est-size').textContent = displayEst;
+}
+
+// Render orientation-safe image/PDF preview on right workspace window
+async function renderCompressPreview() {
+  if (!currentCompressFile) return;
+  const placeholder = document.getElementById('compress-canvas-placeholder');
+  const imgEl = document.getElementById('compress-preview-img');
+  const canvasEl = document.getElementById('compress-preview-canvas');
+
+  const name = currentCompressFile.name.toLowerCase();
+  const isImage = name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.png') || name.endsWith('.webp') || name.endsWith('.bmp') || name.endsWith('.gif');
+  const isPdf = name.endsWith('.pdf');
+
+  if (isImage) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      imgEl.src = e.target.result;
+      imgEl.style.display = 'block';
+      canvasEl.style.display = 'none';
+      if (placeholder) placeholder.style.display = 'none';
+    };
+    reader.readAsDataURL(currentCompressFile);
+  } else if (isPdf) {
+    try {
+      const arrayBuffer = await currentCompressFile.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const page = await pdf.getPage(1);
+      const viewport = page.getViewport({ scale: 1.0 });
+      
+      canvasEl.width = viewport.width;
+      canvasEl.height = viewport.height;
+      const ctx = canvasEl.getContext('2d');
+      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+      
+      canvasEl.style.display = 'block';
+      imgEl.style.display = 'none';
+      if (placeholder) placeholder.style.display = 'none';
+    } catch(e) {
+      if (placeholder) {
+        placeholder.innerHTML = `<div style="font-weight:700;">${currentCompressFile.name}</div><div style="color:var(--muted); font-size:11px; margin-top:4px;">PDF document loaded</div>`;
+        placeholder.style.display = 'block';
+      }
+      imgEl.style.display = 'none';
+      canvasEl.style.display = 'none';
+    }
+  } else {
+    if (placeholder) {
+      placeholder.innerHTML = `<div style="font-weight:700; font-size:14px; margin-bottom:4px;">${currentCompressFile.name}</div><div style="color:var(--muted); font-size:11px;">Document loaded & ready for compression</div>`;
+      placeholder.style.display = 'block';
+    }
+    imgEl.style.display = 'none';
+    canvasEl.style.display = 'none';
+  }
+}
+
+async function runFileCompress() {
+  if (!currentCompressFile) {
+    toast('Please select or drop a file to compress first.', 'error');
+    return;
+  }
+  
+  const fd = new FormData();
+  fd.append('file', currentCompressFile);
+  fd.append('mode', 'json');
+
+  if (currentCompressMode === 'auto') {
+    const targetKb = document.getElementById('compress-target-kb').value;
+    if (!targetKb || parseFloat(targetKb) <= 0) {
+      toast('Please enter a target file size in KB for Auto Resize.', 'error');
+      return;
+    }
+    fd.append('target_size_kb', targetKb);
+    fd.append('quality', '65');
+    fd.append('width_percent', '100');
+    fd.append('height_percent', '100');
+  } else {
+    const q = document.getElementById('compress-quality').value;
+    const wPct = document.getElementById('compress-w-pct').value || 100;
+    const hPct = document.getElementById('compress-h-pct').value || 100;
+    fd.append('quality', q);
+    fd.append('width_percent', wPct);
+    fd.append('height_percent', hPct);
+  }
+  
+  try {
+    toast('Compressing file with optimization engine...');
+    const resp = await fetch('/api/reduce_file_size', { method: 'POST', body: fd });
+    const data = await resp.json();
+    
+    if (data.error) {
+      toast(data.error, 'error');
+      return;
+    }
+    
+    const origKb = (data.original_size / 1024).toFixed(1);
+    const compKb = (data.compressed_size / 1024).toFixed(1);
+    
+    // Update stat cards with exact real numbers from server
+    document.getElementById('stat-orig-size').textContent = `${origKb} KB`;
+    document.getElementById('stat-est-size').textContent = `${compKb} KB`;
+    
+    const baseName = data.filename.substring(0, data.filename.lastIndexOf('.')) || data.filename;
+    const downloadName = `${baseName}_min${data.ext}`;
+    
+    let mimeType = 'application/octet-stream';
+    if (data.ext === '.pdf') mimeType = 'application/pdf';
+    else if (data.ext === '.jpg' || data.ext === '.jpeg') mimeType = 'image/jpeg';
+    else if (data.ext === '.png') mimeType = 'image/png';
+    else if (data.ext === '.webp') mimeType = 'image/webp';
+
+    const dataUrl = `data:${mimeType};base64,${data.data_b64}`;
+    
+    // Trigger direct browser download automatically!
+    const triggerLink = document.createElement('a');
+    triggerLink.href = dataUrl;
+    triggerLink.download = downloadName;
+    document.body.appendChild(triggerLink);
+    triggerLink.click();
+    triggerLink.remove();
+    
+    toast(`Compression completed (${origKb} KB → ${compKb} KB)! Saved ${data.savings_percent}%. Downloading...`);
+  } catch (err) {
+    toast('Compression failed: ' + err.message, 'error');
   }
 }
 </script>

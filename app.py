@@ -930,5 +930,55 @@ def pdf_page_image_route():
         return jsonify({"error": f"Failed to render page: {str(e)}"}), 500
 
 
+@app.route("/api/reduce_file_size", methods=["POST"])
+def reduce_file_size_route():
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+    
+    f = request.files["file"]
+    filename = f.filename or "compressed_file"
+    file_bytes = f.read()
+    
+    try:
+        quality = int(request.form.get("quality", 65))
+        scale_percent = float(request.form.get("scale", 1.0))
+        width_percent = float(request.form.get("width_percent", 100.0))
+        height_percent = float(request.form.get("height_percent", 100.0))
+        target_size_kb = request.form.get("target_size_kb")
+        target_size_kb = float(target_size_kb) if target_size_kb and target_size_kb.strip() else None
+        mode = request.form.get("mode", "download")
+        
+        compressed_bytes, meta = pdf_tools.reduce_file_size(
+            file_bytes, filename, quality=quality, scale_percent=scale_percent,
+            width_percent=width_percent, height_percent=height_percent, target_size_kb=target_size_kb
+        )
+        
+        if mode == "json":
+            # Return JSON metadata with base64 data URL for instant client download
+            ext = os.path.splitext(filename.lower())[1]
+            b64_data = base64.b64encode(compressed_bytes).decode("utf-8")
+            meta["data_b64"] = b64_data
+            meta["ext"] = ext
+            return jsonify(meta)
+        else:
+            ext = os.path.splitext(filename.lower())[1]
+            base_name = os.path.splitext(filename)[0]
+            out_filename = f"{base_name}_min{ext}"
+            mtype = "application/octet-stream"
+            if ext in ('.jpg', '.jpeg'): mtype = "image/jpeg"
+            elif ext == '.png': mtype = "image/png"
+            elif ext == '.webp': mtype = "image/webp"
+            elif ext == '.pdf': mtype = "application/pdf"
+            
+            return send_file(
+                io.BytesIO(compressed_bytes),
+                mimetype=mtype,
+                as_attachment=True,
+                download_name=out_filename
+            )
+    except Exception as e:
+        return jsonify({"error": f"Compression failed: {str(e)}"}), 500
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5050)
