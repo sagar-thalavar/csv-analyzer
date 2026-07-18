@@ -382,6 +382,8 @@
     width: 100px;
     height: 50px;
     user-select: none;
+    left: 0;
+    top: 0;
   }
   .sig-token span { font-size: 10px; font-weight: 800; color: var(--accent-orange); text-shadow: 0 1px 1px #fff; }
   
@@ -866,6 +868,12 @@ let G = {
   pdfPageCount: 1,
   pdfCurrentPage: 1
 };
+
+// Drag and drop visual sign positioning variables
+let tokenXRatio = 0.2;
+let tokenYRatio = 0.2;
+let activeDrag = false;
+let startX, startY;
 
 /* ─── Navigation ─── */
 function showDashboard() {
@@ -2176,30 +2184,102 @@ async function fetchPagePreview() {
   }
 }
 
-// Render layout for single page preview with paginator controls
+// Render layout for single page preview with scrollable view and paginator controls at the bottom
 function renderPDFPreviewLayout(containerId, imageUrl) {
   const container = document.getElementById(containerId);
   if (!container) return;
   
   container.innerHTML = `
     <div class="panel-header"><span class="panel-title">Visual Workspace Preview</span></div>
-    <div class="chart-out" style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1;">
-      <div class="pdf-render-container" id="pdf-render-wrap" ${G.currentTool === 'pdf_sign' ? 'ondblclick="placeSignatureToken(event)"' : ''} style="margin-bottom:16px; border:2px solid var(--border); border-radius:12px; background:#fff; overflow:hidden; max-width:100%; box-shadow:0 4px 0 var(--border);">
-        <img src="${imageUrl}" class="pdf-render-img" id="sign-preview-img" style="display:block; max-width:100%; height:auto;">
-        ${G.currentTool === 'pdf_sign' ? `
-        <div class="sig-token" id="signature-token" style="display:none;" onmousedown="dragStart(event)">
-          <span>SIGNATURE TOKEN</span>
-        </div>` : ''}
+    <div style="display:flex; flex-direction:column; align-items:center; justify-content:space-between; flex:1;">
+      
+      <!-- Smaller Scrollable PDF Preview Container -->
+      <div class="pdf-render-scroll-wrap" style="max-height:340px; overflow-y:auto; border:2px solid var(--border); border-radius:12px; background:#fff; width:100%; display:flex; justify-content:center; align-items:flex-start; padding:16px; box-shadow:inset 0 2px 6px rgba(0,0,0,0.06); margin-bottom:16px;">
+        <div class="pdf-render-container" id="pdf-render-wrap" ${G.currentTool === 'pdf_sign' ? 'ondblclick="placeSignatureToken(event)"' : ''} style="position:relative; box-shadow:0 4px 12px rgba(0,0,0,0.08); border:1px solid var(--border);">
+          <img src="${imageUrl}" class="pdf-render-img" id="sign-preview-img" style="display:block; max-width:280px; height:auto; user-select:none;">
+          ${G.currentTool === 'pdf_sign' ? `
+          <div class="sig-token" id="signature-token" style="display:none;" onmousedown="dragStart(event)">
+            <span>SIGNATURE TOKEN</span>
+          </div>` : ''}
+        </div>
       </div>
       
-      <!-- Pager Controls -->
-      <div style="display:flex; align-items:center; justify-content:center; gap:16px; width:100%;">
+      <!-- Pager Controls at the Bottom -->
+      <div style="display:flex; align-items:center; justify-content:center; gap:16px; width:100%; margin-top:auto;">
         <button type="button" class="btn btn-secondary" onclick="changePreviewPage(-1)" style="width:auto; padding:6px 16px; font-weight:700;">&larr; Prev Page</button>
         <span style="font-weight:800; font-size:13px; font-family:var(--font-mono)">Page ${G.pdfCurrentPage} of ${G.pdfPageCount}</span>
         <button type="button" class="btn btn-secondary" onclick="changePreviewPage(1)" style="width:auto; padding:6px 16px; font-weight:700;">Next Page &rarr;</button>
       </div>
     </div>
   `;
+}
+
+// Drag & drop handlers for visual signature token
+function placeSignatureToken(e) {
+  const wrap = document.getElementById('pdf-render-wrap');
+  const token = document.getElementById('signature-token');
+  if (!wrap || !token) return;
+  
+  const rect = wrap.getBoundingClientRect();
+  const clickX = e.clientX - rect.left;
+  const clickY = e.clientY - rect.top;
+  
+  const tokenWidth = 100;
+  const tokenHeight = 50;
+  let x = clickX - tokenWidth / 2;
+  let y = clickY - tokenHeight / 2;
+  
+  if (x < 0) x = 0;
+  if (y < 0) y = 0;
+  if (x + tokenWidth > rect.width) x = rect.width - tokenWidth;
+  if (y + tokenHeight > rect.height) y = rect.height - tokenHeight;
+  
+  token.style.left = x + 'px';
+  token.style.top = y + 'px';
+  token.style.display = 'flex';
+  
+  tokenXRatio = x / rect.width;
+  tokenYRatio = y / rect.height;
+}
+
+function dragStart(e) {
+  e.preventDefault();
+  activeDrag = true;
+  const token = document.getElementById('signature-token');
+  startX = e.clientX - token.offsetLeft;
+  startY = e.clientY - token.offsetTop;
+  
+  document.addEventListener('mousemove', dragMove);
+  document.addEventListener('mouseup', dragEnd);
+}
+
+function dragMove(e) {
+  if (!activeDrag) return;
+  const token = document.getElementById('signature-token');
+  const wrap = document.getElementById('pdf-render-wrap');
+  const rect = wrap.getBoundingClientRect();
+  
+  let x = e.clientX - startX;
+  let y = e.clientY - startY;
+  
+  const tokenWidth = 100;
+  const tokenHeight = 50;
+  if (x < 0) x = 0;
+  if (y < 0) y = 0;
+  if (x + tokenWidth > rect.width) x = rect.width - tokenWidth;
+  if (y + tokenHeight > rect.height) y = rect.height - tokenHeight;
+  
+  token.style.left = x + 'px';
+  token.style.top = y + 'px';
+  
+  tokenXRatio = x / rect.width;
+  tokenYRatio = y / rect.height;
+}
+
+function dragEnd() {
+  activeDrag = false;
+  document.removeEventListener('mousemove', dragMove);
+  document.removeEventListener('mouseup', dragEnd);
 }
 
 async function changePreviewPage(delta) {
