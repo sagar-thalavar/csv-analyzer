@@ -6,7 +6,7 @@ openpyxl
 scipy
 pypdf
 pypdfium2
-reportlab
+reportlab<4.1.0
 pillow
 pdfplumber
 python-docx
