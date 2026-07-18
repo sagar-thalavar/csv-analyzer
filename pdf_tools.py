@@ -16,12 +16,12 @@ import pdfplumber
 # ─── Group 1: PDF Organizing & Page Editors ──────────────────────────────────
 
 def merge_pdfs(pdf_files_bytes: list[bytes]) -> bytes:
-    merger = pypdf.PdfMerger()
+    writer = pypdf.PdfWriter()
     for f_bytes in pdf_files_bytes:
-        merger.append(io.BytesIO(f_bytes))
+        writer.append(io.BytesIO(f_bytes))
     out_buf = io.BytesIO()
-    merger.write(out_buf)
-    merger.close()
+    writer.write(out_buf)
+    writer.close()
     return out_buf.getvalue()
 
 
