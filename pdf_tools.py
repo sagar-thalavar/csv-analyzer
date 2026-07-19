@@ -471,10 +471,29 @@ def encrypt_pdf(pdf_bytes: bytes, password: str) -> bytes:
     return out_buf.getvalue()
 
 
-def decrypt_pdf(pdf_bytes: bytes, password: str) -> bytes:
+def decrypt_pdf(pdf_bytes: bytes, password: str = "") -> bytes:
     reader = pypdf.PdfReader(io.BytesIO(pdf_bytes))
     if reader.is_encrypted:
-        reader.decrypt(password)
+        success = False
+        if password:
+            try:
+                res = reader.decrypt(password)
+                if res != 0:
+                    success = True
+            except Exception:
+                pass
+        
+        if not success:
+            # Try empty password fallback (for owner-restricted PDFs without user password)
+            try:
+                res = reader.decrypt("")
+                if res != 0:
+                    success = True
+            except Exception:
+                pass
+                
+        if not success:
+            raise ValueError("Incorrect password provided for encrypted PDF.")
         
     writer = pypdf.PdfWriter()
     for page in reader.pages:

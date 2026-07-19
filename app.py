@@ -851,8 +851,8 @@ def pdf_security_route():
     action = request.form.get("action")
     password = request.form.get("password", "")
     
-    if not password:
-        return jsonify({"error": "Password is required"}), 400
+    if action == "encrypt" and not password:
+        return jsonify({"error": "Password is required to encrypt a PDF"}), 400
         
     try:
         f_bytes = f.read()
@@ -867,7 +867,7 @@ def pdf_security_route():
             io.BytesIO(res),
             mimetype="application/pdf",
             as_attachment=True,
-            download_name="secured.pdf"
+            download_name="unlocked.pdf" if action == "decrypt" else "secured.pdf"
         )
     except Exception as e:
         return jsonify({"error": f"Security action failed: {str(e)}"}), 500
