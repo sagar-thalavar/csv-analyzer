@@ -555,10 +555,187 @@
   .modal-dismiss.warning { background: #f59e0b; color: #fff; }
   .modal-dismiss.info { background: #3b82f6; color: #fff; }
 
+  /* Back Button Component */
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    color: var(--text);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 8px 16px;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: 0 3px 0 var(--border);
+  }
+  .btn-back:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 0 var(--border);
+    background: var(--surface-hover);
+  }
+  .btn-back:active {
+    transform: translateY(2px);
+    box-shadow: none;
+  }
+
   /* Custom Scrollbar */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* ── Strict Mobile & Tablet Responsive Layout Standards ── */
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  .shell, .main, .view, .workspace, .workspace-layout, .control-pane, .control-panel, .preview-pane, .preview-panel {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .table-wrap, .chart-out, #preview-table-wrap, #stats-table-wrap, #filter-table-wrap, .order-list {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    display: block;
+  }
+
+  @media (max-width: 1024px) {
+    .workspace, .workspace-layout {
+      grid-template-columns: 1fr !important;
+      gap: 20px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .navbar {
+      height: 60px;
+      padding: 0 14px;
+    }
+    .navbar-logo h1 { font-size: 18px; }
+    .navbar-logo span { font-size: 8px; letter-spacing: 1px; }
+    .navbar-cta { padding: 6px 10px; font-size: 11px; border-radius: 10px; }
+    
+    .main {
+      padding: 14px 10px;
+      width: 100% !important;
+      max-width: 100vw !important;
+      overflow-x: hidden;
+    }
+    
+    .header-title { margin-bottom: 16px; }
+    .header-title h2 { font-size: 20px; }
+    .header-title p { font-size: 12px; }
+    
+    .btn-back {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 10px;
+    }
+    
+    .tools-grid {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    
+    .card-shape {
+      min-height: auto;
+      padding: 18px 14px;
+      border-radius: 16px;
+    }
+    .card-title { font-size: 17px; }
+    .card-desc { font-size: 12px; }
+    
+    .control-panel, .control-pane, .preview-pane {
+      padding: 14px 12px;
+      border-radius: 16px;
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    
+    .form-group input[type="text"],
+    .form-group input[type="password"],
+    .form-group input[type="number"],
+    .form-group select {
+      font-size: 14px; /* Prevents iOS auto-zoom on input focus */
+      height: 42px;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    
+    .subtool-selector {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+    
+    .pdf-render-scroll-wrap {
+      height: 420px;
+      padding: 12px 6px;
+    }
+    
+    .modal-dialog {
+      padding: 20px 14px;
+      border-radius: 16px;
+    }
+    
+    .toast-host {
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+    }
+    .toast {
+      font-size: 12px;
+      padding: 10px 14px;
+      text-align: center;
+    }
+    
+    .sig-tools {
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* Filter rows stacking on mobile */
+    .filter-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+    .filter-row select, .filter-row input {
+      width: 100% !important;
+    }
+    
+    /* File Size Reducer stats cards mobile grid */
+    .red-stats-grid {
+      grid-template-columns: 1fr !important;
+      gap: 10px;
+    }
+
+    /* Long filename badges wrap */
+    .file-badge, .file-list .order-item span {
+      max-width: 100% !important;
+      word-break: break-all;
+      white-space: normal !important;
+    }
+
+    /* Form row vertical stacking on mobile */
+    .form-row {
+      flex-direction: column !important;
+      gap: 8px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -577,6 +754,9 @@
   <main class="main">
     
     <header class="header-title" id="main-header-row">
+      <button type="button" class="btn-back" id="btn-header-back" onclick="showDashboard()" style="display:none; margin-bottom:16px;">
+        <span style="font-weight:800; font-size:16px;">←</span> Back to Home
+      </button>
       <h2 id="current-tool-header">Platform Dashboard</h2>
       <p id="current-tool-subtitle">Select a utility module to get started</p>
     </header>
@@ -1104,20 +1284,30 @@ let activeDrag = false;
 let startX, startY;
 let activeSignPage = 1;
 
-/* ─── Navigation ─── */
-function showDashboard() {
+/* ─── Navigation & History Routing ─── */
+function showDashboard(pushHash = true) {
   G.currentTool = 'dashboard';
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-dashboard').classList.add('active');
   
+  const backBtn = document.getElementById('btn-header-back');
+  if (backBtn) backBtn.style.display = 'none';
+
   document.getElementById('current-tool-header').textContent = 'Platform Dashboard';
   document.getElementById('current-tool-subtitle').textContent = 'Select a utility module to get started';
   document.getElementById('main-header-row').style.display = 'block';
+
+  if (pushHash && window.location.hash !== '#dashboard' && window.location.hash !== '') {
+    history.pushState(null, '', '#dashboard');
+  }
 }
 
-function showTool(toolName) {
+function showTool(toolName, pushHash = true) {
   G.currentTool = toolName;
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+
+  const backBtn = document.getElementById('btn-header-back');
+  if (backBtn) backBtn.style.display = 'inline-flex';
 
   const titleEl = document.getElementById('current-tool-header');
   const subEl = document.getElementById('current-tool-subtitle');
@@ -1154,7 +1344,39 @@ function showTool(toolName) {
     document.getElementById('pdf-op-select').value = toolName;
     setupPDFWorkspace(toolName);
   }
+
+  if (pushHash && window.location.hash !== '#' + toolName) {
+    history.pushState(null, '', '#' + toolName);
+  }
 }
+
+// Sync route state from URL hash
+function syncRouteFromHash() {
+  const hash = window.location.hash.replace('#', '');
+  if (!hash || hash === 'dashboard') {
+    showDashboard(false);
+  } else {
+    showTool(hash, false);
+  }
+}
+
+window.addEventListener('popstate', syncRouteFromHash);
+window.addEventListener('hashchange', syncRouteFromHash);
+
+// Hardware Mouse Back Button (Button Index 3) & Auxiliary Mouse Click Handler
+window.addEventListener('mouseup', function(e) {
+  if (e.button === 3) { // Mouse back button hardware trigger
+    e.preventDefault();
+    if (G.currentTool !== 'dashboard') {
+      showDashboard();
+    } else {
+      history.back();
+    }
+  }
+});
+
+// Restore active tool workspace on initial page load
+document.addEventListener('DOMContentLoaded', syncRouteFromHash);
 
 /* ─── Toast Alerts ─── */
 function toast(msg, type = 'success') {
@@ -2850,9 +3072,10 @@ async function renderPDFPreviewLayout(containerId) {
   renderedPages = {}; // Clear cache
   
   // Step 1: Pre-calculate the expected rendered height for each page using PDF.js viewport
-  // This is critical — without explicit heights, the scroll container can't overflow properly.
+  // Dynamically calculate target width to fit mobile screen bounds without horizontal overflow
+  const maxAvailable = container.clientWidth ? (container.clientWidth - 24) : (window.innerWidth - 32);
+  const renderWidth = Math.max(240, Math.min(500, maxAvailable));
   const pageDims = [];
-  const renderWidth = 500; // target canvas width in px
   for (let p = 1; p <= G.pdfPageCount; p++) {
     const page = await G.pdfDoc.getPage(p);
     const vp = page.getViewport({ scale: 1.0 });
