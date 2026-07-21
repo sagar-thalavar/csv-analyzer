@@ -110,11 +110,43 @@ def df_summary(df: pd.DataFrame) -> dict:
     }
 
 
+# ─── Visitor Count Helper ───────────────────────────────────────────────────
+
+VISITOR_FILE = Path("data/visitor_count.json")
+
+def get_increment_visitor_count(increment: bool = True) -> int:
+    VISITOR_FILE.parent.mkdir(parents=True, exist_ok=True)
+    count = 1000
+    if VISITOR_FILE.exists():
+        try:
+            with open(VISITOR_FILE, "r") as f:
+                data = json.load(f)
+                count = data.get("count", 1000)
+        except Exception:
+            pass
+    if increment:
+        count += 1
+        try:
+            with open(VISITOR_FILE, "w") as f:
+                json.dump({"count": count}, f)
+        except Exception:
+            pass
+    return count
+
+@app.route("/api/visitor-count", methods=["GET"])
+def visitor_count():
+    should_inc = request.args.get("increment", "true").lower() == "true"
+    c = get_increment_visitor_count(increment=should_inc)
+    return jsonify({"count": c, "formatted": f"{c:,}"})
+
+
 # ─── Base Route ───────────────────────────────────────────────────────────────
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    count = get_increment_visitor_count(increment=True)
+    return render_template("index.html", visitor_count=f"{count:,}")
+
 
 
 # ─── Stateless CSV Analyzer API Routes ────────────────────────────────────────
