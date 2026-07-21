@@ -125,14 +125,14 @@ def get_visitor_file_path() -> Path:
         return tmp_path
 
 def get_increment_visitor_count(increment: bool = True) -> int:
-    count = 1248  # Realistic starting visitor count
+    count = 0  # Real-time dynamic visitor count
     try:
         v_file = get_visitor_file_path()
         if v_file.exists():
             try:
                 with open(v_file, "r") as f:
                     data = json.load(f)
-                    count = data.get("count", 1248)
+                    count = data.get("count", 0)
             except Exception:
                 pass
         if increment:
@@ -153,8 +153,7 @@ def visitor_count():
         c = get_increment_visitor_count(increment=should_inc)
         return jsonify({"count": c, "formatted": f"{c:,}"})
     except Exception as e:
-        return jsonify({"count": 1248, "formatted": "1,248"})
-
+        return jsonify({"count": 0, "formatted": "0"})
 
 
 # ─── Base Route ───────────────────────────────────────────────────────────────
@@ -165,7 +164,7 @@ def index():
         count = get_increment_visitor_count(increment=True)
         return render_template("index.html", visitor_count=f"{count:,}")
     except Exception:
-        return render_template("index.html", visitor_count="1,248")
+        return render_template("index.html", visitor_count="0")
 
 
 
