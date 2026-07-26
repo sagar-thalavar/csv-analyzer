@@ -755,6 +755,40 @@
           </div>
           <span class="card-action">Open workspace ↗</span>
         </div>
+
+        <!-- Yellow Card: Text-Based PDF Maker -->
+        <div class="card-shape card-yellow" onclick="showTool('text_pdf_maker')">
+          <div>
+            <h3 class="card-title">Text-Based PDF Maker</h3>
+            <p class="card-desc">Generate formatted PDF documents directly from written text content.</p>
+          </div>
+          <span class="card-action">Open workspace ↗</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── VIEW: TEXT-BASED PDF MAKER ─── -->
+    <div class="view" id="view-text_pdf_maker">
+      <div class="control-pane" style="max-width: 800px; margin: 0 auto;">
+        <div class="panel-header">
+          <span class="panel-title">Text-Based PDF Maker</span>
+        </div>
+        <div class="form-group">
+          <label>ENTER DOCUMENT TEXT</label>
+          <textarea
+            id="text-pdf-input"
+            rows="6"
+            maxlength="500"
+            placeholder="Type your document content or text outline here..."
+            oninput="document.getElementById('text-pdf-counter').innerText = this.value.length + ' / 500 characters'"
+            style="width:100%; resize:vertical; font-family:var(--font-display); font-size:14px; padding:12px; border-radius:8px; border:2px solid var(--border); background:var(--surface); outline:none;"
+          ></textarea>
+          <div style="display:flex; justify-content:flex-end; margin-top:6px;">
+            <span id="text-pdf-counter" style="font-family:var(--font-mono); font-size:12px; font-weight:700; color:var(--muted); background:var(--bg); border:2px solid var(--border); border-radius:8px; padding:2px 8px;">
+              0 / 500 characters
+            </span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1283,6 +1317,11 @@ function showTool(toolName, pushHash = true) {
     titleEl.textContent = 'File Size Reducer Workspace';
     subEl.textContent = 'Compress Images, PDFs, Word, PowerPoint, Excel & documents using industry best practices';
     document.getElementById('view-file_size_reducer').classList.add('active');
+  }
+  else if (toolName === 'text_pdf_maker') {
+    titleEl.textContent = 'Text-Based PDF Maker';
+    subEl.textContent = 'Generate formatted PDF documents directly from written text';
+    document.getElementById('view-text_pdf_maker').classList.add('active');
   }
   else {
     titleEl.textContent = 'PDF Page Organizer Workspace';
