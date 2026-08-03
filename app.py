@@ -791,21 +791,26 @@ def pdf_convert_from_route():
         f_bytes = f.read()
         
         if fmt == "images":
-            img_format = request.form.get("img_format", "PNG")
+            img_format = request.form.get("img_format", "PNG").upper()
+            if img_format in ("JPG", "JPEG"):
+                img_format = "JPEG"
             img_list = pdf_tools.pdf_to_images(f_bytes, img_format)
+            
+            ext = "jpg" if img_format == "JPEG" else img_format.lower()
+            mime_ext = "jpeg" if img_format == "JPEG" else img_format.lower()
             
             if len(img_list) == 1:
                 return send_file(
                     io.BytesIO(img_list[0]),
-                    mimetype=f"image/{img_format.lower()}",
+                    mimetype=f"image/{mime_ext}",
                     as_attachment=True,
-                    download_name=f"page_1.{img_format.lower()}"
+                    download_name=f"page_1.{ext}"
                 )
                 
             zip_buf = io.BytesIO()
             with zipfile.ZipFile(zip_buf, "w") as zf:
                 for idx, img_bytes in enumerate(img_list):
-                    zf.writestr(f"page_{idx + 1}.{img_format.lower()}", img_bytes)
+                    zf.writestr(f"page_{idx + 1}.{ext}", img_bytes)
             zip_buf.seek(0)
             return send_file(
                 zip_buf,

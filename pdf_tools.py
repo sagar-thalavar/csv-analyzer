@@ -220,13 +220,21 @@ def pdf_to_images(pdf_bytes: bytes, image_format: str = "PNG") -> list[bytes]:
     images_list = []
     pdf = pdfium.PdfDocument(pdf_bytes)
     
+    fmt = image_format.upper()
+    if fmt in ("JPG", "JPEG"):
+        fmt = "JPEG"
+    
     for i in range(len(pdf)):
         page = pdf.get_page(i)
         # Render page at 2.0x scale (~150 DPI) for clarity
         pil_img = page.render(scale=2).to_pil()
         
+        # Convert RGBA/LA/P to RGB for JPEG format
+        if fmt == "JPEG" and pil_img.mode in ("RGBA", "LA", "P"):
+            pil_img = pil_img.convert("RGB")
+            
         img_buf = io.BytesIO()
-        pil_img.save(img_buf, format=image_format.upper())
+        pil_img.save(img_buf, format=fmt)
         images_list.append(img_buf.getvalue())
         page.close()
         
