@@ -884,3 +884,174 @@ def auto_target_compress(file_bytes: bytes, filename: str, target_size_kb: float
             high_q = mid_q - 5  # Lower quality needed
 
     return best_bytes, best_q, target_scale
+
+
+# ─── Group 6: Text-Based PDF Generator ─────────────────────────────────────
+
+class NumberedCanvas(canvas.Canvas):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._saved_page_states = []
+
+    def showPage(self):
+        self._saved_page_states.append(dict(self.__dict__))
+        self._startPage()
+
+    def save(self):
+        num_pages = len(self._saved_page_states)
+        for state in self._saved_page_states:
+            self.__dict__.update(state)
+            self.draw_page_number(num_pages)
+            super().showPage()
+        super().save()
+
+    def draw_page_number(self, page_count):
+        self.saveState()
+        self.setFont("Helvetica", 8)
+        self.setFillColor(colors.HexColor("#5e5e6c"))
+        page_text = f"Page {self._pageNumber} of {page_count}"
+        self.drawRightString(A4[0] - 36, 25, page_text)
+        self.drawString(36, 25, "Files Sandbox • Text-Based Document Generator")
+        self.setStrokeColor(colors.HexColor("#1a1a24"))
+        self.setLineWidth(0.5)
+        self.line(36, 38, A4[0] - 36, 38)
+        self.restoreState()
+
+
+def generate_text_pdf(text: str, preset: str = "doc") -> bytes:
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    import datetime
+
+    buf = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buf,
+        pagesize=A4,
+        leftMargin=36,
+        rightMargin=36,
+        topMargin=40,
+        bottomMargin=50
+    )
+
+    styles = getSampleStyleSheet()
+    
+    title_style = ParagraphStyle(
+        'DocTitle',
+        parent=styles['Title'],
+        fontName='Helvetica-Bold',
+        fontSize=20,
+        leading=24,
+        textColor=colors.HexColor('#1a1a24'),
+        alignment=0,
+        spaceAfter=10
+    )
+    
+    h2_style = ParagraphStyle(
+        'DocH2',
+        parent=styles['Heading2'],
+        fontName='Helvetica-Bold',
+        fontSize=13,
+        leading=16,
+        textColor=colors.HexColor('#fa5a00'),
+        spaceBefore=12,
+        spaceAfter=6
+    )
+    
+    body_style = ParagraphStyle(
+        'DocBody',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=10,
+        leading=14,
+        textColor=colors.HexColor('#222222'),
+        spaceAfter=8
+    )
+
+    bullet_style = ParagraphStyle(
+        'DocBullet',
+        parent=body_style,
+        leftIndent=12,
+        spaceAfter=4
+    )
+
+    meta_style = ParagraphStyle(
+        'DocMeta',
+        parent=body_style,
+        fontName='Helvetica-Oblique',
+        fontSize=9,
+        textColor=colors.HexColor('#5e5e6c'),
+        spaceAfter=12
+    )
+
+    story = []
+
+    # Format Header based on Preset
+    preset_titles = {
+        "doc": "Structured Project Documentation",
+        "roadmap": "Action Plan & Task Roadmap",
+        "summary": "Event & Executive Summary",
+        "polish": "Publication-Ready Refined Document",
+        "direct": "Formatted Document"
+    }
+
+    doc_title = preset_titles.get(preset, "Formatted Document")
+    story.append(Paragraph(doc_title, title_style))
+    date_str = datetime.datetime.now().strftime("%B %d, %Y")
+    story.append(Paragraph(f"Generated on {date_str} • Character Count: {len(text)}", meta_style))
+    story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor('#1a1a24'), spaceAfter=14))
+
+    lines = [l.strip() for l in text.split("\n") if l.strip()]
+
+    if preset == "doc":
+        story.append(Paragraph("Executive Overview", h2_style))
+        overview_text = text if len(lines) <= 2 else "\n".join(lines[:2])
+        story.append(Paragraph(overview_text, body_style))
+        story.append(Spacer(1, 6))
+
+        if len(lines) > 2:
+            story.append(Paragraph("Core Concepts & Requirements", h2_style))
+            for line in lines[2:]:
+                story.append(Paragraph(f"• {line}", bullet_style))
+
+    elif preset == "roadmap":
+        story.append(Paragraph("Strategic Objective", h2_style))
+        story.append(Paragraph(lines[0] if lines else text, body_style))
+        story.append(Spacer(1, 8))
+
+        story.append(Paragraph("Actionable Task Matrix", h2_style))
+        table_data = [["#", "Action Item / Task", "Priority", "Status"]]
+        task_lines = lines[1:] if len(lines) > 1 else lines
+        
+        for idx, line in enumerate(task_lines[:8], 1):
+            prio = "HIGH" if idx == 1 else "MEDIUM" if idx <= 3 else "NORMAL"
+            table_data.append([str(idx), Paragraph(line[:60], body_style), prio, "PENDING"])
+
+        if len(table_data) > 1:
+            t = Table(table_data, colWidths=[24, 330, 80, 80])
+            t.setStyle(TableStyle([
+                ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#1a1a24')),
+                ('TEXTCOLOR', (0,0), (-1,0), colors.HexColor('#ffffff')),
+                ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0,0), (-1,0), 9),
+                ('BOTTOMPADDING', (0,0), (-1,0), 6),
+                ('GRID', (0,0), (-1,-1), 1, colors.HexColor('#1a1a24')),
+                ('ALIGN', (0,0), (0,-1), 'CENTER'),
+                ('ALIGN', (2,0), (-1,-1), 'CENTER'),
+                ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+            ]))
+            story.append(t)
+
+    elif preset == "summary":
+        story.append(Paragraph("Key Highlights & Insights", h2_style))
+        for line in lines:
+            story.append(Paragraph(f"• {line}", bullet_style))
+
+    else: # polish or direct
+        story.append(Paragraph("Document Content", h2_style))
+        for line in lines:
+            story.append(Paragraph(line, body_style))
+
+    doc.build(story, canvasmaker=NumberedCanvas)
+    return buf.getvalue()
+

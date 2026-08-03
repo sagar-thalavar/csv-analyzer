@@ -778,12 +778,25 @@
             oninput="document.getElementById('text-pdf-counter').innerText = this.value.length + ' / 500 characters'"
             style="width:100%; resize:vertical; font-family:var(--font-display); font-size:14px; padding:12px; border-radius:8px; border:2px solid var(--border); background:var(--surface); outline:none;"
           ></textarea>
-          <div style="display:flex; justify-content:flex-end; margin-top:6px;">
+          <div style="display:flex; justify-content:flex-end; margin-top:6px; margin-bottom:14px;">
             <span id="text-pdf-counter" style="font-family:var(--font-mono); font-size:12px; font-weight:700; color:var(--muted); background:var(--bg); border:2px solid var(--border); border-radius:8px; padding:2px 8px;">
               0 / 500 characters
             </span>
           </div>
         </div>
+
+        <div class="form-group">
+          <label>Select Document Preset</label>
+          <select id="text-pdf-preset">
+            <option value="doc">Structured Project Documentation</option>
+            <option value="roadmap">Action Plan & Task Roadmap</option>
+            <option value="summary">Event & Executive Summary</option>
+            <option value="polish">Grammar & Tone Polish</option>
+            <option value="direct">Direct PDF Export</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary" onclick="runTextPDFMake()" style="margin-top:12px;">Generate & Download PDF</button>
       </div>
     </div>
 
@@ -1328,6 +1341,44 @@ function showTool(toolName, pushHash = true) {
 
   if (pushHash && window.location.hash !== '#' + toolName) {
     history.pushState(null, '', '#' + toolName);
+  }
+}
+
+async function runTextPDFMake() {
+  const text = document.getElementById('text-pdf-input').value.trim();
+  const preset = document.getElementById('text-pdf-preset').value;
+
+  if (!text) {
+    toast('Please enter text before generating a PDF', 'error');
+    return;
+  }
+
+  toast('Compiling styled PDF document...');
+  try {
+    const res = await fetch('/pdf/text-make', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, preset })
+    });
+
+    if (!res.ok) {
+      const errData = await res.json();
+      toast(errData.error || 'Failed to generate PDF', 'error');
+      return;
+    }
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${preset}_document.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    toast('PDF generated successfully!');
+  } catch (err) {
+    toast('Generation failed: ' + err, 'error');
   }
 }
 
