@@ -827,27 +827,6 @@ def pdf_convert_from_route():
                 as_attachment=True,
                 download_name="extracted_text.txt"
             )
-
-
-@app.route("/pdf/text-make", methods=["POST"])
-def pdf_text_make_route():
-    data = request.json or {}
-    text = data.get("text", "").strip()
-    preset = data.get("preset", "doc")
-
-    if not text:
-        return jsonify({"error": "Please enter document text before generating"}), 400
-
-    try:
-        pdf_bytes = pdf_tools.generate_text_pdf(text, preset)
-        return send_file(
-            io.BytesIO(pdf_bytes),
-            mimetype="application/pdf",
-            as_attachment=True,
-            download_name="generated_document.pdf"
-        )
-    except Exception as e:
-        return jsonify({"error": f"Failed to generate PDF: {str(e)}"}), 500
             
         elif fmt == "word":
             docx = pdf_tools.pdf_to_word(f_bytes)
@@ -881,6 +860,27 @@ def pdf_text_make_route():
             
     except Exception as e:
         return jsonify({"error": f"Conversion failed: {str(e)}"}), 500
+
+
+@app.route("/pdf/text-make", methods=["POST"])
+def pdf_text_make_route():
+    data = request.json or {}
+    text = data.get("text", "").strip()
+    preset = data.get("preset", "doc")
+
+    if not text:
+        return jsonify({"error": "Please enter document text before generating"}), 400
+
+    try:
+        pdf_bytes = pdf_tools.generate_text_pdf(text, preset)
+        return send_file(
+            io.BytesIO(pdf_bytes),
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name="generated_document.pdf"
+        )
+    except Exception as e:
+        return jsonify({"error": f"Failed to generate PDF: {str(e)}"}), 500
 
 
 @app.route("/pdf/convert-to", methods=["POST"])
