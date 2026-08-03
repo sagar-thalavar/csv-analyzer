@@ -11,6 +11,7 @@ from xhtml2pdf import pisa
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib.units import inch
+from reportlab.lib import colors
 import pdfplumber
 
 # ─── Group 1: PDF Organizing & Page Editors ──────────────────────────────────
