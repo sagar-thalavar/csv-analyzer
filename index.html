@@ -1,523 +1,3817 @@
+<!-- Files Sandbox v1.2.0 - Text PDF Generator -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta
-    name="description"
-    content="Sagar R. Thalavar's portfolio: live projects, web experiments, and practical work across data, archives, and interactive systems."
-  />
-  <meta name="theme-color" content="#111111" />
-  <meta property="og:title" content="Sagar R. Thalavar | Portfolio" />
-  <meta
-    property="og:description"
-    content="Live projects, experimental interfaces, and practical work across data, archives, and web systems."
-  />
-  <meta property="og:type" content="website" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Files Sandbox — All-in-One Local PDF & File Studio</title>
+<!-- Custom Dark Circular File Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%231a1a24'/%3E%3Cpath d='M21 17h14l10 10v20a3 3 0 0 1-3 3H21a3 3 0 0 1-3-3V20a3 3 0 0 1 3-3z' fill='none' stroke='%23ffffff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M35 17v10h10' fill='none' stroke='%23ffffff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M26 33h12M26 39h8' stroke='%23ffffff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+<!-- Import PDF.js for lightning fast, serverless, client-side PDF rendering -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<style>
+  :root {
+    --bg: #faf6ee; /* Warm cream background */
+    --surface: #ffffff; /* Pure white containers */
+    --surface-hover: #fcfaf5;
+    --border: #1a1a24; /* Solid crisp outlines */
+    --text: #1a1a24; /* Dark charcoal text */
+    --muted: #5e5e6c;
+    --accent-orange: #fa5a00; /* Orange highlight */
+    --accent-green: #a3d9a5; /* ClickCraft green */
+    --accent-yellow: #fde047; /* Yellow card */
+    --accent-purple: #c7d2fe; /* Purple card */
+    --accent-coral: #fca5a5; /* Coral card */
+    --accent-blue: #93c5fd; /* Blue card for Size Reducer */
+    --danger: #ef4444;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-display: 'Outfit', sans-serif;
+  }
 
-  <title>Sagar R. Thalavar | Portfolio</title>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="alternate icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="favicon.svg" />
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: 13.5px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-  <style>
-    :root {
-      --bg: #f4f4f5;
-      --card: #ffffff;
-      --text: #111111;
-      --muted: #5f6368;
-      --line: rgba(17, 17, 17, 0.08);
-      --shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
-      --shadow-hover: 0 30px 70px rgba(0, 0, 0, 0.12);
-      --radius: 24px;
+  /* Grid noise background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(26, 26, 36, 0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26, 26, 36, 0.015) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .shell {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ── Navbar Header ── */
+  .navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+    padding: 0 40px;
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  .navbar-logo {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .navbar-logo h1 {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+
+  .navbar-logo span {
+    font-size: 9px;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .navbar-cta {
+    background: var(--accent-orange);
+    color: #ffffff;
+    border: 2px solid var(--border);
+    padding: 10px 20px;
+    border-radius: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 13px;
+    transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: 0 3px 0 var(--border);
+  }
+
+  .navbar-cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 0 var(--border);
+  }
+
+  .navbar-cta:active {
+    transform: translateY(2px);
+    box-shadow: none;
+  }
+
+  .main {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 40px 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header Titles ── */
+  .header-title {
+    margin-bottom: 32px;
+  }
+
+  .header-title h2 {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+
+  .header-title p {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* ── shaped cards (Dashboard) ── */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  .card-shape {
+    border: 2px solid var(--border);
+    border-radius: 24px;
+    padding: 28px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 280px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative;
+    box-shadow: 0 4px 0 var(--border);
+  }
+
+  .card-shape:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 0 var(--border);
+  }
+
+  .card-yellow { background: var(--accent-yellow); }
+  .card-green { background: var(--accent-green); }
+  .card-purple { background: var(--accent-purple); }
+  .card-coral { background: var(--accent-coral); }
+  .card-blue { background: var(--accent-blue); }
+
+  .card-title {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+  }
+
+  .card-desc {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: rgba(26, 26, 36, 0.85);
+    flex: 1;
+  }
+
+  .card-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 20px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 8px 16px;
+    font-weight: 700;
+    font-size: 13px;
+    width: fit-content;
+    box-shadow: 0 2px 0 var(--border);
+  }
+
+  /* ── Workspaces Viewport ── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* Split layout */
+  .workspace { display: grid; grid-template-columns: 360px 1fr; gap: 32px; align-items: start; }
+  @media (max-width: 1024px) { .workspace { grid-template-columns: 1fr; } }
+
+  .control-pane {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 4px 0 var(--border);
+  }
+
+  .preview-pane {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 0 var(--border);
+  }
+
+  .panel-header {
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 14px;
+    margin-bottom: 20px;
+  }
+
+  .panel-title { font-size: 16px; font-weight: 800; color: var(--text); }
+
+  /* ── Upload & Drop Zones ── */
+  .dropzone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--bg);
+    margin-bottom: 20px;
+  }
+
+  .dropzone:hover, .dropzone.drag {
+    border-color: var(--accent-orange);
+    background: #fbf0dc;
+  }
+
+  .dropzone h4 { font-size: 14px; margin-bottom: 6px; color: var(--text); font-weight: 800; }
+  .dropzone p { font-size: 12px; color: var(--muted); }
+  .file-input { display: none; }
+
+  /* ── Form Controls ── */
+  .form-group { margin-bottom: 16px; }
+  label { display: block; font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  input[type="text"], input[type="number"], input[type="password"], select, textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 10px 12px;
+    font-family: var(--font-display);
+    font-size: 13px;
+    outline: none;
+    transition: all 0.15s;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    background: var(--surface-hover);
+    box-shadow: 0 3px 0 var(--border);
+  }
+  
+  .form-row { display: flex; gap: 12px; }
+  .form-row .form-group { flex: 1; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 11px 20px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    text-decoration: none;
+    box-shadow: 0 3px 0 var(--border);
+  }
+
+  .btn:active {
+    transform: translateY(2px);
+    box-shadow: none !important;
+  }
+
+  .btn-primary { background: var(--accent-orange); color: #ffffff; }
+  .btn-primary:hover { box-shadow: 0 4px 0 var(--border); }
+  
+  .btn-secondary { background: var(--surface); color: var(--text); }
+  .btn-secondary:hover { box-shadow: 0 4px 0 var(--border); }
+  
+  .btn-danger { background: var(--danger); color: #ffffff; }
+  .btn-danger:hover { box-shadow: 0 4px 0 var(--border); }
+
+  .btn-purple { background: var(--accent-purple); color: var(--text); }
+  .btn-purple:hover { box-shadow: 0 4px 0 var(--border); }
+
+  /* ── Drag & Drop Ordering UI ── */
+  .order-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; max-height: 250px; overflow-y: auto; }
+  .order-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    cursor: grab;
+  }
+  .order-item.dragging { opacity: 0.5; border-style: dashed; }
+  .order-item span { font-family: var(--font-mono); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+  .order-item .handle { cursor: grab; color: var(--muted); font-size: 16px; }
+
+  /* ── Interactive Signature Pad ── */
+  .canvas-container {
+    background: #ffffff;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    position: relative;
+    margin-bottom: 12px;
+    touch-action: none;
+  }
+  canvas#signature-pad { display: block; width: 100%; height: 150px; cursor: crosshair; }
+  
+  .canvas-tools { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+  .color-dot { width: 20px; height: 20px; border-radius: 99px; cursor: pointer; border: 2px solid var(--border); }
+  .color-dot.active { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--border); }
+
+  /* ── PDF Page Visual Signing Grid ── */
+  .sign-preview-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border: 2px solid var(--border);
+    background: var(--bg);
+    padding: 16px;
+    border-radius: 12px;
+    overflow: auto;
+    flex: 1;
+    min-height: 380px;
+  }
+  .pdf-render-container { position: relative; display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid var(--border); }
+  .pdf-render-img { display: block; max-width: 100%; height: auto; user-select: none; }
+  
+  /* Signature overlay token on canvas */
+  .sig-token {
+    position: absolute;
+    border: 2px dashed var(--accent-orange);
+    background: rgba(250, 90, 0, 0.15);
+    cursor: move;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 50px;
+    user-select: none;
+    z-index: 999;
+    left: 0;
+    top: 0;
+  }
+  .sig-token span { font-size: 10px; font-weight: 800; color: var(--accent-orange); text-shadow: 0 1px 1px #fff; }
+  
+  /* ── Tables & Data Grids ── */
+  .table-wrap { overflow-x: auto; flex: 1; max-height: 440px; border: 2px solid var(--border); border-radius: 8px; margin-top: 10px; }
+  table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 12px; background: var(--surface); }
+  th {
+    background: var(--bg);
+    padding: 10px 14px;
+    text-align: left;
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    position: sticky; top: 0; z-index: 2;
+    border-bottom: 2px solid var(--border);
+  }
+  td { padding: 8px 14px; border-bottom: 1px solid #ebdcb9; color: var(--text); }
+  tr:hover td { background: var(--surface-hover); }
+
+  /* Stats cards */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .stat-card { background: var(--bg); border: 2px solid var(--border); border-radius: 12px; padding: 12px 16px; box-shadow: 0 2px 0 var(--border); }
+  .stat-card .label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+  .stat-card .value { font-size: 20px; font-weight: 800; color: var(--text); margin-top: 2px; }
+  .stat-card .sub { font-size: 10px; color: var(--muted); }
+
+  /* ── Logs and outputs ── */
+  .log-box {
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text);
+    max-height: 180px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    margin-top: 10px;
+  }
+
+  /* ── Chart Container ── */
+  .chart-out { display: flex; justify-content: center; align-items: center; flex: 1; }
+  .chart-img { max-width: 100%; border-radius: 8px; border: 2px solid var(--border); }
+  .chart-placeholder { text-align: center; padding: 40px; color: var(--muted); font-size: 13.5px; font-weight: 500; }
+
+  /* ── Filter lists ── */
+  .filter-rows { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .filter-row {
+    display: flex; gap: 8px; align-items: center;
+    padding: 8px; background: var(--bg); border: 2px solid var(--border); border-radius: 8px;
+  }
+  .filter-row select, .filter-row input { flex: 1; min-width: 60px; padding: 6px; }
+
+  /* ── Toast notifications ── */
+  #toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.2s;
+    box-shadow: 0 4px 0 var(--border);
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+  #toast.success { border-color: var(--accent-green); color: var(--text); }
+  #toast.error { border-color: var(--danger); color: var(--danger); }
+
+  /* ── Modal Alert Dialog ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 26, 36, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    animation: modalFadeIn 0.2s ease;
+  }
+  .modal-overlay.visible { display: flex; }
+
+  @keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes modalSlideUp {
+    from { opacity: 0; transform: translateY(20px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .modal-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 8px 0 var(--border);
+    text-align: center;
+    animation: modalSlideUp 0.25s ease;
+  }
+
+  .modal-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 26px;
+  }
+  .modal-icon.error { background: #fef2f2; border: 2px solid var(--danger); }
+  .modal-icon.warning { background: #fffbeb; border: 2px solid #f59e0b; }
+  .modal-icon.info { background: #eff6ff; border: 2px solid #3b82f6; }
+
+  .modal-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+  }
+
+  .modal-message {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .modal-dismiss {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 32px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: 0 3px 0 var(--border);
+  }
+  .modal-dismiss:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 0 var(--border);
+  }
+  .modal-dismiss:active {
+    transform: translateY(2px);
+    box-shadow: none;
+  }
+  .modal-dismiss.error { background: var(--danger); color: #fff; }
+  .modal-dismiss.warning { background: #f59e0b; color: #fff; }
+  .modal-dismiss.info { background: #3b82f6; color: #fff; }
+
+  /* Back Button Component */
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    color: var(--text);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 8px 16px;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: 0 3px 0 var(--border);
+  }
+  .btn-back:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 0 var(--border);
+    background: var(--surface-hover);
+  }
+  .btn-back:active {
+    transform: translateY(2px);
+    box-shadow: none;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* ── Mobile First Responsive Media Queries ── */
+  @media (max-width: 768px) {
+    .navbar {
+      height: 60px;
+      padding: 0 16px;
     }
-
-    * {
-      box-sizing: border-box;
+    .navbar-logo h1 { font-size: 18px; }
+    .navbar-logo span { font-size: 8px; letter-spacing: 1px; }
+    .navbar-cta { padding: 6px 12px; font-size: 11px; border-radius: 10px; }
+    
+    .main {
+      padding: 16px 12px;
     }
-
-    html {
-      scroll-behavior: smooth;
+    
+    .header-title { margin-bottom: 20px; }
+    .header-title h2 { font-size: 22px; }
+    .header-title p { font-size: 12px; }
+    
+    .btn-back {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 10px;
     }
-
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top, rgba(255, 255, 255, 0.9), transparent 45%),
-        var(--bg);
-      color: var(--text);
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .container {
-      width: min(1120px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 56px 0 72px;
-    }
-
-    .hero {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 32px;
-      box-shadow: var(--shadow);
-      padding: 40px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .hero::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(17, 17, 17, 0.03), transparent 50%);
-      pointer-events: none;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.92rem;
-      color: var(--muted);
-      letter-spacing: 0.02em;
-      margin-bottom: 14px;
-    }
-
-    .eyebrow::before {
-      content: "";
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: #111;
-      display: inline-block;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(2.4rem, 5vw, 4.4rem);
-      line-height: 1.02;
-      letter-spacing: -0.04em;
-    }
-
-    .subtitle {
-      margin: 16px 0 0;
-      font-size: clamp(1.02rem, 2vw, 1.2rem);
-      line-height: 1.7;
-      color: #333;
-      max-width: 72ch;
-    }
-
-    .subtitle a {
-      font-weight: 700;
-      color: #111;
-      text-decoration: underline;
-      text-underline-offset: 4px;
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 28px;
-    }
-
-    .button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 12px 18px;
-      border-radius: 999px;
-      border: 1px solid #111;
-      font-weight: 650;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
-      will-change: transform;
-    }
-
-    .button:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-    }
-
-    .button.primary {
-      background: #111;
-      color: #fff;
-    }
-
-    .button.secondary {
-      background: transparent;
-      color: #111;
-    }
-
-    .button.secondary:hover {
-      background: #111;
-      color: #fff;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 24px;
-      margin-top: 24px;
-    }
-
-    .panel {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 32px;
-      box-shadow: var(--shadow);
-      padding: 32px;
-    }
-
-    .socials {
-      grid-column: 1 / -1;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+    
+    .tools-grid {
+      grid-template-columns: 1fr;
       gap: 16px;
     }
-
-    .social-card {
-      background: #fafafa;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 18px 16px;
-      text-align: center;
-      font-weight: 650;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
+    
+    .card-shape {
+      min-height: auto;
+      padding: 20px;
+      border-radius: 18px;
     }
-
-    .social-card:hover {
-      background: #111;
-      color: #fff;
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
+    .card-title { font-size: 18px; }
+    .card-desc { font-size: 12.5px; }
+    
+    .workspace-layout, .workspace {
+      grid-template-columns: 1fr;
+      gap: 16px;
     }
-
-    .section-title {
-      margin: 0 0 18px;
-      font-size: clamp(1.6rem, 2.4vw, 2rem);
-      letter-spacing: -0.03em;
-    }
-
-    .section-subtitle {
-      margin: -8px 0 24px;
-      color: var(--muted);
-      line-height: 1.7;
-      max-width: 72ch;
-    }
-
-    .projects {
-      grid-column: 1 / -1;
-    }
-
-    .project-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .project-card {
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      padding: 22px 18px;
-      min-height: 250px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
-    }
-
-    .project-card:hover {
-      background: #111;
-      color: #fff;
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-hover);
-    }
-
-    .project-top {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .project-badge {
-      display: inline-flex;
-      align-items: center;
-      width: fit-content;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: #f1f1f1;
-      color: #444;
-      font-size: 0.78rem;
-      font-weight: 650;
-      letter-spacing: 0.02em;
-      transition: background 0.15s ease, color 0.15s ease;
-    }
-
-    .project-card:hover .project-badge {
-      background: rgba(255, 255, 255, 0.14);
-      color: #fff;
-    }
-
-    .project-card h3 {
-      margin: 0;
-      font-size: 1.2rem;
-      letter-spacing: -0.02em;
-    }
-
-    .project-card p {
-      margin: 0;
-      line-height: 1.65;
-      color: #333;
-      transition: color 0.15s ease;
-    }
-
-    .project-card:hover p {
-      color: rgba(255, 255, 255, 0.92);
-    }
-
-    .project-link {
-      margin-top: 18px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 11px 14px;
-      border-radius: 999px;
-      border: 1px solid #111;
-      font-weight: 650;
-      text-align: center;
-      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-    }
-
-    .project-card:hover .project-link {
-      background: #fff;
-      color: #111;
-      border-color: #fff;
-    }
-
-    .other-projects {
-      grid-column: 1 / -1;
-    }
-
-    .other-card {
-      display: block;
-      background: linear-gradient(135deg, #111, #2a2a2a);
-      color: #fff;
-      border-radius: 28px;
-      padding: 28px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: var(--shadow);
-      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-    }
-
-    .other-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-hover);
-      opacity: 0.96;
-    }
-
-    .other-card h3 {
-      margin: 0 0 10px;
-      font-size: 1.3rem;
-    }
-
-    .other-card p {
-      margin: 0;
-      color: rgba(255, 255, 255, 0.88);
-      line-height: 1.7;
-    }
-
-    .note {
-      grid-column: 1 / -1;
-    }
-
-    .note p {
-      margin: 0 0 14px;
-      color: #555;
-      line-height: 1.7;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 180px;
-      resize: vertical;
-      border-radius: 16px;
-      border: 1px solid rgba(17, 17, 17, 0.16);
+    
+    .control-panel, .control-pane, .preview-pane {
       padding: 16px;
-      font: inherit;
-      line-height: 1.6;
-      background: #fff;
-      color: #111;
-      outline: none;
+      border-radius: 18px;
     }
-
-    textarea:focus {
-      border-color: #111;
-      box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.08);
+    
+    .form-group input[type="text"],
+    .form-group input[type="password"],
+    .form-group input[type="number"],
+    .form-group select {
+      font-size: 14px; /* Prevents iOS auto-zoom on input focus */
+      height: 42px;
     }
-
-    .erase {
-      margin-top: 14px;
-      border: none;
-      background: #111;
-      color: #fff;
-      padding: 12px 18px;
-      border-radius: 999px;
-      font: inherit;
-      font-weight: 650;
-      cursor: pointer;
+    
+    .subtool-selector {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
     }
-
-    footer {
+    
+    .pdf-render-scroll-wrap {
+      height: 420px;
+      padding: 12px 8px;
+    }
+    
+    .modal-dialog {
+      padding: 20px 16px;
+      border-radius: 18px;
+    }
+    
+    .toast-host {
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+    }
+    .toast {
+      font-size: 12px;
+      padding: 10px 16px;
       text-align: center;
-      color: #777;
-      margin-top: 28px;
-      font-size: 0.9rem;
-      line-height: 1.7;
     }
-
-    @media (max-width: 980px) {
-      .socials,
-      .project-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+    
+    .table-wrap, .chart-out, #preview-table-wrap, #stats-table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
-
-    @media (max-width: 640px) {
-      .container {
-        width: min(100% - 20px, 1120px);
-        padding: 20px 0 40px;
-      }
-
-      .hero {
-        padding: 26px 20px;
-        border-radius: 24px;
-      }
-
-      .panel {
-        padding: 22px 18px;
-        border-radius: 24px;
-      }
-
-      .socials,
-      .project-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .project-card {
-        min-height: auto;
-      }
+    
+    .sig-tools {
+      flex-wrap: wrap;
+      gap: 8px;
     }
-  </style>
+  }
+</style>
 </head>
-
 <body>
-  <main class="container">
-    <section class="hero">
-      <div class="eyebrow">Live portfolio</div>
-      <h1>Sagar R. Thalavar</h1>
-      <p class="subtitle">
-        I work at <a href="https://beneathatree.com/" target="_blank" rel="noopener noreferrer">BeneathAtree</a> and I am a 3rd-year Data Science Engineering student at New Horizon College, Bengaluru.
-        I build web pages that are simple, pleasant to use, and easy to understand. I have also started reading a lot more lately, which has changed how I think about work, design, and attention.
-      </p>
 
-      <div class="hero-actions">
-        <a class="button primary" href="https://www.linkedin.com/in/sagar-r-thalavar-developer-gpti/" target="_blank" rel="noopener noreferrer">Open LinkedIn</a>
-        <a class="button secondary" href="https://github.com/sagar-thalavar" target="_blank" rel="noopener noreferrer">GitHub</a>
-        <a class="button secondary" href="https://www.instagram.com/otziburl/" target="_blank" rel="noopener noreferrer">Instagram</a>
-        <a class="button secondary" href="mailto:sagarthalavar509@gmail.com">Email</a>
+<div class="shell">
+  <!-- Top Navigation Header -->
+  <nav class="navbar">
+    <div class="navbar-logo" onclick="showDashboard()">
+      <h1>Files Sandbox</h1>
+      <span>files.sagarthalavar.in</span>
+    </div>
+    <a href="https://sagarthalavar.in" target="_blank" class="navbar-cta">Back to Portfolio</a>
+  </nav>
+
+  <!-- Main Viewport Space -->
+  <main class="main">
+    
+    <header class="header-title" id="main-header-row">
+      <button type="button" class="btn-back" id="btn-header-back" onclick="showDashboard()" style="display:none; margin-bottom:16px;">
+        <span style="font-weight:800; font-size:16px;">←</span> Back to Home
+      </button>
+      <h2 id="current-tool-header">Platform Dashboard</h2>
+      <p id="current-tool-subtitle">Select a utility module to get started</p>
+    </header>
+
+    <!-- ─── VIEW: DASHBOARD DIRECTORY ─── -->
+    <div class="view active" id="view-dashboard">
+      <div class="tools-grid">
+        <!-- Yellow Card: CSV Analyzer -->
+        <div class="card-shape card-yellow" onclick="showTool('csv_analyzer')">
+          <div>
+            <h3 class="card-title">CSV & Data Tools</h3>
+            <p class="card-desc">Clean databases, inspect row metadata, apply query filters, run mathematical aggregations, render outlier fences, plot custom charts, and export to spreadsheet tables.</p>
+          </div>
+          <span class="card-action">Open workspace ↗</span>
+        </div>
+
+        <!-- Green Card: PDF Conversion Suite -->
+        <div class="card-shape card-green" onclick="showTool('pdf_convert_from')">
+          <div>
+            <h3 class="card-title">PDF Conversion Suite</h3>
+            <p class="card-desc">Extract data elements bidirectional. Convert PDF documents to editable Microsoft Word files, Excel spreadsheets, html syntax pages, plaintext strings, or pixel image grids.</p>
+          </div>
+          <span class="card-action">Open workspace ↗</span>
+        </div>
+
+        <!-- Purple Card: PDF Page Organizer -->
+        <div class="card-shape card-purple" onclick="showTool('pdf_merge')">
+          <div>
+            <h3 class="card-title">PDF Page Organizer</h3>
+            <p class="card-desc">Organize pages and compile sequences. Merge multiple documents, slice split ranges, delete pages, rotate canvases, crop bounds, and stamp page numbers.</p>
+          </div>
+          <span class="card-action">Open workspace ↗</span>
+        </div>
+
+        <!-- Coral Card: PDF Security & Sign -->
+        <div class="card-shape card-coral" onclick="showTool('pdf_sign')">
+          <div>
+            <h3 class="card-title">PDF Security & Sign</h3>
+            <p class="card-desc">Lock credentials and sign agreements. Draw signatures, place coordinates tokens visually, add strong password protection, and remove security restrictions.</p>
+          </div>
+          <span class="card-action">Open workspace ↗</span>
+        </div>
+
+        <!-- Blue Card: Universal File Size Reducer -->
+        <div class="card-shape card-blue" onclick="showTool('file_size_reducer')">
+          <div>
+            <h3 class="card-title">File Size Reducer</h3>
+            <p class="card-desc">Compress images, PDFs, Word (.docx), PowerPoint (.pptx), Excel (.xlsx), SVG, and general files with intelligent pixel, clarity, dimension, and stream optimization.</p>
+          </div>
+          <span class="card-action">Open workspace ↗</span>
+        </div>
+
+        <!-- Yellow Card: Text-Based PDF Maker -->
+        <div class="card-shape card-yellow" onclick="showTool('text_pdf_maker')">
+          <div>
+            <h3 class="card-title">Text-Based PDF Maker</h3>
+            <p class="card-desc">Generate formatted PDF documents directly from written text content.</p>
+          </div>
+          <span class="card-action">Open workspace ↗</span>
+        </div>
       </div>
-    </section>
+    </div>
 
-    <section class="grid">
+    <!-- ─── VIEW: TEXT-BASED PDF MAKER ─── -->
+    <div class="view" id="view-text_pdf_maker">
+      <div class="control-pane" style="max-width: 800px; margin: 0 auto;">
+        <div class="panel-header">
+          <span class="panel-title">Text-Based PDF Maker</span>
+        </div>
+        <div class="form-group">
+          <label>ENTER DOCUMENT TEXT</label>
+          <textarea
+            id="text-pdf-input"
+            rows="6"
+            maxlength="500"
+            placeholder="Type your document content or text outline here..."
+            oninput="document.getElementById('text-pdf-counter').innerText = this.value.length + ' / 500 characters'"
+            style="width:100%; resize:vertical; font-family:var(--font-display); font-size:14px; padding:12px; border-radius:8px; border:2px solid var(--border); background:var(--surface); outline:none;"
+          ></textarea>
+          <div style="display:flex; justify-content:flex-end; margin-top:6px; margin-bottom:14px;">
+            <span id="text-pdf-counter" style="font-family:var(--font-mono); font-size:12px; font-weight:700; color:var(--muted); background:var(--bg); border:2px solid var(--border); border-radius:8px; padding:2px 8px;">
+              0 / 500 characters
+            </span>
+          </div>
+        </div>
 
-      <div class="panel projects">
-        <h2 class="section-title">Live Projects</h2>
-        <p class="section-subtitle">
-          A few pages that are already live and available to explore.
-        </p>
+        <div class="form-group">
+          <label>Select Document Preset</label>
+          <select id="text-pdf-preset">
+            <option value="doc">Structured Project Documentation</option>
+            <option value="roadmap">Action Plan & Task Roadmap</option>
+            <option value="summary">Event & Executive Summary</option>
+            <option value="polish">Grammar & Tone Polish</option>
+            <option value="direct">Direct PDF Export</option>
+          </select>
+        </div>
 
-        <div class="project-grid" id="projectGrid"></div>
+        <button class="btn btn-primary" onclick="runTextPDFMake()" style="margin-top:12px;">Generate & Download PDF</button>
+      </div>
+    </div>
+
+    <!-- ─── VIEW: CSV ANALYZER ─── -->
+    <div class="view" id="view-csv_analyzer">
+      <div id="csv-upload-stage">
+        <div class="dropzone" onclick="document.getElementById('csv-file').click()"
+             ondragover="e=>{ e.preventDefault(); this.classList.add('drag'); }"
+             ondragleave="this.classList.remove('drag')"
+             ondrop="handleCSVDrop(event)">
+          <h4>Drop your CSV file here</h4>
+          <p>or click to browse local files (up to 4MB supported)</p>
+          <input type="file" id="csv-file" accept=".csv" class="file-input" onchange="uploadCSV(this)">
+        </div>
       </div>
 
-      <div class="panel note">
-        <h2 class="section-title">Temporary Note</h2>
-        <p>
-          Write something here for yourself.
-          This space does not save or remember.
-        </p>
-
-        <textarea id="note" placeholder="Type freely. Nothing here is permanent."></textarea>
-        <button class="erase" type="button" onclick="eraseText()">Erase</button>
-      </div>
-    </section>
-
-    <footer>
-      Feel free to copy anything from this page. Copyright permission is granted publicly. - Sagar
-    </footer>
-  </main>
-
-  <script>
-    const projects = [
-      {
-        title: "PI Collision Simulator",
-        badge: "Physics + curiosity",
-        href: "https://pi-collision-simulator.vercel.app/",
-        summary:
-          "An interactive simulator that turns a mathematical idea into something visible and easy to explore."
-      },
-      {
-        title: "Mouse Practice",
-        badge: "Skill training",
-        href: "https://sagar-mouse-practice.netlify.app/",
-        summary:
-          "A browser-based practice space for improving cursor precision, control, and movement confidence."
-      },
-      {
-        title: "DataOps Zeta",
-        badge: "Data workflow",
-        href: "https://dataops-zeta.vercel.app/",
-        summary:
-          "A clear view into understanding data operations and how they connect to database workflows."
-      },
-      {
-        title: "One Last Two",
-        badge: "College mini project",
-        href: "https://one-last-two.vercel.app/",
-        summary:
-          "A college mini project that lives on the web and shows a simple, finished interface."
-      }
-    ];
-
-    const projectGrid = document.getElementById("projectGrid");
-
-    projectGrid.innerHTML = projects
-      .map(
-        (project) => `
-          <article class="project-card">
-            <div class="project-top">
-              <span class="project-badge">${project.badge}</span>
-              <h3>${project.title}</h3>
-              <p>${project.summary}</p>
+      <div id="csv-workspace-stage" style="display:none;">
+        <div class="workspace">
+          <div class="control-pane">
+            <div class="form-group">
+              <label>Choose Workspace Section</label>
+              <select id="csv-section-select" onchange="switchCSVSection(this.value)">
+                <option value="overview">Overview Summary</option>
+                <option value="preview">Table Preview</option>
+                <option value="stats">Columns Stats</option>
+                <option value="charts">Matplotlib Charting</option>
+                <option value="filter">Query Multi-Filter</option>
+                <option value="clean">Clean Dataset</option>
+                <option value="export">Export File</option>
+              </select>
             </div>
-            <a class="project-link" href="${project.href}" target="_blank" rel="noopener noreferrer">
-              Open project
-            </a>
-          </article>
-        `
-      )
-      .join("");
 
-    function eraseText() {
-      document.getElementById("note").value = "";
+            <div class="divider" style="height:2px; background:var(--border); margin:16px 0;"></div>
+
+            <div id="csv-controls-overview" class="csv-sec-ctrl">
+              <p class="text-muted" style="font-size:12px; color:var(--muted)">Displays automated descriptions, row quantities, duplicates, and data columns types.</p>
+            </div>
+
+            <div id="csv-controls-preview" class="csv-sec-ctrl" style="display:none;">
+              <div class="form-group">
+                <label>Rows limit</label>
+                <input type="number" id="preview-n" value="20" min="5" max="500">
+              </div>
+              <button class="btn btn-primary" onclick="loadPreview()">Reload Preview</button>
+            </div>
+
+            <div id="csv-controls-stats" class="csv-sec-ctrl" style="display:none;">
+              <div class="form-group">
+                <label>Target Outlier Column</label>
+                <select id="outlier-col"></select>
+              </div>
+              <button class="btn btn-primary" onclick="detectOutliers()">Find Outliers</button>
+              <div class="divider" style="height:2px; background:var(--border); margin:14px 0;"></div>
+              <div class="form-group">
+                <label>Group by column</label>
+                <select id="gb-group-col"></select>
+              </div>
+              <div class="form-group">
+                <label>Aggregate numeric col</label>
+                <select id="gb-agg-col"></select>
+              </div>
+              <div class="form-group">
+                <label>Function</label>
+                <select id="gb-func">
+                  <option value="mean">Mean</option>
+                  <option value="sum">Sum</option>
+                  <option value="count">Count</option>
+                  <option value="median">Median</option>
+                  <option value="min">Min</option>
+                  <option value="max">Max</option>
+                </select>
+              </div>
+              <button class="btn btn-purple" onclick="runGroupBy()">Run Group By</button>
+            </div>
+
+            <div id="csv-controls-charts" class="csv-sec-ctrl" style="display:none;">
+              <div class="form-group">
+                <label>Chart Mode</label>
+                <select id="chart-type" onchange="switchChartControls(this.value)">
+                  <option value="histogram">Histogram (Numeric)</option>
+                  <option value="bar">Bar Chart (Frequencies)</option>
+                  <option value="scatter">Scatter Plot (X vs Y)</option>
+                  <option value="boxplot">Box Plot (Single/Grouped)</option>
+                  <option value="line">Line Chart (Trend)</option>
+                  <option value="correlation">Correlation Heatmap</option>
+                  <option value="missing">Missing Values Chart</option>
+                </select>
+              </div>
+              
+              <div id="ctrl-hist" class="chart-sub-ctrl">
+                <div class="form-group"><label>Column</label><select id="hist-col"></select></div>
+                <div class="form-group"><label>Bins</label><input type="number" id="hist-bins" value="20" min="5" max="100"></div>
+                <button class="btn btn-primary" onclick="renderHistogram()">Generate Plot</button>
+              </div>
+
+              <div id="ctrl-bar" class="chart-sub-ctrl" style="display:none;">
+                <div class="form-group"><label>Column</label><select id="bar-col"></select></div>
+                <div class="form-group"><label>Top N rows</label><input type="number" id="bar-top" value="15" min="3" max="50"></div>
+                <button class="btn btn-primary" onclick="renderBar()">Generate Plot</button>
+              </div>
+
+              <div id="ctrl-scatter" class="chart-sub-ctrl" style="display:none;">
+                <div class="form-group"><label>X Axis Column</label><select id="scatter-x"></select></div>
+                <div class="form-group"><label>Y Axis Column</label><select id="scatter-y"></select></div>
+                <div class="form-group"><label>Color grouping (optional)</label><select id="scatter-hue"><option value="">— none —</option></select></div>
+                <button class="btn btn-primary" onclick="renderScatter()">Generate Plot</button>
+              </div>
+
+              <div id="ctrl-boxplot" class="chart-sub-ctrl" style="display:none;">
+                <div class="form-group"><label>Numeric column</label><select id="box-col"></select></div>
+                <div class="form-group"><label>Group by column</label><select id="box-group"><option value="">— none —</option></select></div>
+                <button class="btn btn-primary" onclick="renderBoxplot()">Generate Plot</button>
+              </div>
+
+              <div id="ctrl-line" class="chart-sub-ctrl" style="display:none;">
+                <div class="form-group"><label>X axis column</label><select id="line-x"></select></div>
+                <div class="form-group"><label>Y axis column</label><select id="line-y"></select></div>
+                <button class="btn btn-primary" onclick="renderLine()">Generate Plot</button>
+              </div>
+
+              <div id="ctrl-correlation" class="chart-sub-ctrl" style="display:none;">
+                <button class="btn btn-primary" onclick="renderCorrelation()">Plot Heatmap</button>
+              </div>
+
+              <div id="ctrl-missing" class="chart-sub-ctrl" style="display:none;">
+                <button class="btn btn-primary" onclick="renderMissingChart()">Plot Missing Values</button>
+              </div>
+            </div>
+
+            <div id="csv-controls-filter" class="csv-sec-ctrl" style="display:none;">
+              <button class="btn btn-secondary" style="margin-bottom:12px;" onclick="addFilter()">+ Add Filter Rule</button>
+              <div id="filter-rows" class="filter-rows"></div>
+              
+              <div class="form-group">
+                <label>Sort By Column</label>
+                <select id="filter-sort"></select>
+              </div>
+              <div class="form-group">
+                <label>Direction</label>
+                <select id="filter-sort-dir">
+                  <option value="asc">Ascending</option>
+                  <option value="desc">Descending</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Row Limit</label>
+                <input type="number" id="filter-limit" value="100">
+              </div>
+              
+              <div class="form-row">
+                <button class="btn btn-primary" onclick="runFilter()">Apply Query</button>
+                <button class="btn btn-secondary" onclick="resetFilter()">Reset</button>
+              </div>
+            </div>
+
+            <div id="csv-controls-clean" class="csv-sec-ctrl" style="display:none;">
+              <div class="form-group">
+                <label>Global actions</label>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  <button class="btn btn-secondary" onclick="cleanOp({kind:'drop_duplicates'})">Drop Duplicates</button>
+                  <button class="btn btn-secondary" onclick="cleanOp({kind:'strip_whitespace'})">Strip Whitespace</button>
+                  <button class="btn btn-secondary" onclick="cleanOp({kind:'drop_nulls'})">Drop All Null Rows</button>
+                </div>
+              </div>
+              
+              <div class="divider" style="height:2px; background:var(--border); margin:12px 0;"></div>
+              
+              <div class="form-group">
+                <label>Column targets</label>
+                <select id="clean-col" style="margin-bottom:8px;"></select>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:8px;">
+                  <button class="btn btn-secondary" onclick="cleanColOp('drop_nulls')">Drop Nulls</button>
+                  <button class="btn btn-secondary" onclick="cleanColOp('to_numeric')">→ Numeric</button>
+                  <button class="btn btn-secondary" onclick="cleanColOp('fill_null_mean')">Mean Fill</button>
+                  <button class="btn btn-secondary" onclick="cleanColOp('fill_null_median')">Median Fill</button>
+                  <button class="btn btn-secondary" onclick="cleanColOp('lowercase')">Lower text</button>
+                  <button class="btn btn-secondary" onclick="cleanColOp('clip_outliers')">Clipped outliers</button>
+                </div>
+                <button class="btn btn-danger" onclick="cleanColOp('drop_col')">Drop Column</button>
+              </div>
+
+              <div class="divider" style="height:2px; background:var(--border); margin:12px 0;"></div>
+
+              <div class="form-group">
+                <label>Fill null value</label>
+                <input type="text" id="fill-val" placeholder="Custom text/number" style="margin-bottom:6px;">
+                <button class="btn btn-secondary" onclick="cleanColOp('fill_null', {value: document.getElementById('fill-val').value})">Execute Fill</button>
+              </div>
+
+              <div class="form-group">
+                <label>Rename column</label>
+                <input type="text" id="rename-val" placeholder="New name" style="margin-bottom:6px;">
+                <button class="btn btn-secondary" onclick="cleanColOp('rename_col', {new_name: document.getElementById('rename-val').value})">Execute Rename</button>
+              </div>
+            </div>
+
+            <div id="csv-controls-export" class="csv-sec-ctrl" style="display:none;">
+              <p class="text-muted" style="margin-bottom:12px;">Download dataset streams in your target formatting:</p>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <button class="btn btn-primary" onclick="exportData('/export/csv', 'cleaned.csv')">Download CSV</button>
+                <button class="btn btn-purple" onclick="exportData('/export/excel', 'cleaned.xlsx')">Download Excel (.xlsx)</button>
+                <button class="btn btn-secondary" onclick="exportData('/export/json', 'cleaned.json')">Download JSON</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview / Visualization Pane -->
+          <div class="preview-pane">
+            <div id="csv-view-overview" class="csv-sec-view">
+              <div class="stats-grid" id="overview-cards"></div>
+              
+              <div class="form-group">
+                <label>Columns detected</label>
+                <div id="col-list" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;"></div>
+              </div>
+
+              <div class="form-group">
+                <label>Missing values table</label>
+                <div id="missing-list" style="max-height:160px; overflow-y:auto; margin-bottom:16px;"></div>
+              </div>
+
+              <div class="form-group">
+                <label>Text column value frequencies</label>
+                <div id="text-freq-body" style="max-height:220px; overflow-y:auto;"></div>
+              </div>
+            </div>
+
+            <div id="csv-view-preview" class="csv-sec-view" style="display:none;">
+              <div class="panel-header"><span class="panel-title">Data preview grid (Top rows)</span></div>
+              <div class="table-wrap" id="preview-table-wrap"></div>
+            </div>
+
+            <div id="csv-view-stats" class="csv-sec-view" style="display:none;">
+              <div class="panel-header"><span class="panel-title">Numeric statistics Summary</span></div>
+              <div class="table-wrap" id="stats-table-wrap" style="margin-bottom:16px;"></div>
+              
+              <div id="stats-outlier-results"></div>
+              <div id="stats-groupby-results"></div>
+            </div>
+
+            <div id="csv-view-charts" class="csv-sec-view" style="display:none; text-align:center;">
+              <div class="panel-header"><span class="panel-title">Matplotlib Plotting Workspace</span></div>
+              <div class="chart-out" id="chart-image-out">
+                <div class="chart-placeholder">Configure variables on the left and click Plot</div>
+              </div>
+            </div>
+
+            <div id="csv-view-filter" class="csv-sec-view" style="display:none;">
+              <div class="panel-header"><span class="panel-title">Filtered Query results</span></div>
+              <div id="filter-meta" style="margin-bottom:10px; color:var(--muted); font-size:11px;"></div>
+              <div class="table-wrap" id="filter-table-wrap"></div>
+            </div>
+
+            <div id="csv-view-clean" class="csv-sec-view" style="display:none;">
+              <div class="panel-header"><span class="panel-title">Cleaning log history</span></div>
+              <div class="log-box" id="clean-log" style="height:320px; max-height:none;">No operations executed yet.</div>
+            </div>
+
+            <div id="csv-view-export" class="csv-sec-view" style="display:none;">
+              <div class="panel-header"><span class="panel-title">Export files status</span></div>
+              <div class="chart-placeholder">Select format on the left to request the download bundle. All calculations are performed stateless.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── VIEW: GENERAL PDF TOOL WORKSPACE (Organizer) ─── -->
+    <div class="view" id="view-pdf_workspace">
+      <div class="workspace">
+        <div class="control-pane">
+          <div class="form-group">
+            <label>Select Operation</label>
+            <select id="pdf-op-select" onchange="showTool(this.value)">
+              <option value="pdf_merge">Merge PDF Files</option>
+              <option value="pdf_split">Split PDF Pages</option>
+              <option value="pdf_delete">Delete PDF Pages</option>
+              <option value="pdf_rotate">Rotate PDF Pages</option>
+              <option value="pdf_crop">Crop PDF Margins</option>
+              <option value="pdf_arrange">Rearrange PDF Pages</option>
+              <option value="pdf_num">Add Page Numbers</option>
+            </select>
+          </div>
+          <div class="divider" style="height:2px; background:var(--border); margin:16px 0;"></div>
+          <div id="pdf-ctrl-container"></div>
+        </div>
+        <div class="preview-pane" id="pdf-preview-container"></div>
+      </div>
+    </div>
+
+    <!-- ─── VIEW: PDF CONVERSION WORKSPACE ─── -->
+    <div class="view" id="view-pdf_conversion">
+      <div class="workspace">
+        <div class="control-pane">
+          <div class="form-group">
+            <label>Conversion Direction</label>
+            <select id="pdf-conv-select" onchange="showTool(this.value)">
+              <option value="pdf_convert_from">PDF to Other Formats</option>
+              <option value="pdf_convert_to">Convert to PDF</option>
+            </select>
+          </div>
+          <div class="divider" style="height:2px; background:var(--border); margin:16px 0;"></div>
+          <div id="pdf-conv-ctrl-container"></div>
+        </div>
+        <div class="preview-pane" id="pdf-conv-preview-container"></div>
+      </div>
+    </div>
+
+    <!-- ─── VIEW: PDF SECURITY WORKSPACE ─── -->
+    <div class="view" id="view-pdf_security">
+      <div class="workspace">
+        <div class="control-pane">
+          <div class="form-group">
+            <label>Select Operation</label>
+            <select id="pdf-sec-select" onchange="showTool(this.value)">
+              <option value="pdf_sign">Visual Sign PDF</option>
+              <option value="pdf_encrypt">Password Protect PDF</option>
+              <option value="pdf_decrypt">Unlock PDF Document</option>
+            </select>
+          </div>
+          <div class="divider" style="height:2px; background:var(--border); margin:16px 0;"></div>
+          <div id="pdf-sec-ctrl-container"></div>
+        </div>
+        <div class="preview-pane" id="pdf-sec-preview-container"></div>
+      </div>
+    </div>
+
+    <!-- ─── VIEW: UNIVERSAL FILE SIZE REDUCER WORKSPACE ─── -->
+    <div class="view" id="view-file_size_reducer">
+      <div class="workspace">
+        <!-- LEFT CONTROL PANE -->
+        <div class="control-pane">
+          <div class="panel-header"><span class="panel-title">File Size Reducer</span></div>
+
+          <div class="form-group">
+            <label>Upload Document</label>
+            <div class="dropzone" onclick="document.getElementById('compress-file-input').click()"
+                 ondragover="event.preventDefault(); this.classList.add('drag');"
+                 ondragleave="this.classList.remove('drag')"
+                 ondrop="handleCompressDrop(event)"
+                 style="padding:20px 10px;">
+              <h4>Upload file</h4>
+              <p>Drop file here or click to browse</p>
+              <input type="file" id="compress-file-input" class="file-input" accept="*" onchange="handleCompressFileSelect(this)">
+            </div>
+          </div>
+
+          <div class="form-group" id="compress-selected-doc-box" style="display:none;">
+            <label>Selected Document</label>
+            <div style="background:var(--bg); border:2px solid var(--border); border-radius:8px; padding:6px 12px; font-weight:700; font-family:var(--font-mono); font-size:12px; word-break:break-all;" id="compress-selected-doc-name">file.pdf</div>
+          </div>
+
+          <!-- COMPRESSION MODE TABS -->
+          <div class="form-group">
+            <label>Resize Mode</label>
+            <div style="display:flex; gap:6px; margin-bottom:12px;">
+              <button type="button" class="btn btn-secondary compress-tab-btn active" id="compress-tab-auto" onclick="switchCompressTab('auto')" style="padding:8px 12px; font-size:12px; font-weight:700; flex:1;">Auto Resize</button>
+              <button type="button" class="btn btn-secondary compress-tab-btn" id="compress-tab-manual" onclick="switchCompressTab('manual')" style="padding:8px 12px; font-size:12px; font-weight:700; flex:1;">Manual Resize</button>
+            </div>
+
+            <!-- AUTO RESIZE TAB PANEL -->
+            <div id="compress-pane-auto" class="compress-pane">
+              <div class="form-group">
+                <label>Target File Size (KB)</label>
+                <input type="number" id="compress-target-kb" placeholder="e.g. 200 (target size in KB)" min="10" oninput="updateCompressEst()">
+                <p style="font-size:11px; color:var(--muted); margin-top:6px; font-weight:600; line-height:1.4;">Automatically optimizes quality and DPI to match your target file size without altering width or height.</p>
+              </div>
+            </div>
+
+            <!-- MANUAL RESIZE TAB PANEL -->
+            <div id="compress-pane-manual" class="compress-pane" style="display:none;">
+              <div class="form-row">
+                <div class="form-group"><label>Width (%)</label><input type="number" id="compress-w-pct" value="100" min="10" max="100" oninput="updateCompressEst()"></div>
+                <div class="form-group"><label>Height (%)</label><input type="number" id="compress-h-pct" value="100" min="10" max="100" oninput="updateCompressEst()"></div>
+              </div>
+
+              <div class="form-group">
+                <label>Resolution (DPI)</label>
+                <input type="number" id="compress-dpi" value="150" min="30" max="600" placeholder="e.g. 150" oninput="updateCompressEst()">
+              </div>
+
+              <div class="form-group">
+                <label style="display:flex; justify-content:space-between;">
+                  <span>Quality Level</span>
+                  <span id="compress-quality-val" style="font-weight:800; font-family:var(--font-mono);">65%</span>
+                </label>
+                <input type="range" id="compress-quality" min="10" max="100" value="65" oninput="updateCompressQualityLabel(this.value)">
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" onclick="runFileCompress()" style="margin-top:8px;">Execute Compression</button>
+        </div>
+
+        <!-- RIGHT PREVIEW PANE -->
+        <div class="preview-pane" id="compress-preview-container">
+          <div class="panel-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="panel-title">Visual Workspace Preview</span>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button type="button" onclick="renderCompressPreview()" title="Re-render preview" style="width:32px; height:32px; border-radius:8px; border:2px solid var(--border); background:var(--bg); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; box-shadow:0 2px 0 var(--border); transition:transform 0.1s,box-shadow 0.1s;" onmousedown="this.style.transform='translateY(2px)';this.style.boxShadow='none'" onmouseup="this.style.transform=''" onmouseleave="this.style.transform=''">&#x21bb;</button>
+              <span id="txt-compress-size-badge" style="font-weight:800; font-family:var(--font-mono); font-size:12px; background:var(--bg); border:2px solid var(--border); border-radius:8px; padding:4px 8px;">No file loaded</span>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; flex:1; position:relative; width:100%; height:100%; padding:16px; overflow-y:auto;">
+            <!-- Live Preview Canvas / Image Window -->
+            <div id="compress-canvas-wrapper" style="width:100%; max-width:550px; min-height:280px; background:var(--surface); border:2px solid var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:16px; box-shadow:0 3px 0 var(--border); position:relative; overflow:hidden; padding:12px;">
+              <div id="compress-canvas-placeholder" style="color:var(--muted); font-size:12px; font-weight:600; text-align:center;">
+                Upload a document or image to preview live compressed quality
+              </div>
+              <img id="compress-preview-img" style="display:none; max-width:100%; max-height:400px; border-radius:4px; object-fit:contain;">
+              <canvas id="compress-preview-canvas" style="display:none; max-width:100%; max-height:400px; border-radius:4px;"></canvas>
+            </div>
+
+            <!-- Stats Card (Original Size & Est. Compressed) -->
+            <div id="compress-stats-card" style="display:none; width:100%; max-width:550px; background:var(--bg); border:2px solid var(--border); border-radius:10px; padding:16px; box-shadow:0 4px 0 var(--border);">
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                <div class="stat-card">
+                  <div class="label">Original Size</div>
+                  <div class="value" id="stat-orig-size" style="font-size:15px;">0 KB</div>
+                </div>
+                <div class="stat-card">
+                  <div class="label">Est. Compressed</div>
+                  <div class="value" id="stat-est-size" style="font-size:15px;">0 KB</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast element -->
+<div id="toast"></div>
+
+<!-- Modal Alert Dialog -->
+<div class="modal-overlay" id="modal-alert" onclick="dismissModal(event)">
+  <div class="modal-card">
+    <div class="modal-icon error" id="modal-icon">⚠</div>
+    <div class="modal-title" id="modal-title">Warning</div>
+    <div class="modal-message" id="modal-message">Something went wrong.</div>
+    <div id="modal-action-container" style="width:100%; display:flex; justify-content:center;">
+      <button class="modal-dismiss error" id="modal-btn" onclick="closeModal()">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- JS Code logic -->
+<script>
+// Configure PDF.js global library worker path
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+/* ─── State Store ────────────────────────────────────────────────────── */
+let G = {
+  currentTool: 'dashboard',
+  csvText: '',
+  csvSummary: null,
+  csvFilename: '',
+  pdfFiles: [], // Array of { name, size, bytes }
+  signatureImage: null,
+  pdfPageCount: 1,
+  pdfCurrentPage: 1,
+  pdfDoc: null
+};
+
+// Drag and drop visual sign positioning variables
+let tokenXRatio = 0.2;
+let tokenYRatio = 0.2;
+let activeDrag = false;
+let startX, startY;
+let activeSignPage = 1;
+
+/* ─── Navigation & History Routing ─── */
+function showDashboard(pushHash = true) {
+  G.currentTool = 'dashboard';
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-dashboard').classList.add('active');
+  
+  const backBtn = document.getElementById('btn-header-back');
+  if (backBtn) backBtn.style.display = 'none';
+
+  document.getElementById('current-tool-header').textContent = 'Platform Dashboard';
+  document.getElementById('current-tool-subtitle').textContent = 'Select a utility module to get started';
+  document.getElementById('main-header-row').style.display = 'block';
+
+  if (pushHash && window.location.hash !== '#dashboard' && window.location.hash !== '') {
+    history.pushState(null, '', '#dashboard');
+  }
+}
+
+function showTool(toolName, pushHash = true) {
+  G.currentTool = toolName;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+
+  const backBtn = document.getElementById('btn-header-back');
+  if (backBtn) backBtn.style.display = 'inline-flex';
+
+  const titleEl = document.getElementById('current-tool-header');
+  const subEl = document.getElementById('current-tool-subtitle');
+  document.getElementById('main-header-row').style.display = 'block';
+
+  if (toolName === 'csv_analyzer') {
+    titleEl.textContent = 'CSV Analyzer Workspace';
+    subEl.textContent = 'Upload a local dataset to clean and analyze';
+    document.getElementById('view-csv_analyzer').classList.add('active');
+  } 
+  else if (['pdf_convert_from', 'pdf_convert_to'].includes(toolName)) {
+    titleEl.textContent = 'PDF Conversion Suite';
+    subEl.textContent = 'Change file formats bidirectional in-memory';
+    document.getElementById('view-pdf_conversion').classList.add('active');
+    document.getElementById('pdf-conv-select').value = toolName;
+    setupPDFConversionWorkspace(toolName);
+  } 
+  else if (['pdf_encrypt', 'pdf_decrypt', 'pdf_sign'].includes(toolName)) {
+    titleEl.textContent = 'PDF Security Workspace';
+    subEl.textContent = 'Secure your documents and visual sign credentials';
+    document.getElementById('view-pdf_security').classList.add('active');
+    document.getElementById('pdf-sec-select').value = toolName;
+    setupPDFSecurityWorkspace(toolName);
+  }
+  else if (toolName === 'file_size_reducer') {
+    titleEl.textContent = 'File Size Reducer Workspace';
+    subEl.textContent = 'Compress Images, PDFs, Word, PowerPoint, Excel & documents using industry best practices';
+    document.getElementById('view-file_size_reducer').classList.add('active');
+  }
+  else if (toolName === 'text_pdf_maker') {
+    titleEl.textContent = 'Text-Based PDF Maker';
+    subEl.textContent = 'Generate formatted PDF documents directly from written text';
+    document.getElementById('view-text_pdf_maker').classList.add('active');
+  }
+  else {
+    titleEl.textContent = 'PDF Page Organizer Workspace';
+    subEl.textContent = 'Merge, split, rotate, crop, and arrange pages';
+    document.getElementById('view-pdf_workspace').classList.add('active');
+    document.getElementById('pdf-op-select').value = toolName;
+    setupPDFWorkspace(toolName);
+  }
+
+  if (pushHash && window.location.hash !== '#' + toolName) {
+    history.pushState(null, '', '#' + toolName);
+  }
+}
+
+async function runTextPDFMake() {
+  const text = document.getElementById('text-pdf-input').value.trim();
+  const preset = document.getElementById('text-pdf-preset').value;
+
+  if (!text) {
+    toast('Please enter text before generating a PDF', 'error');
+    return;
+  }
+
+  toast('Compiling styled PDF document...');
+  try {
+    const res = await fetch('/pdf/text-make', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, preset })
+    });
+
+    if (!res.ok) {
+      const errData = await res.json();
+      toast(errData.error || 'Failed to generate PDF', 'error');
+      return;
     }
-  </script>
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${preset}_document.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    toast('PDF generated successfully!');
+  } catch (err) {
+    toast('Generation failed: ' + err, 'error');
+  }
+}
+
+// Sync route state from URL hash
+function syncRouteFromHash() {
+  const hash = window.location.hash.replace('#', '');
+  if (!hash || hash === 'dashboard') {
+    showDashboard(false);
+  } else {
+    showTool(hash, false);
+  }
+}
+
+window.addEventListener('popstate', syncRouteFromHash);
+window.addEventListener('hashchange', syncRouteFromHash);
+
+// Hardware Mouse Back Button (Button Index 3) & Auxiliary Mouse Click Handler
+window.addEventListener('mouseup', function(e) {
+  if (e.button === 3) { // Mouse back button hardware trigger
+    e.preventDefault();
+    if (G.currentTool !== 'dashboard') {
+      showDashboard();
+    } else {
+      history.back();
+    }
+  }
+});
+
+// Restore active tool workspace on initial page load
+document.addEventListener('DOMContentLoaded', syncRouteFromHash);
+
+/* ─── Toast Alerts ─── */
+function toast(msg, type = 'success') {
+  if (type === 'error') {
+    // Show modal dialog for errors/warnings
+    showModal(msg, 'error');
+    return;
+  }
+  // Keep subtle toast for success/info
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  clearTimeout(t._to);
+  t._to = setTimeout(() => t.className = '', 3000);
+}
+
+function showModal(msg, type = 'error', action = null) {
+  const overlay = document.getElementById('modal-alert');
+  const icon = document.getElementById('modal-icon');
+  const title = document.getElementById('modal-title');
+  const message = document.getElementById('modal-message');
+  const actionContainer = document.getElementById('modal-action-container');
+
+  const config = {
+    error:   { icon: '✕', title: 'Something went wrong', btnText: 'Got it' },
+    warning: { icon: '⚠', title: 'Heads up', btnText: 'Understood' },
+    info:    { icon: 'ℹ', title: 'Notice', btnText: 'Okay' }
+  };
+  const c = config[type] || config.error;
+
+  icon.className = 'modal-icon ' + type;
+  icon.textContent = c.icon;
+  title.textContent = c.title;
+  message.textContent = msg;
+
+  if (action === 'crop_limit') {
+    actionContainer.innerHTML = `
+      <div style="display:flex; gap:10px; width:100%; justify-content:center; flex-wrap:wrap;">
+        <button class="modal-dismiss error" style="background:#fa5a00; border-color:#fa5a00; color:#fff;" onclick="setMaxCropValues()">Set to Maximum Crop</button>
+        <button class="modal-dismiss" style="background:var(--bg); color:var(--text);" onclick="closeModal()">Adjust Manually</button>
+      </div>
+    `;
+  } else {
+    actionContainer.innerHTML = `
+      <button class="modal-dismiss ${type}" id="modal-btn" onclick="closeModal()">${c.btnText}</button>
+    `;
+  }
+
+  overlay.classList.add('visible');
+}
+
+async function setMaxCropValues() {
+  let pWidth = 612;
+  let pHeight = 792;
+
+  if (G.pdfDoc) {
+    try {
+      const page = await G.pdfDoc.getPage(1);
+      const vp = page.getViewport({ scale: 1.0 });
+      pWidth = Math.round(vp.width);
+      pHeight = Math.round(vp.height);
+    } catch(e) {}
+  }
+
+  // Maximum crop allowed per side leaving a 20pt center content box
+  const maxLR = Math.max(0, Math.floor((pWidth - 20) / 2));
+  const maxTB = Math.max(0, Math.floor((pHeight - 20) / 2));
+
+  const lEl = document.getElementById('crop-l');
+  const rEl = document.getElementById('crop-r');
+  const tEl = document.getElementById('crop-t');
+  const bEl = document.getElementById('crop-b');
+
+  if (lEl) lEl.value = maxLR;
+  if (rEl) rEl.value = maxLR;
+  if (tEl) tEl.value = maxTB;
+  if (bEl) bEl.value = maxTB;
+
+  applyCropPreview();
+  closeModal();
+  toast(`Crop margins set to maximum: ${maxLR}pt Left/Right, ${maxTB}pt Top/Bottom.`);
+}
+
+function closeModal() {
+  document.getElementById('modal-alert').classList.remove('visible');
+}
+
+function dismissModal(e) {
+  // Close if user clicks the dark overlay background (not the card itself)
+  if (e.target === e.currentTarget) closeModal();
+}
+
+/* ─── CSV Workspace Handlers ─── */
+function handleCSVDrop(e) {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (file && file.name.endsWith('.csv')) uploadCSVFile(file);
+  else toast('Invalid file type. CSV files only.', 'error');
+}
+
+function uploadCSV(input) {
+  if (input.files[0]) uploadCSVFile(input.files[0]);
+}
+
+async function uploadCSVFile(file) {
+  const fd = new FormData();
+  fd.append('file', file);
+  toast('Uploading & Profiling CSV…');
+  
+  try {
+    const res = await fetch('/upload', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.error) { toast(data.error, 'error'); return; }
+    
+    G.csvText = data.csv_data;
+    G.csvSummary = data.summary;
+    G.csvFilename = data.filename;
+    
+    document.getElementById('csv-upload-stage').style.display = 'none';
+    document.getElementById('csv-workspace-stage').style.display = 'block';
+    
+    populateCSVSelects(data.summary);
+    renderCSVOverview(data.summary);
+    renderCSVStatsTable(data.summary);
+    renderCSVPreviewTable(data.preview, data.summary.columns);
+    
+    switchCSVSection('overview');
+    toast('Data loaded successfully.');
+  } catch (err) {
+    toast('Profile failed: ' + err, 'error');
+  }
+}
+
+function switchCSVSection(secName) {
+  document.getElementById('csv-section-select').value = secName;
+  document.querySelectorAll('.csv-sec-ctrl').forEach(ctrl => ctrl.style.display = 'none');
+  document.querySelectorAll('.csv-sec-view').forEach(vw => vw.style.display = 'none');
+  
+  document.getElementById('csv-controls-' + secName).style.display = 'block';
+  document.getElementById('csv-view-' + secName).style.display = 'block';
+
+  if (secName === 'preview') loadPreview();
+}
+
+function populateCSVSelects(s) {
+  const all = s.columns, num = s.numeric_cols, txt = s.text_cols;
+
+  function fill(id, cols) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = cols.map(c => `<option value="${c}">${c}</option>`).join('');
+  }
+
+  fill('hist-col', num); fill('bar-col', all); fill('scatter-x', num); fill('scatter-y', num);
+  document.getElementById('scatter-hue').innerHTML = '<option value="">— none ──</option>' + all.map(c => `<option value="${c}">${c}</option>`).join('');
+  fill('box-col', num);
+  document.getElementById('box-group').innerHTML = '<option value="">— none ──</option>' + txt.map(c => `<option value="${c}">${c}</option>`).join('');
+  fill('line-x', all); fill('line-y', num);
+  fill('outlier-col', num);
+  fill('gb-group-col', all); fill('gb-agg-col', num);
+  fill('clean-col', all);
+  fill('filter-sort', all);
+}
+
+function renderCSVOverview(s) {
+  const cards = [
+    { label: 'Total Rows', value: s.rows.toLocaleString(), sub: 'records' },
+    { label: 'Columns', value: s.cols, sub: `${s.numeric_cols.length} numeric / ${s.text_cols.length} text` },
+    { label: 'Duplicates', value: s.duplicates.toLocaleString(), sub: 'identical rows' },
+    { label: 'Missing Cells', value: Object.values(s.missing).reduce((a,b)=>a+b,0).toLocaleString(), sub: 'across dataset' },
+  ];
+  
+  document.getElementById('overview-cards').innerHTML = cards.map(c => `
+    <div class="stat-card">
+      <div class="label">${c.label}</div>
+      <div class="value">${c.value}</div>
+      <div class="sub">${c.sub}</div>
+    </div>`).join('');
+
+  document.getElementById('col-list').innerHTML = s.columns.map(c => {
+    const type = s.numeric_cols.includes(c) ? 'numeric' : 'text';
+    const colorClass = type === 'numeric' ? 'background:var(--accent-yellow); color:var(--text);' : 'background:var(--accent-purple); color:var(--text);';
+    return `<span class="tool-badge" style="position:static; margin:0; padding:4px 8px; border:2px solid var(--border); border-radius:8px; font-weight:700; ${colorClass}" title="${s.dtypes[c]}">${c} (${s.dtypes[c]})</span>`;
+  }).join('');
+
+  const hasMissing = Object.entries(s.missing).filter(([,v]) => v > 0);
+  document.getElementById('missing-list').innerHTML = hasMissing.length === 0
+    ? '<span style="color:var(--text); font-weight:700;">✓ No missing cell spaces found.</span>'
+    : hasMissing.map(([col, cnt]) => {
+        const pct = (cnt / s.rows * 100).toFixed(1);
+        return `<div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border);">
+          <span style="color:var(--muted)">${col}</span>
+          <span style="color:var(--danger); font-weight:700;">${cnt} rows missing (${pct}%)</span>
+        </div>`;
+      }).join('');
+
+  const tf = s.text_freq;
+  const tfKeys = Object.keys(tf);
+  document.getElementById('text-freq-body').innerHTML = tfKeys.length === 0
+    ? '<span class="text-muted">No text value groupings detected.</span>'
+    : tfKeys.map(col => {
+        const counts = tf[col];
+        return `<div style="margin-bottom:12px;">
+          <div style="font-size:12px; color:var(--text); font-weight:800; margin-bottom:4px;">${col}</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+            ${Object.entries(counts).map(([v,c]) =>
+              `<span style="background:var(--surface); border:2px solid var(--border); border-radius:6px; padding:2px 8px; font-size:11px; font-family:var(--font-mono)">
+                ${v} : <strong style="color:var(--accent-orange)">${c}</strong>
+              </span>`).join('')}
+          </div>
+        </div>`;
+      }).join('');
+}
+
+function renderCSVStatsTable(s) {
+  const ns = s.numeric_stats;
+  const cols = Object.keys(ns);
+  if (cols.length === 0) {
+    document.getElementById('stats-table-wrap').innerHTML = '<div style="padding:16px;" class="text-muted">No numeric columns found.</div>';
+    return;
+  }
+  const headers = ['Column','Count','Mean','Median','Std','Min','25%','75%','Max'];
+  document.getElementById('stats-table-wrap').innerHTML = `
+    <table>
+      <thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+      <tbody>${cols.map(col => {
+        const st = ns[col];
+        return `<tr>
+          <td style="color:var(--text); font-weight:700;">${col}</td><td>${st.count}</td><td>${st.mean}</td><td>${st.median}</td>
+          <td>${st.std}</td><td>${st.min}</td><td>${st.q25}</td><td>${st.q75}</td><td>${st.max}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+}
+
+function renderCSVPreviewTable(rows, cols) {
+  const wrap = document.getElementById('preview-table-wrap');
+  if(!rows.length) {
+    wrap.innerHTML = '<div style="padding:16px" class="text-muted">Empty dataset.</div>';
+    return;
+  }
+  const columns = cols || Object.keys(rows[0]);
+  wrap.innerHTML = `
+    <table>
+      <thead><tr>${columns.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
+      <tbody>${rows.map(row=>`<tr>${columns.map(c=>`<td>${row[c] ?? ''}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table>`;
+}
+
+async function loadPreview() {
+  const n = document.getElementById('preview-n').value;
+  toast('Loading preview…');
+  const res = await fetch('/preview', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ csv_data: G.csvText, n: parseInt(n) })
+  });
+  const rows = await res.json();
+  if (rows.error) { toast(rows.error, 'error'); return; }
+  renderCSVPreviewTable(rows, Object.keys(rows[0] || {}));
+}
+
+async function detectOutliers() {
+  const col = document.getElementById('outlier-col').value;
+  toast('Running scan…');
+  const res = await fetch('/stats/outliers', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ csv_data: G.csvText, col })
+  });
+  const data = await res.json();
+  if(data.error) { toast(data.error, 'error'); return; }
+
+  document.getElementById('stats-outlier-results').innerHTML = `
+    <h4 style="margin:20px 0 10px; color:var(--text); font-weight:800;">Outlier scan output: ${col}</h4>
+    <div class="stats-grid mb-12">
+      <div class="stat-card"><div class="label">Outliers Found</div><div class="value" style="color:var(--danger)">${data.outlier_count}</div><div class="sub">${data.outlier_pct}% of data</div></div>
+      <div class="stat-card"><div class="label">IQR</div><div class="value">${data.iqr}</div><div class="sub">Q3 − Q1</div></div>
+      <div class="stat-card"><div class="label">Lower Fence</div><div class="value">${data.lower_fence}</div><div class="sub">Q1 − 1.5×IQR</div></div>
+      <div class="stat-card"><div class="label">Upper Fence</div><div class="value">${data.upper_fence}</div><div class="sub">Q3 + 1.5×IQR</div></div>
+    </div>
+    ${data.outlier_rows.length > 0 ? `<div class="table-wrap"><table>
+      <thead><tr>${Object.keys(data.outlier_rows[0]).map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+      <tbody>${data.outlier_rows.map(row=>`<tr>${Object.values(row).map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table></div>` : '<p style="color:var(--text); font-weight:700;">✓ Zero outliers found in this fence boundaries.</p>'}`;
+}
+
+async function runGroupBy() {
+  toast('Executing Aggregation…');
+  const body = {
+    csv_data: G.csvText,
+    group_col: document.getElementById('gb-group-col').value,
+    agg_col: document.getElementById('gb-agg-col').value,
+    agg_func: document.getElementById('gb-func').value
+  };
+  const res = await fetch('/stats/groupby', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  if(data.error) { toast(data.error, 'error'); return; }
+  
+  document.getElementById('stats-groupby-results').innerHTML = `
+    <h4 style="margin:20px 0 10px; color:var(--text); font-weight:800;">Aggregation Outputs</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>${data.columns.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+        <tbody>${data.rows.map(row=>`<tr>${data.columns.map(c=>`<td>${row[c]}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table>
+    </div>`;
+}
+
+/* ─── CSV Charting ─── */
+function switchChartControls(type) {
+  document.querySelectorAll('.chart-sub-ctrl').forEach(el => el.style.display = 'none');
+  const sub = document.getElementById('ctrl-' + type);
+  if(sub) sub.style.display = 'block';
+}
+
+async function postChartRequest(endpoint, body) {
+  const container = document.getElementById('chart-image-out');
+  container.innerHTML = '<div class="chart-placeholder">Compiling Matplotlib coordinates…</div>';
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ csv_data: G.csvText, ...body })
+    });
+    const data = await res.json();
+    if(data.error) {
+      toast(data.error, 'error');
+      container.innerHTML = `<div class="chart-placeholder" style="color:var(--danger)">${data.error}</div>`;
+      return;
+    }
+    if (!data.image) {
+      container.innerHTML = `<div class="chart-placeholder" style="color:var(--text)">✓ ${data.message}</div>`;
+      return;
+    }
+    container.innerHTML = `<img src="data:image/png;base64,${data.image}" class="chart-img" alt="CSV visualization">`;
+  } catch(err) {
+    toast(err, 'error');
+  }
+}
+
+const renderHistogram = () => postChartRequest('/chart/histogram', { col: document.getElementById('hist-col').value, bins: +document.getElementById('hist-bins').value });
+const renderBar = () => postChartRequest('/chart/bar', { col: document.getElementById('bar-col').value, top_n: +document.getElementById('bar-top').value });
+const renderScatter = () => postChartRequest('/chart/scatter', { x: document.getElementById('scatter-x').value, y: document.getElementById('scatter-y').value, hue: document.getElementById('scatter-hue').value });
+const renderBoxplot = () => postChartRequest('/chart/boxplot', { col: document.getElementById('box-col').value, group: document.getElementById('box-group').value });
+const renderLine = () => postChartRequest('/chart/line', { x: document.getElementById('line-x').value, y: document.getElementById('line-y').value });
+const renderCorrelation = () => postChartRequest('/chart/correlation', {});
+const renderMissingChart = () => postChartRequest('/chart/missing', {});
+
+/* ─── CSV Filtering ─── */
+let filterCount = 0;
+function addFilter() {
+  if(!G.csvSummary) return;
+  filterCount++;
+  const id = `flt-${filterCount}`;
+  const row = document.createElement('div');
+  row.className = 'filter-row';
+  row.id = id;
+  row.innerHTML = `
+    <select class="f-col">
+      ${G.csvSummary.columns.map(c=>`<option value="${c}">${c}</option>`).join('')}
+    </select>
+    <select class="f-op">
+      <option value="contains">contains</option>
+      <option value="equals">equals</option>
+      <option value="gt">&gt;</option>
+      <option value="lt">&lt;</option>
+      <option value="gte">&ge;</option>
+      <option value="lte">&le;</option>
+      <option value="not_null">is not null</option>
+      <option value="is_null">is null</option>
+    </select>
+    <input class="f-val" placeholder="value">
+    <button class="btn btn-danger" style="width:auto; padding:4px 10px;" onclick="document.getElementById('${id}').remove()">✕</button>`;
+  document.getElementById('filter-rows').appendChild(row);
+}
+
+async function runFilter() {
+  const rows = document.querySelectorAll('.filter-row');
+  const filters = [];
+  rows.forEach(row => {
+    filters.push({
+      col: row.querySelector('.f-col').value,
+      op: row.querySelector('.f-op').value,
+      val: row.querySelector('.f-val').value
+    });
+  });
+
+  toast('Querying records…');
+  const body = {
+    csv_data: G.csvText,
+    filters,
+    sort_col: document.getElementById('filter-sort').value,
+    sort_asc: document.getElementById('filter-sort-dir').value === 'asc',
+    limit: +document.getElementById('filter-limit').value
+  };
+
+  try {
+    const res = await fetch('/filter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if(data.error) { toast(data.error, 'error'); return; }
+    
+    document.getElementById('filter-meta').textContent = `Showing ${data.shown} of ${data.total} matching database rows`;
+    
+    const tableWrap = document.getElementById('filter-table-wrap');
+    if(!data.rows.length) {
+      tableWrap.innerHTML = '<div class="chart-placeholder">Zero query matches returned.</div>';
+    } else {
+      tableWrap.innerHTML = `<table>
+        <thead><tr>${data.columns.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+        <tbody>${data.rows.map(row=>`<tr>${data.columns.map(c=>`<td>${row[c] ?? ''}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table>`;
+    }
+  } catch(err) {
+    toast(err, 'error');
+  }
+}
+
+function resetFilter() {
+  document.getElementById('filter-rows').innerHTML = '';
+  document.getElementById('filter-table-wrap').innerHTML = '';
+  document.getElementById('filter-meta').textContent = '';
+  filterCount = 0;
+}
+
+/* ─── CSV Cleaning ─── */
+async function cleanOp(op) {
+  await applyCleanOps([op]);
+}
+
+async function cleanColOp(kind, extra = {}) {
+  const col = document.getElementById('clean-col').value;
+  await applyCleanOps([{ kind, col, ...extra }]);
+}
+
+async function applyCleanOps(operations) {
+  toast('Running clean commands…');
+  try {
+    const res = await fetch('/clean', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ csv_data: G.csvText, operations })
+    });
+    const data = await res.json();
+    if(data.error) { toast(data.error, 'error'); return; }
+
+    G.csvText = data.csv_data;
+    G.csvSummary = data.summary;
+    
+    populateCSVSelects(data.summary);
+    renderCSVOverview(data.summary);
+    renderCSVStatsTable(data.summary);
+    renderCSVPreviewTable(data.preview, data.summary.columns);
+    
+    const logBox = document.getElementById('clean-log');
+    logBox.textContent = data.log.join('\n');
+    toast('Cleaning mutations applied.');
+  } catch(err) {
+    toast(err, 'error');
+  }
+}
+
+/* ─── CSV Stateless Export ─── */
+async function exportData(endpoint, filename) {
+  toast('Compiling download bundle…');
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ csv_data: G.csvText })
+    });
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+    toast('Downloaded successfully.');
+  } catch(err) {
+    toast('Export failed: ' + err, 'error');
+  }
+}
+
+/* ─── PDF Workspace Dynamic Handlers (Page Organizer) ─── */
+function setupPDFWorkspace(tool) {
+  const ctrl = document.getElementById('pdf-ctrl-container');
+  const prev = document.getElementById('pdf-preview-container');
+  
+  let ctrlHTML = '';
+  let prevHTML = `<div class="panel-header"><span class="panel-title">Visual Workspace Preview</span></div>
+                  <div class="chart-out" id="pdf-view-out">
+                    <div class="chart-placeholder">Upload a PDF file to begin operations. All manipulations run statelessly in memory.</div>
+                  </div>`;
+
+  if (tool === 'pdf_merge') {
+    ctrlHTML = `
+      <div class="panel-header"><span class="panel-title">PDF Merger Panel</span></div>
+      <div class="dropzone" onclick="document.getElementById('pdf-m-files').click()"
+           ondragover="e=>{ e.preventDefault(); this.classList.add('drag'); }"
+           ondragleave="this.classList.remove('drag')"
+           ondrop="handlePDFMultiDrop(event)">
+        <h4>Upload PDF documents</h4>
+        <p>Drop files here or click to browse (Select multiple)</p>
+        <input type="file" id="pdf-m-files" accept=".pdf" class="file-input" multiple onchange="uploadPDFMulti(this)">
+      </div>
+      <div class="form-group" id="pdf-file-details" style="display:none;">
+        <label>Selected Documents</label>
+        <span class="file-badge" id="pdf-filename-badge" style="position:static; padding:6px 12px; font-weight:700; border:2px solid var(--border); border-radius:8px; display:inline-block;">none</span>
+      </div>
+      <button class="btn btn-primary" id="btn-merge-action" onclick="runPDFMerge()" style="display:none;">Merge Documents</button>
+    `;
+    prevHTML = `
+      <div class="panel-header"><span class="panel-title">File order directory</span></div>
+      <p class="text-muted" style="margin-bottom:10px; font-size:12px;">Drag and drop elements to rearrange the merge order.</p>
+      <div class="order-list" id="pdf-merge-list"></div>
+      <div class="chart-placeholder" id="pdf-merge-empty">No files loaded yet.</div>
+    `;
+  } 
+  else {
+    ctrlHTML = `
+      <div class="panel-header"><span class="panel-title">${tool === 'pdf_split' ? 'PDF Splitter' : tool === 'pdf_delete' ? 'Delete Pages' : tool === 'pdf_rotate' ? 'Rotate Page canvas' : tool === 'pdf_crop' ? 'Crop Margins' : tool === 'pdf_arrange' ? 'Rearrange Sequence' : 'Page Stamp Numbers'}</span></div>
+      ${pdfSingleDropHTML()}
+      <div id="dynamic-pdf-controls" style="margin-top:16px;"></div>
+    `;
+  }
+
+  ctrl.innerHTML = ctrlHTML;
+  prev.innerHTML = prevHTML;
+
+  // If file is already uploaded, populate badge and render controls dynamically
+  if (tool !== 'pdf_merge' && G.pdfFiles.length > 0) {
+    setTimeout(() => {
+      const badge = document.getElementById('pdf-filename-badge');
+      if (badge) {
+        badge.textContent = G.pdfFiles[0].name;
+        document.getElementById('pdf-file-details').style.display = 'block';
+      }
+      renderDynamicControls(tool);
+      renderPDFPreviewLayout('pdf-preview-container');
+    }, 20);
+  } else if (tool === 'pdf_merge' && G.pdfFiles.length > 0) {
+    setTimeout(() => {
+      renderPDFFileList();
+    }, 20);
+  }
+}
+
+/* ─── PDF Workspace Dynamic Handlers (Security & Sign) ─── */
+function setupPDFSecurityWorkspace(tool) {
+  const ctrl = document.getElementById('pdf-sec-ctrl-container');
+  const prev = document.getElementById('pdf-sec-preview-container');
+  
+  let ctrlHTML = '';
+  let prevHTML = `<div class="panel-header"><span class="panel-title">Visual Workspace Preview</span></div>
+                  <div class="chart-out" id="pdf-sec-view-out">
+                    <div class="chart-placeholder">Upload a PDF file to begin security operations. All actions run statelessly in memory.</div>
+                  </div>`;
+
+  ctrlHTML = `
+    <div class="panel-header"><span class="panel-title">${tool === 'pdf_encrypt' ? 'Password Protect' : tool === 'pdf_decrypt' ? 'Remove Security' : 'Visual Sign PDF'}</span></div>
+    ${pdfSingleDropHTML()}
+    <div id="dynamic-pdf-controls" style="margin-top:16px;"></div>
+  `;
+
+  ctrl.innerHTML = ctrlHTML;
+  prev.innerHTML = prevHTML;
+
+  // If file is already uploaded, populate badge and render controls dynamically
+  if (G.pdfFiles.length > 0) {
+    setTimeout(() => {
+      const badge = document.getElementById('pdf-filename-badge');
+      if (badge) {
+        badge.textContent = G.pdfFiles[0].name;
+        document.getElementById('pdf-file-details').style.display = 'block';
+      }
+      renderDynamicControls(tool);
+      renderPDFPreviewLayout('pdf-sec-preview-container');
+    }, 20);
+  }
+}
+
+function setupPDFConversionWorkspace(tool) {
+  const ctrl = document.getElementById('pdf-conv-ctrl-container');
+  const prev = document.getElementById('pdf-conv-preview-container');
+  
+  let ctrlHTML = '';
+  let prevHTML = `<div class="panel-header"><span class="panel-title">Visual Workspace Preview</span></div>
+                  <div class="chart-out" id="pdf-conv-view-out">
+                    <div class="chart-placeholder">Upload files on the left to begin rendering previews. All conversions are performed in memory.</div>
+                  </div>`;
+
+  if (tool === 'pdf_convert_from') {
+    ctrlHTML = `
+      <div class="panel-header"><span class="panel-title">Export PDF Elements</span></div>
+      ${pdfSingleDropHTML()}
+      <div id="dynamic-pdf-controls" style="margin-top:16px;"></div>
+    `;
+  } 
+  else if (tool === 'pdf_convert_to') {
+    ctrlHTML = `
+      <div class="panel-header"><span class="panel-title">Convert to PDF</span></div>
+      <div class="dropzone" onclick="document.getElementById('pdf-to-file').click()"
+           ondragover="e=>{ e.preventDefault(); this.classList.add('drag'); }"
+           ondragleave="this.classList.remove('drag')"
+           ondrop="handlePDFToDrop(event)">
+        <h4>Upload source file</h4>
+        <p>Drop Image, Word (docx), Excel (xlsx), HTML, Text, or RTF here</p>
+        <input type="file" id="pdf-to-file" accept=".jpg,.jpeg,.png,.bmp,.gif,.docx,.xlsx,.html,.txt,.rtf" class="file-input" onchange="uploadPDFTo(this)">
+      </div>
+      <div class="form-group">
+        <label>Detected Source Format</label>
+        <span class="file-badge" id="source-format-badge" style="position:static; padding:6px 12px; font-weight:700; border:2px solid var(--border); border-radius:8px; display:inline-block; margin-top:4px;">none</span>
+      </div>
+      <button class="btn btn-primary" onclick="runPDFConvertTo()">Compile to PDF</button>
+    `;
+  }
+
+  ctrl.innerHTML = ctrlHTML;
+  prev.innerHTML = prevHTML;
+
+  // If file is already uploaded, populate badge and render controls dynamically
+  if (tool === 'pdf_convert_from' && G.pdfFiles.length > 0) {
+    setTimeout(() => {
+      const badge = document.getElementById('pdf-filename-badge');
+      if (badge) {
+        badge.textContent = G.pdfFiles[0].name;
+        document.getElementById('pdf-file-details').style.display = 'block';
+      }
+      renderDynamicControls(tool);
+      renderPDFPreviewLayout('pdf-conv-preview-container');
+    }, 20);
+  }
+}
+
+function pdfSingleDropHTML() {
+  return `
+    <div class="dropzone" onclick="document.getElementById('pdf-s-file').click()"
+         ondragover="e=>{ e.preventDefault(); this.classList.add('drag'); }"
+         ondragleave="this.classList.remove('drag')"
+         ondrop="handlePDFSingleDrop(event)">
+      <h4>Upload PDF document</h4>
+      <p>Drop file here or click to browse (up to 4MB supported)</p>
+      <input type="file" id="pdf-s-file" accept=".pdf" class="file-input" onchange="uploadPDFSingle(this)">
+    </div>
+    <div class="form-group" style="display:none;" id="pdf-file-details">
+      <label>Selected Document</label>
+      <span class="file-badge" id="pdf-filename-badge" style="position:static; padding:6px 12px; font-weight:700; border:2px solid var(--border); border-radius:8px; display:inline-block;">none</span>
+    </div>
+  `;
+}
+
+function toggleFormatOption(val) {
+  document.getElementById('img-fmt-row').style.display = val === 'images' ? 'block' : 'none';
+}
+
+/* ─── PDF Workspace File Inputs ─── */
+function handlePDFSingleDrop(e) {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if(file && file.name.endsWith('.pdf')) loadPDFSingleFile(file);
+  else toast('PDF documents only', 'error');
+}
+
+function uploadPDFSingle(input) {
+  if (input.files[0]) loadPDFSingleFile(input.files[0]);
+}
+
+async function loadPDFSingleFile(file) {
+  G.pdfFiles = [{ name: file.name, size: file.size, fileObject: file }];
+  const badge = document.getElementById('pdf-filename-badge');
+  if(badge) {
+    badge.textContent = file.name;
+    document.getElementById('pdf-file-details').style.display = 'block';
+  }
+  toast(`Selected: ${file.name}`);
+  
+  // Set preview state
+  G.pdfPageCount = 1;
+  G.pdfCurrentPage = 1;
+  activeSignPage = 1;
+
+  // Read file as ArrayBuffer and load using PDF.js library
+  const reader = new FileReader();
+  reader.onload = async function() {
+    try {
+      const typedarray = new Uint8Array(this.result);
+      let pdf = null;
+      try {
+        pdf = await pdfjsLib.getDocument(typedarray).promise;
+      } catch (pdfErr) {
+        if (G.currentTool === 'pdf_decrypt') {
+          // Encrypted PDF loaded into Unlock PDF workspace
+          G.pdfFiles = [{ fileObject: file, name: file.name, arrayBuffer: this.result }];
+          renderDynamicControls(G.currentTool);
+          
+          const secContainer = document.getElementById('pdf-sec-preview-container');
+          if (secContainer) {
+            secContainer.innerHTML = `
+              <div style="padding:40px 20px; text-align:center; background:#fff; border:2px dashed var(--border); border-radius:12px; margin:20px;">
+                <div style="font-size:36px; margin-bottom:12px;">🔒</div>
+                <h3 style="font-size:16px; font-weight:800; margin-bottom:8px; font-family:var(--font-heading);">Encrypted PDF Document Loaded</h3>
+                <p style="font-size:13px; color:var(--muted); max-width:420px; margin:0 auto 16px; font-family:var(--font-body);">
+                  "<strong>${file.name}</strong>" is password protected.<br>Enter the current password in the left panel and click <strong>Remove Restrictions</strong> to unlock it.
+                </p>
+              </div>
+            `;
+          }
+          toast('Encrypted PDF loaded. Enter password on the left to unlock.', 'info');
+          return;
+        } else {
+          throw pdfErr;
+        }
+      }
+      
+      G.pdfDoc = pdf;
+      G.pdfPageCount = pdf.numPages;
+      
+      // Render controls with metadata bounded checks
+      renderDynamicControls(G.currentTool);
+      
+      // Select appropriate preview container
+      let containerId = 'pdf-preview-container';
+      if (['pdf_encrypt', 'pdf_decrypt', 'pdf_sign'].includes(G.currentTool)) {
+        containerId = 'pdf-sec-preview-container';
+      } else if (['pdf_convert_from'].includes(G.currentTool)) {
+        containerId = 'pdf-conv-preview-container';
+      }
+      
+      renderPDFPreviewLayout(containerId);
+    } catch(err) {
+      toast('Failed to load PDF: ' + err, 'error');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function handlePDFMultiDrop(e) {
+  e.preventDefault();
+  const files = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.pdf'));
+  if (files.length) loadPDFMultiFiles(files);
+  else toast('PDF documents only', 'error');
+}
+
+// Keep standard multi uploads
+function uploadPDFMulti(input) {
+  if(input.files.length) loadPDFMultiFiles(Array.from(input.files));
+}
+
+function loadPDFMultiFiles(files) {
+  files.forEach(f => {
+    G.pdfFiles.push({ name: f.name, size: f.size, fileObject: f });
+  });
+  renderPDFFileList();
+}
+
+function renderPDFFileList() {
+  const list = document.getElementById('pdf-merge-list');
+  const empty = document.getElementById('pdf-merge-empty');
+  const btn = document.getElementById('btn-merge-action');
+  
+  if(!G.pdfFiles.length) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    btn.style.display = 'none';
+    return;
+  }
+  
+  empty.style.display = 'none';
+  btn.style.display = 'block';
+  
+  list.innerHTML = G.pdfFiles.map((f, idx) => `
+    <div class="order-item" draggable="true" data-idx="${idx}" ondragstart="handleDragStart(event)" ondragover="handleDragOver(event)" ondrop="handleItemDrop(event)" ondragend="handleDragEnd(event)">
+      <span title="${f.name}">${idx+1}. ${f.name} (${(f.size/1024).toFixed(1)} KB)</span>
+      <div class="handle">☰</div>
+    </div>
+  `).join('');
+}
+
+// Drag & drop sorting handlers
+let draggingEl = null;
+function handleDragStart(e) {
+  draggingEl = e.currentTarget;
+  e.currentTarget.classList.add('dragging');
+}
+function handleDragOver(e) { e.preventDefault(); }
+function handleItemDrop(e) {
+  e.preventDefault();
+  const target = e.currentTarget;
+  if(draggingEl && draggingEl !== target) {
+    const dragIdx = parseInt(draggingEl.getAttribute('data-idx'));
+    const targetIdx = parseInt(target.getAttribute('data-idx'));
+    
+    const temp = G.pdfFiles[dragIdx];
+    G.pdfFiles.splice(dragIdx, 1);
+    G.pdfFiles.splice(targetIdx, 0, temp);
+    
+    renderPDFFileList();
+  }
+}
+function handleDragEnd(e) { e.currentTarget.classList.remove('dragging'); }
+
+/* ─── Render Dynamic Bounded Controls Based on PDF Page Count ─── */
+function renderDynamicControls(tool) {
+  const container = document.getElementById('dynamic-pdf-controls');
+  if (!container) return;
+
+  let html = '';
+
+  if (tool === 'pdf_split') {
+    html = `
+      <div class="form-group">
+        <label>Split Ranges</label>
+        <div id="split-ranges-container" style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;"></div>
+        <button type="button" class="btn btn-secondary" onclick="addSplitRangeRow()" style="margin-bottom:12px; font-size:11px; padding:6px 12px; width:auto;">+ Add Range</button>
+      </div>
+      <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="merge-ranges-check" style="width:auto; margin:0;">
+        <label for="merge-ranges-check" style="margin:0; text-transform:none; font-size:13px; font-weight:500;">Merge all ranges into one PDF</label>
+      </div>
+      <button class="btn btn-primary" onclick="runPDFSplit()">Execute Page Split</button>
+    `;
+  }
+  else if (tool === 'pdf_delete') {
+    html = `
+      <div class="form-group">
+        <label>Select Pages to Delete</label>
+        <div id="delete-pages-container" style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;"></div>
+        <button type="button" class="btn btn-secondary" onclick="addDeletePageRow()" style="margin-bottom:12px; font-size:11px; padding:6px 12px; width:auto;">+ Add Page</button>
+      </div>
+      <button class="btn btn-danger" onclick="runPDFDelete()">Execute Delete</button>
+    `;
+  }
+  else if (tool === 'pdf_rotate') {
+    html = `
+      <div class="form-group">
+        <label>Rotate Angle</label>
+        <select id="rotate-angle" onchange="applyRotatePreview()">
+          <option value="90">90° Clockwise</option>
+          <option value="180">180° Half Turn</option>
+          <option value="270">270° Counter-Clockwise</option>
+        </select>
+      </div>
+      ${G.pdfPageCount > 1 ? `
+      <div class="form-group">
+        <label>Apply to</label>
+        <select id="rotate-scope" onchange="toggleScopeInputs('rotate', this.value)">
+          <option value="all">All Pages</option>
+          <option value="specific">Specific Pages</option>
+        </select>
+      </div>
+      <div id="rotate-specific-container" style="display:none; margin-bottom:16px;">
+        <label>Select Pages</label>
+        <div id="rotate-pages-container" style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;"></div>
+        <button type="button" class="btn btn-secondary" id="btn-add-rotate-page" onclick="addRotatePageRow()" style="font-size:11px; padding:6px 12px; width:auto;">+ Add Page</button>
+      </div>` : `
+      <input type="hidden" id="rotate-scope" value="all">
+      <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">Single page document — rotation applies to the entire page.</p>
+      `}
+      <button class="btn btn-primary" onclick="runPDFRotate()">Execute Rotation</button>
+    `;
+  }
+  else if (tool === 'pdf_crop') {
+    html = `
+      <div class="form-row">
+        <div class="form-group"><label>Left Margin (pt)</label><input type="number" id="crop-l" value="20" min="0" oninput="applyCropPreview()"></div>
+        <div class="form-group"><label>Right Margin (pt)</label><input type="number" id="crop-r" value="20" min="0" oninput="applyCropPreview()"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Top Margin (pt)</label><input type="number" id="crop-t" value="20" min="0" oninput="applyCropPreview()"></div>
+        <div class="form-group"><label>Bottom Margin (pt)</label><input type="number" id="crop-b" value="20" min="0" oninput="applyCropPreview()"></div>
+      </div>
+      <div class="form-group">
+        <label>Apply to</label>
+        <select id="crop-scope" onchange="toggleScopeInputs('crop', this.value); applyCropPreview();">
+          <option value="all">All Pages</option>
+          <option value="specific">Specific Pages</option>
+        </select>
+      </div>
+      <div id="crop-specific-container" style="display:none; margin-bottom:16px;">
+        <label>Select Pages</label>
+        <div id="crop-pages-container" style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;"></div>
+        <button type="button" class="btn btn-secondary" onclick="addCropPageRow()" style="font-size:11px; padding:6px 12px; width:auto;">+ Add Page</button>
+      </div>
+      <button class="btn btn-primary" onclick="runPDFCrop()">Execute Margin Crop</button>
+    `;
+  }
+  else if (tool === 'pdf_arrange') {
+    html = `
+      <div class="form-group">
+        <label>New Sequence Slot List</label>
+        <div id="arrange-sequence-container" style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;"></div>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn btn-secondary" onclick="addArrangeSlotRow()" style="font-size:11px; padding:6px 12px; width:auto;">+ Add Slot</button>
+          <button type="button" class="btn btn-secondary" onclick="resetArrangeSlotsToDefault()" style="font-size:11px; padding:6px 12px; width:auto;">Reset Default Sequence</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="runPDFArrange()">Execute Sorting</button>
+    `;
+  }
+  else if (tool === 'pdf_num') {
+    html = `
+      <div class="form-group">
+        <label>Alignment style</label>
+        <select id="num-style" onchange="applyNumberingPreview()">
+          <option value="bottom_right">Bottom Right corner</option>
+          <option value="bottom_center">Bottom Center margin</option>
+          <option value="bottom_left">Bottom Left corner</option>
+          <option value="top_right">Top Right corner</option>
+          <option value="top_center">Top Center margin</option>
+          <option value="top_left">Top Left corner</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="runPDFNumbering()">Stamp Page Numbers</button>
+    `;
+  }
+  else if (tool === 'pdf_encrypt') {
+    html = `
+      <div class="form-group">
+        <label>Encryption Password</label>
+        <input type="password" id="protect-pass" placeholder="Secure phrase keys">
+      </div>
+      <button class="btn btn-primary" onclick="runPDFSecurity('encrypt')">Apply Encryption</button>
+    `;
+  }
+  else if (tool === 'pdf_decrypt') {
+    html = `
+      <div class="form-group">
+        <label>Decryption Password</label>
+        <input type="password" id="unlock-pass" placeholder="Current file password">
+      </div>
+      <button class="btn btn-primary" onclick="runPDFSecurity('decrypt')">Remove Restrictions</button>
+    `;
+  }
+  else if (tool === 'pdf_convert_from') {
+    html = `
+      <div class="form-group">
+        <label>Target Format</label>
+        <select id="conv-from-fmt" onchange="toggleFormatOption(this.value)">
+          <option value="images">Render to Image grid (ZIP / PNG)</option>
+          <option value="text">Text Document (.txt)</option>
+          <option value="word">Word Layout document (.docx)</option>
+          <option value="excel">Excel table grid (.xlsx)</option>
+          <option value="html">Semantic HTML page (.html)</option>
+        </select>
+      </div>
+      <div class="form-group" id="img-fmt-row">
+        <label>Image Codec</label>
+        <select id="conv-img-codec">
+          <option value="PNG">PNG Image</option>
+          <option value="JPEG">JPEG Image</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="runPDFConvertFrom()">Extract Elements</button>
+    `;
+  }
+  else if (tool === 'pdf_sign') {
+    html = `
+      <div class="form-group">
+        <label>Signature Mode</label>
+        <div style="display:flex; gap:6px; margin-bottom:12px;">
+          <button type="button" class="btn btn-secondary sig-tab-btn active" id="tab-draw" onclick="switchSigTab('draw')" style="padding:6px 12px; font-size:11px; width:auto; flex:1;">Draw</button>
+          <button type="button" class="btn btn-secondary sig-tab-btn" id="tab-write" onclick="switchSigTab('write')" style="padding:6px 12px; font-size:11px; width:auto; flex:1;">Write</button>
+          <button type="button" class="btn btn-secondary sig-tab-btn" id="tab-upload" onclick="switchSigTab('upload')" style="padding:6px 12px; font-size:11px; width:auto; flex:1;">Upload</button>
+          <button type="button" class="btn btn-secondary sig-tab-btn" id="tab-camera" onclick="switchSigTab('camera')" style="padding:6px 12px; font-size:11px; width:auto; flex:1;">Camera</button>
+        </div>
+
+        <!-- DRAW TAB PANEL -->
+        <div id="sig-pane-draw" class="sig-pane">
+          <div class="canvas-container">
+            <canvas id="signature-pad"></canvas>
+          </div>
+          <div class="canvas-tools">
+            <div style="display:flex; gap:6px;">
+              <div class="color-dot active" style="background:#000" onclick="setSignColor('#000', this)"></div>
+              <div class="color-dot" style="background:#7c3aed" onclick="setSignColor('#7c3aed', this)"></div>
+              <div class="color-dot" style="background:#fa5a00" onclick="setSignColor('#fa5a00', this)"></div>
+            </div>
+            <button type="button" class="btn btn-secondary" style="width:auto; padding:3px 10px; font-size:11px;" onclick="clearSignCanvas()">Clear</button>
+          </div>
+        </div>
+
+        <!-- WRITE TAB PANEL -->
+        <div id="sig-pane-write" class="sig-pane" style="display:none;">
+          <input type="text" id="sig-write-input" placeholder="Type your signature..." oninput="updateWrittenSignature(this.value)" style="margin-bottom:8px;">
+          <div style="background:#fff; border:2px solid var(--border); border-radius:8px; padding:16px; text-align:center;">
+            <canvas id="write-canvas" style="display:none;"></canvas>
+            <div id="write-preview" style="font-family:'Caveat', cursive; font-size:32px; color:#000; min-height:50px;"></div>
+          </div>
+        </div>
+
+        <!-- UPLOAD TAB PANEL -->
+        <div id="sig-pane-upload" class="sig-pane" style="display:none;">
+          <div class="dropzone" onclick="document.getElementById('sig-upload-file').click()" style="padding:20px 10px; margin-bottom:0;">
+            <h4>Upload Photo</h4>
+            <p>Drop image or click to browse</p>
+            <input type="file" id="sig-upload-file" accept="image/*" class="file-input" onchange="loadUploadedSignature(this)">
+          </div>
+          <div id="upload-preview-container" style="display:none; margin-top:8px; text-align:center;">
+            <img id="upload-preview-img" style="max-height:80px; border:2px solid var(--border); border-radius:8px;">
+          </div>
+        </div>
+
+        <!-- CAMERA TAB PANEL -->
+        <div id="sig-pane-camera" class="sig-pane" style="display:none;">
+          <button type="button" class="btn btn-secondary" id="btn-start-camera" onclick="startCamera()">Open Web Camera</button>
+          <div id="camera-stream-container" style="display:none; text-align:center;">
+            <video id="camera-video" width="100%" height="auto" autoplay playsinline style="border:2px solid var(--border); border-radius:8px; background:#000; max-height:160px; margin-top:8px;"></video>
+            <button type="button" class="btn btn-primary" onclick="captureCameraPhoto()" style="margin-top:8px;">Take Photo & Crop</button>
+          </div>
+          <div id="camera-preview-container" style="display:none; text-align:center; margin-top:8px;">
+            <img id="camera-preview-img" style="max-height:80px; border:2px solid var(--border); border-radius:8px;">
+            <button type="button" class="btn btn-secondary" onclick="resetCameraPhoto()" style="margin-top:6px; font-size:11px; width:auto; padding:4px 10px;">Retake</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Selected signing page</label>
+        <input type="number" id="sign-page-num" value="1" min="1" max="${G.pdfPageCount}" onchange="updateSignPreviewPage()">
+      </div>
+      <button class="btn btn-primary" onclick="runPDFSign()">Overlay Signature</button>
+    `;
+  }
+
+  container.innerHTML = html;
+
+  // Initialize helper sub-elements
+  if (tool === 'pdf_split') {
+    addSplitRangeRow(1, G.pdfPageCount);
+  } else if (tool === 'pdf_delete') {
+    addDeletePageRow(1);
+  } else if (tool === 'pdf_rotate') {
+    if (G.pdfPageCount > 1) addRotatePageRow(1);
+    setTimeout(() => applyRotatePreview(), 100);
+  } else if (tool === 'pdf_crop') {
+    addCropPageRow(1);
+  } else if (tool === 'pdf_arrange') {
+    resetArrangeSlotsToDefault();
+  } else if (tool === 'pdf_num') {
+    setTimeout(() => applyNumberingPreview(), 100);
+  } else if (tool === 'pdf_sign') {
+    initSignaturePad();
+  }
+}
+
+/* ─── Helpers for Dynamic Rows ─── */
+function addSplitRangeRow(fromVal = 1, toVal = 1) {
+  const container = document.getElementById('split-ranges-container');
+  if (!container) return;
+  const row = document.createElement('div');
+  row.className = 'form-row split-range-row';
+  row.style.alignItems = 'center';
+  row.style.gap = '8px';
+  row.style.marginBottom = '6px';
+  row.innerHTML = `
+    <div class="form-group" style="margin:0; flex:1;">
+      <label style="font-size:10px;">From</label>
+      <input type="number" class="range-from" min="1" max="${G.pdfPageCount}" value="${fromVal}" onchange="validateRangeRow(this)">
+    </div>
+    <div class="form-group" style="margin:0; flex:1;">
+      <label style="font-size:10px;">To</label>
+      <input type="number" class="range-to" min="1" max="${G.pdfPageCount}" value="${toVal}" onchange="validateRangeRow(this)">
+    </div>
+    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()" style="width:auto; padding:8px 12px; margin-top:16px;">✕</button>
+  `;
+  container.appendChild(row);
+}
+
+function addDeletePageRow(val = 1) {
+  const container = document.getElementById('delete-pages-container');
+  if (!container) return;
+  const row = document.createElement('div');
+  row.className = 'delete-page-row';
+  row.style.display = 'flex';
+  row.style.gap = '8px';
+  row.style.alignItems = 'center';
+  row.style.marginBottom = '6px';
+  row.innerHTML = `
+    <input type="number" class="delete-page-val" min="1" max="${G.pdfPageCount}" value="${val}" style="flex:1;" onchange="validateRangeRow(this)">
+    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()" style="width:auto; padding:8px 12px;">✕</button>
+  `;
+  container.appendChild(row);
+}
+
+function addRotatePageRow(val = 1) {
+  const container = document.getElementById('rotate-pages-container');
+  if (!container) return;
+  
+  // Prevent adding more page rows than pages in the document
+  const existingRows = container.querySelectorAll('.rotate-page-row').length;
+  if (existingRows >= G.pdfPageCount) {
+    toast(`Cannot add more — this document only has ${G.pdfPageCount} page${G.pdfPageCount > 1 ? 's' : ''}.`, 'error');
+    return;
+  }
+  
+  const row = document.createElement('div');
+  row.className = 'rotate-page-row';
+  row.style.display = 'flex';
+  row.style.gap = '8px';
+  row.style.alignItems = 'center';
+  row.style.marginBottom = '6px';
+  row.innerHTML = `
+    <input type="number" class="rotate-page-val" min="1" max="${G.pdfPageCount}" value="${val}" style="flex:1;" onchange="validateRangeRow(this)">
+    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()" style="width:auto; padding:8px 12px;">✕</button>
+  `;
+  container.appendChild(row);
+}
+
+// Live CSS rotation preview on the PDF canvases
+function applyRotatePreview() {
+  const angleEl = document.getElementById('rotate-angle');
+  if (!angleEl) return;
+  const angle = parseInt(angleEl.value);
+  
+  const scopeEl = document.getElementById('rotate-scope');
+  const scope = scopeEl ? scopeEl.value : 'all';
+  
+  // Collect which pages to rotate
+  let pagesToRotate = [];
+  if (scope === 'all') {
+    for (let i = 1; i <= G.pdfPageCount; i++) pagesToRotate.push(i);
+  } else {
+    const rows = document.querySelectorAll('.rotate-page-row');
+    rows.forEach(row => {
+      pagesToRotate.push(parseInt(row.querySelector('.rotate-page-val').value));
+    });
+  }
+  const rotateSet = new Set(pagesToRotate);
+  
+  // Apply CSS transform to matching page canvases, reset others
+  for (let p = 1; p <= G.pdfPageCount; p++) {
+    const wrapper = document.getElementById(`page-wrapper-${p}`);
+    if (!wrapper) continue;
+    const canvas = wrapper.querySelector('canvas');
+    if (!canvas) continue;
+    
+    if (rotateSet.has(p)) {
+      canvas.style.transition = 'transform 0.4s ease';
+      canvas.style.transform = `rotate(${angle}deg)`;
+    } else {
+      canvas.style.transition = 'transform 0.4s ease';
+      canvas.style.transform = 'rotate(0deg)';
+    }
+  }
+}
+
+function addCropPageRow(val = 1) {
+  const container = document.getElementById('crop-pages-container');
+  if (!container) return;
+  const row = document.createElement('div');
+  row.className = 'crop-page-row';
+  row.style.display = 'flex';
+  row.style.gap = '8px';
+  row.style.alignItems = 'center';
+  row.style.marginBottom = '6px';
+  row.innerHTML = `
+    <input type="number" class="crop-page-val" min="1" max="${G.pdfPageCount}" value="${val}" style="flex:1;" onchange="validateRangeRow(this); applyCropPreview();" oninput="applyCropPreview();">
+    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove(); applyCropPreview();" style="width:auto; padding:8px 12px;">✕</button>
+  `;
+  container.appendChild(row);
+  applyCropPreview();
+}
+
+function toggleScopeInputs(prefix, val) {
+  const container = document.getElementById(prefix + '-specific-container');
+  if (container) {
+    container.style.display = val === 'specific' ? 'block' : 'none';
+  }
+}
+
+// Live Visual Crop Overlay Preview
+function applyCropPreview() {
+  const lEl = document.getElementById('crop-l');
+  const rEl = document.getElementById('crop-r');
+  const tEl = document.getElementById('crop-t');
+  const bEl = document.getElementById('crop-b');
+  if (!lEl || !rEl || !tEl || !bEl) return;
+
+  const left = Math.max(0, parseFloat(lEl.value) || 0);
+  const right = Math.max(0, parseFloat(rEl.value) || 0);
+  const top = Math.max(0, parseFloat(tEl.value) || 0);
+  const bottom = Math.max(0, parseFloat(bEl.value) || 0);
+
+  const scopeEl = document.getElementById('crop-scope');
+  const scope = scopeEl ? scopeEl.value : 'all';
+
+  let pagesToCrop = [];
+  if (scope === 'all') {
+    for (let i = 1; i <= G.pdfPageCount; i++) pagesToCrop.push(i);
+  } else {
+    const rows = document.querySelectorAll('.crop-page-row');
+    rows.forEach(row => {
+      pagesToCrop.push(parseInt(row.querySelector('.crop-page-val').value));
+    });
+  }
+  const cropSet = new Set(pagesToCrop);
+
+  for (let p = 1; p <= G.pdfPageCount; p++) {
+    const wrapper = document.getElementById(`page-wrapper-${p}`);
+    if (!wrapper) continue;
+    let overlay = wrapper.querySelector('.crop-overlay-box');
+
+    if (cropSet.has(p) && (left > 0 || right > 0 || top > 0 || bottom > 0)) {
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'crop-overlay-box';
+        overlay.style.cssText = 'position:absolute; pointer-events:none; border:2px dashed #ef4444; background:rgba(239, 68, 68, 0.12); border-radius:4px; box-sizing:border-box; display:flex; align-items:center; justify-content:center; color:#ef4444; font-weight:800; font-family:var(--font-mono); font-size:11px; z-index:10;';
+        overlay.innerHTML = '<span style="background:rgba(255,255,255,0.9); padding:2px 6px; border-radius:4px; border:1px solid #ef4444;">Cropped Area</span>';
+        wrapper.appendChild(overlay);
+      }
+      const canvas = wrapper.querySelector('canvas');
+      const w = canvas ? canvas.clientWidth : 500;
+      const h = canvas ? canvas.clientHeight : 600;
+      const scaleX = w / 612;
+      const scaleY = h / 792;
+
+      const pxLeft = Math.min(w * 0.45, left * scaleX);
+      const pxRight = Math.min(w * 0.45, right * scaleX);
+      const pxTop = Math.min(h * 0.45, top * scaleY);
+      const pxBottom = Math.min(h * 0.45, bottom * scaleY);
+
+      overlay.style.display = 'flex';
+      overlay.style.left = pxLeft + 'px';
+      overlay.style.top = pxTop + 'px';
+      overlay.style.width = Math.max(10, w - pxLeft - pxRight) + 'px';
+      overlay.style.height = Math.max(10, h - pxTop - pxBottom) + 'px';
+    } else {
+      if (overlay) overlay.style.display = 'none';
+    }
+  }
+}
+
+function addArrangeSlotRow(val = 1) {
+  const container = document.getElementById('arrange-sequence-container');
+  if (!container) return;
+  const slotIdx = container.children.length + 1;
+  const row = document.createElement('div');
+  row.className = 'arrange-slot-row';
+  row.style.display = 'flex';
+  row.style.gap = '8px';
+  row.style.alignItems = 'center';
+  row.style.marginBottom = '6px';
+  row.innerHTML = `
+    <span style="font-family:var(--font-mono); font-size:11px; width:60px;">Slot ${slotIdx}:</span>
+    <select class="arrange-page-val" style="flex:1;" onchange="applyArrangePreview()">
+      ${Array.from({length: G.pdfPageCount}, (_, i) => `<option value="${i+1}" ${i+1 === val ? 'selected' : ''}>Page ${i+1}</option>`).join('')}
+    </select>
+    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove(); updateArrangeSlotLabels(); applyArrangePreview();" style="width:auto; padding:8px 12px;">✕</button>
+  `;
+  container.appendChild(row);
+  applyArrangePreview();
+}
+
+function updateArrangeSlotLabels() {
+  const container = document.getElementById('arrange-sequence-container');
+  if (!container) return;
+  Array.from(container.children).forEach((row, index) => {
+    row.querySelector('span').textContent = `Slot ${index + 1}:`;
+  });
+}
+
+function resetArrangeSlotsToDefault() {
+  const container = document.getElementById('arrange-sequence-container');
+  if (!container) return;
+  container.innerHTML = '';
+  for (let i = 1; i <= G.pdfPageCount; i++) {
+    addArrangeSlotRow(i);
+  }
+  applyArrangePreview();
+}
+
+// Live Rearrange Page Sequence Preview
+function applyArrangePreview() {
+  const rows = document.querySelectorAll('.arrange-slot-row');
+  if (!rows.length) return;
+
+  const sequence = [];
+  rows.forEach(row => {
+    sequence.push(parseInt(row.querySelector('.arrange-page-val').value));
+  });
+
+  const scrollWrap = document.querySelector('.pdf-render-scroll-wrap');
+  if (!scrollWrap) return;
+
+  sequence.forEach(pageNum => {
+    const pageContainer = scrollWrap.querySelector(`.pdf-page-container[data-page="${pageNum}"]`);
+    if (pageContainer) {
+      scrollWrap.appendChild(pageContainer);
+    }
+  });
+}
+
+// Live Visual Page Numbering Stamp Preview
+function applyNumberingPreview() {
+  const styleEl = document.getElementById('num-style');
+  if (!styleEl) return;
+  const style = styleEl.value || 'bottom_right';
+
+  for (let p = 1; p <= G.pdfPageCount; p++) {
+    const wrapper = document.getElementById(`page-wrapper-${p}`);
+    if (!wrapper) continue;
+
+    let badge = wrapper.querySelector('.page-num-preview-badge');
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.className = 'page-num-preview-badge';
+      badge.style.cssText = 'position:absolute; pointer-events:none; background:transparent; color:#000000; padding:4px 8px; font-weight:700; font-family:Helvetica, Arial, sans-serif; font-size:12px; z-index:12; transition:all 0.2s ease; border:none; text-shadow:0 0 2px rgba(255,255,255,0.9);';
+      wrapper.appendChild(badge);
+    }
+
+    badge.textContent = `Page ${p}`;
+    badge.style.display = 'block';
+
+    badge.style.top = 'auto';
+    badge.style.bottom = 'auto';
+    badge.style.left = 'auto';
+    badge.style.right = 'auto';
+    badge.style.transform = 'none';
+
+    if (style === 'bottom_right') {
+      badge.style.bottom = '16px';
+      badge.style.right = '16px';
+    } else if (style === 'bottom_center') {
+      badge.style.bottom = '16px';
+      badge.style.left = '50%';
+      badge.style.transform = 'translateX(-50%)';
+    } else if (style === 'bottom_left') {
+      badge.style.bottom = '16px';
+      badge.style.left = '16px';
+    } else if (style === 'top_right') {
+      badge.style.top = '16px';
+      badge.style.right = '16px';
+    } else if (style === 'top_center') {
+      badge.style.top = '16px';
+      badge.style.left = '50%';
+      badge.style.transform = 'translateX(-50%)';
+    } else if (style === 'top_left') {
+      badge.style.top = '16px';
+      badge.style.left = '16px';
+    }
+  }
+}
+
+function validateRangeRow(input) {
+  let val = parseInt(input.value);
+  if (isNaN(val) || val < 1) val = 1;
+  if (val > G.pdfPageCount) val = G.pdfPageCount;
+  input.value = val;
+}
+
+/* ─── PDF Visual Sign Handlers ─── */
+let signCtx, isDrawing = false, signColor = '#000';
+function initSignaturePad() {
+  const pad = document.getElementById('signature-pad');
+  if(!pad) return;
+  
+  pad.width = pad.parentElement.clientWidth;
+  pad.height = 150;
+  
+  signCtx = pad.getContext('2d');
+  signCtx.strokeStyle = signColor;
+  signCtx.lineWidth = 2.5;
+  signCtx.lineCap = 'round';
+  
+  pad.addEventListener('mousedown', startDrawing);
+  pad.addEventListener('mousemove', draw);
+  pad.addEventListener('mouseup', stopDrawing);
+  pad.addEventListener('mouseleave', stopDrawing);
+  
+  pad.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    const rect = pad.getBoundingClientRect();
+    startDrawing({ clientX: t.clientX, clientY: t.clientY, rect });
+  });
+  pad.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    draw({ clientX: t.clientX, clientY: t.clientY });
+  });
+  pad.addEventListener('touchend', stopDrawing);
+}
+
+function startDrawing(e) {
+  isDrawing = true;
+  const pad = document.getElementById('signature-pad');
+  const rect = e.rect || pad.getBoundingClientRect();
+  signCtx.beginPath();
+  signCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+}
+
+function draw(e) {
+  if(!isDrawing) return;
+  const pad = document.getElementById('signature-pad');
+  const rect = pad.getBoundingClientRect();
+  signCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+  signCtx.stroke();
+}
+
+function updateSignatureTokenPreview() {
+  const token = document.getElementById('signature-token');
+  if (!token) return;
+
+  let imgUrl = null;
+
+  if (currentSigTab === 'draw') {
+    const pad = document.getElementById('signature-pad');
+    if (pad) imgUrl = pad.toDataURL('image/png');
+  } else if (currentSigTab === 'write') {
+    const canvas = document.getElementById('write-canvas');
+    if (canvas) imgUrl = canvas.toDataURL('image/png');
+  } else if (currentSigTab === 'upload') {
+    const img = document.getElementById('upload-preview-img');
+    if (img && img.src && img.src.length > 5) imgUrl = img.src;
+  } else if (currentSigTab === 'camera') {
+    const img = document.getElementById('camera-preview-img');
+    if (img && img.src && img.src.length > 5) imgUrl = img.src;
+  }
+
+  if (imgUrl) {
+    token.innerHTML = `<img src="${imgUrl}" style="width:100%; height:100%; object-fit:contain; pointer-events:none; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));">`;
+    token.style.background = 'rgba(255, 255, 255, 0.9)';
+    token.style.border = '2px dashed var(--accent-purple)';
+    token.style.borderRadius = '6px';
+    token.style.boxShadow = '0 4px 12px rgba(124, 58, 237, 0.25)';
+    token.style.padding = '4px';
+  } else {
+    token.innerHTML = `<span style="font-size:10px; font-weight:800; color:var(--accent-purple); text-align:center;">SIGNATURE HERE</span>`;
+    token.style.background = 'rgba(124, 58, 237, 0.12)';
+    token.style.border = '2px dashed var(--accent-purple)';
+    token.style.borderRadius = '6px';
+  }
+}
+
+function stopDrawing() { 
+  isDrawing = false; 
+  updateSignatureTokenPreview();
+}
+
+function clearSignCanvas() {
+  const pad = document.getElementById('signature-pad');
+  signCtx.clearRect(0, 0, pad.width, pad.height);
+  updateSignatureTokenPreview();
+}
+
+function setSignColor(col, el) {
+  signColor = col;
+  signCtx.strokeStyle = col;
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+  el.classList.add('active');
+  updateSignatureTokenPreview();
+}
+
+// Signature Tab Selector switcher
+let currentSigTab = 'draw';
+function switchSigTab(tab) {
+  currentSigTab = tab;
+  document.querySelectorAll('.sig-tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  
+  document.querySelectorAll('.sig-pane').forEach(pane => pane.style.display = 'none');
+  document.getElementById('sig-pane-' + tab).style.display = 'block';
+  
+  // Stop camera if leaving camera tab
+  if (tab !== 'camera' && cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+    document.getElementById('camera-stream-container').style.display = 'none';
+    document.getElementById('camera-preview-container').style.display = 'none';
+    document.getElementById('btn-start-camera').style.display = 'block';
+  }
+  
+  updateSignatureTokenPreview();
+}
+
+// Text Written signature generator
+function updateWrittenSignature(text) {
+  const preview = document.getElementById('write-preview');
+  preview.textContent = text || 'Type your signature...';
+  
+  const canvas = document.getElementById('write-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = 300;
+  canvas.height = 100;
+  
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#000000';
+  ctx.font = "italic 36px 'Caveat', cursive";
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text || '', canvas.width / 2, canvas.height / 2);
+  
+  updateSignatureTokenPreview();
+}
+
+// Uploaded file signature handler
+let signatureUploadBlob = null;
+function loadUploadedSignature(input) {
+  if (input.files[0]) {
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('upload-preview-img').src = e.target.result;
+      document.getElementById('upload-preview-container').style.display = 'block';
+      signatureUploadBlob = file;
+      toast('Signature image uploaded.');
+      updateSignatureTokenPreview();
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// Camera photo signature crop handler
+let cameraStream = null;
+let signatureCameraBlob = null;
+async function startCamera() {
+  const container = document.getElementById('camera-stream-container');
+  const video = document.getElementById('camera-video');
+  const btn = document.getElementById('btn-start-camera');
+  
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    video.srcObject = cameraStream;
+    container.style.display = 'block';
+    btn.style.display = 'none';
+  } catch(err) {
+    toast('Could not access camera: ' + err, 'error');
+  }
+}
+
+function captureCameraPhoto() {
+  const video = document.getElementById('camera-video');
+  const canvas = document.createElement('canvas');
+  const vWidth = video.videoWidth || 640;
+  const vHeight = video.videoHeight || 480;
+  
+  // Crop a nice 2:1 aspect ratio center window from the video camera feed
+  const targetWidth = vWidth;
+  const targetHeight = vWidth / 2;
+  const startX = 0;
+  const startY = (vHeight - targetHeight) / 2;
+  
+  canvas.width = 300;
+  canvas.height = 150;
+  
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, startX, startY, targetWidth, targetHeight, 0, 0, canvas.width, canvas.height);
+  
+  canvas.toBlob(blob => {
+    signatureCameraBlob = blob;
+    document.getElementById('camera-preview-img').src = URL.createObjectURL(blob);
+    document.getElementById('camera-preview-container').style.display = 'block';
+    document.getElementById('camera-stream-container').style.display = 'none';
+    
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream = null;
+    }
+    updateSignatureTokenPreview();
+  }, 'image/png');
+}
+
+function resetCameraPhoto() {
+  signatureCameraBlob = null;
+  document.getElementById('camera-preview-container').style.display = 'none';
+  document.getElementById('btn-start-camera').style.display = 'block';
+  updateSignatureTokenPreview();
+}
+
+/* ─── Client-side Rendering & Scrollable PDF Previewer ─── */
+let renderedPages = {}; // Cache rendered states to prevent redundant drawing
+
+async function renderPageCanvas(pageNum) {
+  if (renderedPages[pageNum]) return;
+  renderedPages[pageNum] = true;
+  
+  const wrapper = document.getElementById(`page-wrapper-${pageNum}`);
+  if (!wrapper) return;
+  
+  try {
+    const page = await G.pdfDoc.getPage(pageNum);
+    
+    // Use the wrapper's actual width for scaling (fall back to 500)
+    const unscaledViewport = page.getViewport({ scale: 1.0 });
+    const targetWidth = Math.min(wrapper.clientWidth || 500, 500);
+    const scale = targetWidth / unscaledViewport.width;
+    const viewport = page.getViewport({ scale: scale });
+    
+    const canvas = document.createElement('canvas');
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    canvas.style.display = 'block';
+    canvas.style.width = targetWidth + 'px';
+    canvas.style.height = Math.round(viewport.height) + 'px';
+    canvas.style.border = '1px solid #ddd';
+    canvas.style.borderRadius = '4px';
+    
+    // Double click visual sign placement listener
+    if (G.currentTool === 'pdf_sign') {
+      wrapper.addEventListener('dblclick', (e) => placeSignatureToken(e, pageNum));
+    }
+    
+    const context = canvas.getContext('2d');
+    await page.render({ canvasContext: context, viewport: viewport }).promise;
+    
+    // Hide loading text and mount canvas view
+    const loader = wrapper.querySelector('.page-loader-text');
+    if (loader) loader.remove();
+    wrapper.appendChild(canvas);
+  } catch(err) {
+    console.error(`Failed to render page ${pageNum}:`, err);
+    renderedPages[pageNum] = false; // Reset so lazy render loop can retry
+  }
+}
+
+function handlePreviewScroll() {
+  const wrap = document.querySelector('.pdf-render-scroll-wrap');
+  if (!wrap) return;
+  
+  const scrollPos = wrap.scrollTop + wrap.clientHeight / 2;
+  const pageContainers = wrap.querySelectorAll('.pdf-page-container');
+  
+  let activePageNum = 1;
+  pageContainers.forEach(container => {
+    const pageNum = parseInt(container.getAttribute('data-page'));
+    // Use offsetTop relative to the scroll wrapper
+    const top = container.offsetTop;
+    const bottom = top + container.offsetHeight;
+    
+    if (scrollPos >= top && scrollPos <= bottom) {
+      activePageNum = pageNum;
+    }
+  });
+  
+  G.pdfCurrentPage = activePageNum;
+  
+  // Update header text label in real time
+  const label = document.getElementById('txt-active-page-num');
+  if (label) {
+    label.textContent = `Page ${activePageNum} of ${G.pdfPageCount}`;
+  }
+}
+
+// Apply current tool settings as a live preview (called by the ↻ button)
+async function rerenderAllPages() {
+  if (!G.pdfDoc) return;
+  
+  // Reset CSS transforms and hide crop overlays / page num badges
+  for (let p = 1; p <= G.pdfPageCount; p++) {
+    const wrapper = document.getElementById(`page-wrapper-${p}`);
+    if (!wrapper) continue;
+    const canvas = wrapper.querySelector('canvas');
+    if (canvas) {
+      canvas.style.transition = 'none';
+      canvas.style.transform = 'rotate(0deg)';
+    }
+    const cropOverlay = wrapper.querySelector('.crop-overlay-box');
+    if (cropOverlay) cropOverlay.style.display = 'none';
+    const numBadge = wrapper.querySelector('.page-num-preview-badge');
+    if (numBadge) numBadge.style.display = 'none';
+  }
+  
+  // Apply tool-specific preview effects
+  if (G.currentTool === 'pdf_rotate') {
+    applyRotatePreview();
+  } else if (G.currentTool === 'pdf_crop') {
+    applyCropPreview();
+  } else if (G.currentTool === 'pdf_arrange') {
+    applyArrangePreview();
+  } else if (G.currentTool === 'pdf_num') {
+    applyNumberingPreview();
+  }
+  
+  toast('Preview updated.');
+}
+
+// Pre-calculate page dimensions and build the scrollable layout, then render all pages eagerly
+async function renderPDFPreviewLayout(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container || !G.pdfDoc) return;
+  
+  renderedPages = {}; // Clear cache
+  
+  // Step 1: Pre-calculate the expected rendered height for each page using PDF.js viewport
+  // Dynamically calculate target width to fit mobile screen bounds without horizontal overflow
+  const maxAvailable = container.clientWidth ? (container.clientWidth - 24) : (window.innerWidth - 32);
+  const renderWidth = Math.max(240, Math.min(500, maxAvailable));
+  const pageDims = [];
+  for (let p = 1; p <= G.pdfPageCount; p++) {
+    const page = await G.pdfDoc.getPage(p);
+    const vp = page.getViewport({ scale: 1.0 });
+    const scale = renderWidth / vp.width;
+    const scaledHeight = Math.round(vp.height * scale);
+    pageDims.push({ pageNum: p, width: renderWidth, height: scaledHeight });
+  }
+  
+  // Step 2: Build the HTML with explicit min-height on each page wrapper
+  let pagesHTML = '';
+  for (const dim of pageDims) {
+    pagesHTML += `
+      <div class="pdf-page-container" id="page-wrapper-${dim.pageNum}" data-page="${dim.pageNum}" 
+           style="position:relative; width:${dim.width}px; min-height:${dim.height}px; background:#fff; 
+                  display:flex; flex-direction:column; align-items:center; overflow:hidden; flex-shrink:0;">
+        <div class="page-loader-text" style="padding:40px; font-size:11px; color:var(--muted); font-weight:700; font-family:var(--font-mono);">Rendering Page ${dim.pageNum}...</div>
+      </div>
+    `;
+  }
+  
+  container.innerHTML = `
+    <div class="panel-header" style="display:flex; justify-content:space-between; align-items:center;">
+      <span class="panel-title">Visual Workspace Preview</span>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button type="button" onclick="rerenderAllPages()" title="Re-render pages" style="width:32px; height:32px; border-radius:8px; border:2px solid var(--border); background:var(--bg); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; box-shadow:0 2px 0 var(--border); transition:transform 0.1s,box-shadow 0.1s;" onmousedown="this.style.transform='translateY(2px)';this.style.boxShadow='none'" onmouseup="this.style.transform='';this.style.boxShadow='0 2px 0 var(--border)'" onmouseleave="this.style.transform='';this.style.boxShadow='0 2px 0 var(--border)'">&#x21bb;</button>
+        <span id="txt-active-page-num" style="font-weight:800; font-family:var(--font-mono); font-size:12px; background:var(--bg); border:2px solid var(--border); border-radius:8px; padding:4px 8px;">Page 1 of ${G.pdfPageCount}</span>
+      </div>
+    </div>
+    
+    <div style="display:flex; flex-direction:column; align-items:center; flex:1; position:relative; width:100%;">
+      
+      <!-- Hidden signature token overlay container -->
+      ${G.currentTool === 'pdf_sign' ? `
+      <div class="sig-token" id="signature-token" style="display:none;" onmousedown="dragStart(event)">
+        <span>SIGNATURE TOKEN</span>
+      </div>` : ''}
+      
+      <!-- Scrollable PDF Document viewer — overflow-y is ALWAYS scroll so scrollbar is visible -->
+      <div class="pdf-render-scroll-wrap" onscroll="handlePreviewScroll()" 
+           style="height:520px; overflow-y:scroll; border:2px solid var(--border); border-radius:12px; 
+                  background:#f5f5f0; width:100%; display:flex; flex-direction:column; gap:20px; 
+                  align-items:center; padding:20px 16px; box-shadow:inset 0 2px 6px rgba(0,0,0,0.06);">
+        ${pagesHTML}
+      </div>
+      
+    </div>
+  `;
+  
+  // Step 3: Eagerly render ALL pages sequentially (no lazy loading needed for typical docs)
+  for (let p = 1; p <= G.pdfPageCount; p++) {
+    await renderPageCanvas(p);
+  }
+  
+  // Trigger initial page number detection
+  handlePreviewScroll();
+}
+
+// Drag & drop handlers for visual signature token placement
+function placeSignatureToken(e, pageNum) {
+  const wrap = document.getElementById(`page-wrapper-${pageNum}`);
+  const token = document.getElementById('signature-token');
+  if (!wrap || !token) return;
+  
+  // Attach token inside active page wrapper
+  if (token.parentElement !== wrap) {
+    wrap.appendChild(token);
+  }
+  
+  const rect = wrap.getBoundingClientRect();
+  const clickX = e.clientX - rect.left;
+  const clickY = e.clientY - rect.top;
+  
+  const tokenWidth = 100;
+  const tokenHeight = 50;
+  let x = clickX - tokenWidth / 2;
+  let y = clickY - tokenHeight / 2;
+  
+  if (x < 0) x = 0;
+  if (y < 0) y = 0;
+  if (x + tokenWidth > rect.width) x = rect.width - tokenWidth;
+  if (y + tokenHeight > rect.height) y = rect.height - tokenHeight;
+  
+  token.style.left = x + 'px';
+  token.style.top = y + 'px';
+  token.style.display = 'flex';
+  
+  activeSignPage = pageNum;
+  document.getElementById('sign-page-num').value = pageNum;
+  
+  tokenXRatio = x / rect.width;
+  tokenYRatio = y / rect.height;
+  
+  updateSignatureTokenPreview();
+}
+
+function dragStart(e) {
+  e.preventDefault();
+  activeDrag = true;
+  const token = document.getElementById('signature-token');
+  startX = e.clientX - token.offsetLeft;
+  startY = e.clientY - token.offsetTop;
+  
+  document.addEventListener('mousemove', dragMove);
+  document.addEventListener('mouseup', dragEnd);
+}
+
+function dragMove(e) {
+  if (!activeDrag) return;
+  const token = document.getElementById('signature-token');
+  const wrap = token.parentElement;
+  if (!wrap) return;
+  const rect = wrap.getBoundingClientRect();
+  
+  let x = e.clientX - startX;
+  let y = e.clientY - startY;
+  
+  const tokenWidth = 100;
+  const tokenHeight = 50;
+  if (x < 0) x = 0;
+  if (y < 0) y = 0;
+  if (x + tokenWidth > rect.width) x = rect.width - tokenWidth;
+  if (y + tokenHeight > rect.height) y = rect.height - tokenHeight;
+  
+  token.style.left = x + 'px';
+  token.style.top = y + 'px';
+  
+  tokenXRatio = x / rect.width;
+  tokenYRatio = y / rect.height;
+}
+
+function dragEnd() {
+  activeDrag = false;
+  document.removeEventListener('mousemove', dragMove);
+  document.removeEventListener('mouseup', dragEnd);
+}
+
+async function updateSignPreviewPage() {
+  const pInput = document.getElementById('sign-page-num');
+  if (!pInput) return;
+  const p = +pInput.value;
+  if (p >= 1 && p <= G.pdfPageCount) {
+    activeSignPage = p;
+    // Scroll active sign target page into view inside previewer
+    const wrapper = document.getElementById(`page-wrapper-${p}`);
+    const scrollWrap = document.querySelector('.pdf-render-scroll-wrap');
+    if (wrapper && scrollWrap) {
+      scrollWrap.scrollTop = wrapper.offsetTop - 16;
+    }
+  } else {
+    pInput.value = activeSignPage;
+  }
+}
+
+/* ─── PDF Convert To Handlers ─── */
+function handlePDFToDrop(e) {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if(file) loadPDFToFile(file);
+}
+
+function uploadPDFTo(input) {
+  if(input.files[0]) loadPDFToFile(input.files[0]);
+}
+
+function loadPDFToFile(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  const mapping = {
+    'docx': 'word', 'xlsx': 'excel', 'html': 'html', 'txt': 'text', 'rtf': 'rtf',
+    'jpg': 'image', 'jpeg': 'image', 'png': 'image', 'bmp': 'image', 'gif': 'image'
+  };
+  
+  const fmt = mapping[ext];
+  if(!fmt) { toast('Unsupported source file format.', 'error'); return; }
+  
+  G.pdfFiles = [{ name: file.name, size: file.size, fileObject: file, sourceFormat: fmt }];
+  document.getElementById('source-format-badge').textContent = `${ext.toUpperCase()} File (${fmt})`;
+  toast(`Selected source: ${file.name}`);
+}
+
+/* ─── Trigger Server Actions (stateless POST endpoints) ─── */
+async function runPDFMerge() {
+  if(!G.pdfFiles.length) { toast('Upload PDF files first', 'error'); return; }
+  toast('Merging PDF documents…');
+  
+  const fd = new FormData();
+  G.pdfFiles.forEach(f => {
+    fd.append('files', f.fileObject);
+  });
+  
+  await postFileDownload('/pdf/merge', fd, 'merged_document.pdf');
+}
+
+async function runPDFSplit() {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  
+  const rows = document.querySelectorAll('.split-range-row');
+  if (rows.length === 0) { toast('Please add at least one page range.', 'error'); return; }
+  
+  const rangeArr = [];
+  for (const row of rows) {
+    const fromVal = parseInt(row.querySelector('.range-from').value);
+    const toVal = parseInt(row.querySelector('.range-to').value);
+    
+    if (fromVal > toVal) {
+      toast(`Invalid range: From page (${fromVal}) cannot be greater than To page (${toVal}).`, 'error');
+      return;
+    }
+    rangeArr.push([fromVal, toVal]);
+  }
+  
+  // Validate: a single range covering the entire document is pointless
+  if (rangeArr.length === 1 && rangeArr[0][0] === 1 && rangeArr[0][1] === G.pdfPageCount) {
+    toast(`Splitting from page 1 to ${G.pdfPageCount} is the entire document — that's not a split. Use a smaller range or add multiple ranges.`, 'error');
+    return;
+  }
+  
+  const mergeChecked = document.getElementById('merge-ranges-check').checked;
+  
+  const fd = new FormData();
+  fd.append('file', G.pdfFiles[0].fileObject);
+  fd.append('action', 'split');
+  fd.append('ranges', JSON.stringify(rangeArr));
+  fd.append('merge_ranges', mergeChecked ? 'true' : 'false');
+  
+  const downloadName = (rangeArr.length > 1 && !mergeChecked) ? 'split_pages.zip' : 'split_page.pdf';
+  await postFileDownload('/pdf/organize', fd, downloadName);
+}
+
+async function runPDFDelete() {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  const rows = document.querySelectorAll('.delete-page-row');
+  if (rows.length === 0) { toast('Please specify at least one page to delete.', 'error'); return; }
+  
+  const pages = [];
+  rows.forEach(row => {
+    pages.push(parseInt(row.querySelector('.delete-page-val').value));
+  });
+  
+  // Validate: cannot delete ALL pages
+  const uniquePages = new Set(pages.filter(p => p >= 1 && p <= G.pdfPageCount));
+  if (uniquePages.size >= G.pdfPageCount) {
+    toast(`Cannot delete all ${G.pdfPageCount} pages. At least one page must remain.`, 'error');
+    return;
+  }
+  
+  const fd = new FormData();
+  fd.append('file', G.pdfFiles[0].fileObject);
+  fd.append('action', 'delete_pages');
+  fd.append('pages', JSON.stringify(pages));
+  
+  await postFileDownload('/pdf/organize', fd, 'pages_deleted.pdf');
+}
+
+async function runPDFRotate() {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  const angle = document.getElementById('rotate-angle').value;
+  const scope = document.getElementById('rotate-scope').value;
+  
+  let pages = [];
+  if (scope === 'specific') {
+    const rows = document.querySelectorAll('.rotate-page-row');
+    rows.forEach(row => {
+      pages.push(parseInt(row.querySelector('.rotate-page-val').value));
+    });
+    if (pages.length === 0) { toast('Please specify at least one page to rotate.', 'error'); return; }
+  }
+  
+  const fd = new FormData();
+  fd.append('file', G.pdfFiles[0].fileObject);
+  fd.append('action', 'rotate');
+  fd.append('angle', angle);
+  fd.append('pages', JSON.stringify(pages));
+  
+  await postFileDownload('/pdf/organize', fd, 'rotated.pdf');
+}
+
+async function runPDFCrop() {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  const l = parseFloat(document.getElementById('crop-l').value) || 0;
+  const r = parseFloat(document.getElementById('crop-r').value) || 0;
+  const t = parseFloat(document.getElementById('crop-t').value) || 0;
+  const b = parseFloat(document.getElementById('crop-b').value) || 0;
+  const scope = document.getElementById('crop-scope').value;
+
+  let pWidth = 612;
+  let pHeight = 792;
+  if (G.pdfDoc) {
+    try {
+      const page = await G.pdfDoc.getPage(1);
+      const vp = page.getViewport({ scale: 1.0 });
+      pWidth = Math.round(vp.width);
+      pHeight = Math.round(vp.height);
+    } catch(e) {}
+  }
+
+  if (l + r >= pWidth - 10 || t + b >= pHeight - 10) {
+    showModal(`Crop margins are too large. Combined margins exceed actual page dimensions (${pWidth}pt width, ${pHeight}pt height).`, 'error', 'crop_limit');
+    return;
+  }
+  
+  let pages = [];
+  if (scope === 'specific') {
+    const rows = document.querySelectorAll('.crop-page-row');
+    rows.forEach(row => {
+      pages.push(parseInt(row.querySelector('.crop-page-val').value));
+    });
+    if (pages.length === 0) { toast('Please specify at least one page to crop.', 'error'); return; }
+  }
+  
+  const fd = new FormData();
+  fd.append('file', G.pdfFiles[0].fileObject);
+  fd.append('action', 'crop');
+  fd.append('left', l);
+  fd.append('right', r);
+  fd.append('top', t);
+  fd.append('bottom', b);
+  fd.append('pages', JSON.stringify(pages));
+  
+  await postFileDownload('/pdf/organize', fd, 'cropped.pdf');
+}
+
+async function runPDFArrange() {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  const rows = document.querySelectorAll('.arrange-slot-row');
+  if (rows.length === 0) { toast('Please specify at least one page slot in sequence.', 'error'); return; }
+  
+  const order = [];
+  rows.forEach(row => {
+    order.push(parseInt(row.querySelector('.arrange-page-val').value));
+  });
+  
+  const fd = new FormData();
+  fd.append('file', G.pdfFiles[0].fileObject);
+  fd.append('action', 'rearrange');
+  fd.append('order', JSON.stringify(order));
+  
+  await postFileDownload('/pdf/organize', fd, 'rearranged.pdf');
+}
+
+async function runPDFNumbering() {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  const style = document.getElementById('num-style').value;
+  
+  const fd = new FormData();
+  fd.append('file', G.pdfFiles[0].fileObject);
+  fd.append('action', 'add_page_numbers');
+  fd.append('style', style);
+  
+  await postFileDownload('/pdf/organize', fd, 'numbered.pdf');
+}
+
+async function runPDFSecurity(action) {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  const pId = action === 'encrypt' ? 'protect-pass' : 'unlock-pass';
+  const pass = document.getElementById(pId).value;
+  if(!pass) { toast('Password is required', 'error'); return; }
+  
+  const fd = new FormData();
+  fd.append('file', G.pdfFiles[0].fileObject);
+  fd.append('action', action);
+  fd.append('password', pass);
+  
+  await postFileDownload('/pdf/security', fd, 'secured_document.pdf');
+}
+
+async function runPDFConvertFrom() {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  const fmt = document.getElementById('conv-from-fmt').value;
+  const codec = document.getElementById('conv-img-codec').value;
+  
+  const fd = new FormData();
+  fd.append('file', G.pdfFiles[0].fileObject);
+  fd.append('format', fmt);
+  fd.append('img_format', codec);
+  
+  const nameMapping = {
+    'images': 'images.zip', 'text': 'extracted_text.txt',
+    'word': 'converted.docx', 'excel': 'converted.xlsx', 'html': 'converted.html'
+  };
+  
+  await postFileDownload('/pdf/convert-from', fd, nameMapping[fmt]);
+}
+
+async function runPDFConvertTo() {
+  if(!G.pdfFiles.length) { toast('Upload source file first', 'error'); return; }
+  const src = G.pdfFiles[0];
+  
+  const fd = new FormData();
+  fd.append('file', src.fileObject);
+  fd.append('source_format', src.sourceFormat);
+  
+  await postFileDownload('/pdf/convert-to', fd, 'converted_from_source.pdf');
+}
+
+async function runPDFSign() {
+  if(!G.pdfFiles.length) { toast('Upload PDF first', 'error'); return; }
+  
+  let signatureBlob = null;
+  
+  if (currentSigTab === 'draw') {
+    const pad = document.getElementById('signature-pad');
+    signatureBlob = await new Promise(resolve => pad.toBlob(resolve, 'image/png'));
+    if (!signatureBlob || signatureBlob.size < 200) {
+      toast('Please draw a signature first.', 'error');
+      return;
+    }
+  } 
+  else if (currentSigTab === 'write') {
+    const canvas = document.getElementById('write-canvas');
+    const text = document.getElementById('sig-write-input').value;
+    if (!text) {
+      toast('Please type a signature text first.', 'error');
+      return;
+    }
+    signatureBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  } 
+  else if (currentSigTab === 'upload') {
+    if (!signatureUploadBlob) {
+      toast('Please upload a signature photo first.', 'error');
+      return;
+    }
+    signatureBlob = signatureUploadBlob;
+  } 
+  else if (currentSigTab === 'camera') {
+    if (!signatureCameraBlob) {
+      toast('Please take a camera photo first.', 'error');
+      return;
+    }
+    signatureBlob = signatureCameraBlob;
+  }
+
+  toast('Overlaying signature graphics…');
+  
+  try {
+    const imgElement = document.querySelector(`#page-wrapper-${activeSignPage} canvas`);
+    if (!imgElement) {
+      toast('Please wait for the visual page preview to load before signing.', 'error');
+      return;
+    }
+    
+    const page = await G.pdfDoc.getPage(activeSignPage);
+    const viewport = page.getViewport({ scale: 1.0 });
+    const widthPts = viewport.width;
+    const heightPts = viewport.height;
+    
+    const xPts = tokenXRatio * widthPts;
+    const yPts = (1.0 - tokenYRatio - (50 / imgElement.clientHeight)) * heightPts;
+    const wPts = (100 / imgElement.clientWidth) * widthPts;
+    const hPts = (50 / imgElement.clientHeight) * heightPts;
+    
+    const fd = new FormData();
+    fd.append('file', G.pdfFiles[0].fileObject);
+    fd.append('signature', signatureBlob, 'signature.png');
+    fd.append('page', activeSignPage);
+    fd.append('x', xPts);
+    fd.append('y', yPts);
+    fd.append('width', wPts);
+    fd.append('height', hPts);
+    
+    await postFileDownload('/pdf/sign', fd, 'signed_document.pdf');
+  } catch(err) {
+    toast('Signing failed: ' + err, 'error');
+  }
+}
+
+async function postFileDownload(endpoint, formData, downloadName) {
+  toast('Processing file...');
+  try {
+    const res = await fetch(endpoint, { method: 'POST', body: formData });
+    if(res.status === 400 || res.status === 500) {
+      const data = await res.json();
+      toast(data.error || 'Server processing error', 'error');
+      return;
+    }
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = downloadName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+    toast('Downloaded successfully.');
+  } catch(err) {
+    toast('Processing failed: ' + err, 'error');
+  }
+}
+
+/* ─── File Size Reducer Handlers ─── */
+let currentCompressFile = null;
+let currentCompressMode = 'auto';
+
+function switchCompressTab(mode) {
+  currentCompressMode = mode;
+  document.querySelectorAll('.compress-tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.compress-pane').forEach(pane => pane.style.display = 'none');
+
+  if (mode === 'auto') {
+    document.getElementById('compress-tab-auto').classList.add('active');
+    document.getElementById('compress-pane-auto').style.display = 'block';
+  } else {
+    document.getElementById('compress-tab-manual').classList.add('active');
+    document.getElementById('compress-pane-manual').style.display = 'block';
+  }
+  updateCompressEst();
+}
+
+function updateCompressQualityLabel(val) {
+  document.getElementById('compress-quality-val').textContent = val + '%';
+  updateCompressEst();
+}
+
+function handleCompressFileSelect(input) {
+  if (input.files && input.files[0]) {
+    currentCompressFile = input.files[0];
+    displayCompressFileInfo();
+  }
+}
+
+function handleCompressDrop(e) {
+  e.preventDefault();
+  if (e.currentTarget) e.currentTarget.classList.remove('drag');
+  if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+    currentCompressFile = e.dataTransfer.files[0];
+    displayCompressFileInfo();
+  }
+}
+
+function displayCompressFileInfo() {
+  if (!currentCompressFile) return;
+  
+  const selectedBox = document.getElementById('compress-selected-doc-box');
+  const selectedName = document.getElementById('compress-selected-doc-name');
+  if (selectedBox) selectedBox.style.display = 'block';
+  if (selectedName) selectedName.textContent = currentCompressFile.name;
+
+  document.getElementById('compress-stats-card').style.display = 'block';
+  
+  const origKb = (currentCompressFile.size / 1024).toFixed(1);
+  const origMb = (currentCompressFile.size / (1024 * 1024)).toFixed(2);
+  const displayOrig = currentCompressFile.size > 1024 * 1024 ? `${origMb} MB` : `${origKb} KB`;
+  
+  const badge = document.getElementById('txt-compress-size-badge');
+  if (badge) badge.textContent = displayOrig;
+  document.getElementById('stat-orig-size').textContent = displayOrig;
+  
+  updateCompressEst();
+  renderCompressPreview();
+}
+
+function updateCompressEst() {
+  if (!currentCompressFile) return;
+  
+  let estBytes = currentCompressFile.size;
+
+  if (currentCompressMode === 'auto') {
+    const targetKb = parseFloat(document.getElementById('compress-target-kb').value);
+    if (targetKb && targetKb > 0) {
+      estBytes = targetKb * 1024;
+    } else {
+      estBytes = Math.round(currentCompressFile.size * 0.6);
+    }
+  } else {
+    const q = parseInt(document.getElementById('compress-quality').value) || 65;
+    const wPct = parseFloat(document.getElementById('compress-w-pct').value) || 100;
+    const hPct = parseFloat(document.getElementById('compress-h-pct').value) || 100;
+    const dpi = parseFloat(document.getElementById('compress-dpi').value) || 150;
+    
+    const factor = (q / 100) * (wPct / 100) * (hPct / 100) * (dpi / 150);
+    estBytes = Math.round(currentCompressFile.size * Math.min(0.95, factor));
+  }
+
+  const estKb = (estBytes / 1024).toFixed(1);
+  const estMb = (estBytes / (1024 * 1024)).toFixed(2);
+  const displayEst = estBytes > 1024 * 1024 ? `${estMb} MB` : `${estKb} KB`;
+  
+  document.getElementById('stat-est-size').textContent = displayEst;
+}
+
+// Render orientation-safe image/PDF preview on right workspace window
+async function renderCompressPreview() {
+  if (!currentCompressFile) return;
+  const placeholder = document.getElementById('compress-canvas-placeholder');
+  const imgEl = document.getElementById('compress-preview-img');
+  const canvasEl = document.getElementById('compress-preview-canvas');
+
+  const name = currentCompressFile.name.toLowerCase();
+  const isImage = name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.png') || name.endsWith('.webp') || name.endsWith('.bmp') || name.endsWith('.gif');
+  const isPdf = name.endsWith('.pdf');
+
+  if (isImage) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      imgEl.src = e.target.result;
+      imgEl.style.display = 'block';
+      canvasEl.style.display = 'none';
+      if (placeholder) placeholder.style.display = 'none';
+    };
+    reader.readAsDataURL(currentCompressFile);
+  } else if (isPdf) {
+    try {
+      const arrayBuffer = await currentCompressFile.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const page = await pdf.getPage(1);
+      const viewport = page.getViewport({ scale: 1.0 });
+      
+      canvasEl.width = viewport.width;
+      canvasEl.height = viewport.height;
+      const ctx = canvasEl.getContext('2d');
+      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+      
+      canvasEl.style.display = 'block';
+      imgEl.style.display = 'none';
+      if (placeholder) placeholder.style.display = 'none';
+    } catch(e) {
+      if (placeholder) {
+        placeholder.innerHTML = `<div style="font-weight:700;">${currentCompressFile.name}</div><div style="color:var(--muted); font-size:11px; margin-top:4px;">PDF document loaded</div>`;
+        placeholder.style.display = 'block';
+      }
+      imgEl.style.display = 'none';
+      canvasEl.style.display = 'none';
+    }
+  } else {
+    if (placeholder) {
+      placeholder.innerHTML = `<div style="font-weight:700; font-size:14px; margin-bottom:4px;">${currentCompressFile.name}</div><div style="color:var(--muted); font-size:11px;">Document loaded & ready for compression</div>`;
+      placeholder.style.display = 'block';
+    }
+    imgEl.style.display = 'none';
+    canvasEl.style.display = 'none';
+  }
+}
+
+async function runFileCompress() {
+  if (!currentCompressFile) {
+    toast('Please select or drop a file to compress first.', 'error');
+    return;
+  }
+  
+  const fd = new FormData();
+  fd.append('file', currentCompressFile);
+  fd.append('mode', 'json');
+
+  if (currentCompressMode === 'auto') {
+    const targetKb = document.getElementById('compress-target-kb').value;
+    if (!targetKb || parseFloat(targetKb) <= 0) {
+      toast('Please enter a target file size in KB for Auto Resize.', 'error');
+      return;
+    }
+    fd.append('target_size_kb', targetKb);
+    fd.append('quality', '65');
+    fd.append('width_percent', '100');
+    fd.append('height_percent', '100');
+  } else {
+    const q = document.getElementById('compress-quality').value;
+    const wPct = document.getElementById('compress-w-pct').value || 100;
+    const hPct = document.getElementById('compress-h-pct').value || 100;
+    fd.append('quality', q);
+    fd.append('width_percent', wPct);
+    fd.append('height_percent', hPct);
+  }
+  
+  try {
+    toast('Compressing file with optimization engine...');
+    const resp = await fetch('/api/reduce_file_size', { method: 'POST', body: fd });
+    const data = await resp.json();
+    
+    if (data.error) {
+      toast(data.error, 'error');
+      return;
+    }
+    
+    const origKb = (data.original_size / 1024).toFixed(1);
+    const compKb = (data.compressed_size / 1024).toFixed(1);
+    
+    // Update stat cards with exact real numbers from server
+    document.getElementById('stat-orig-size').textContent = `${origKb} KB`;
+    document.getElementById('stat-est-size').textContent = `${compKb} KB`;
+    
+    const baseName = data.filename.substring(0, data.filename.lastIndexOf('.')) || data.filename;
+    const downloadName = `${baseName}_min${data.ext}`;
+    
+    let mimeType = 'application/octet-stream';
+    if (data.ext === '.pdf') mimeType = 'application/pdf';
+    else if (data.ext === '.jpg' || data.ext === '.jpeg') mimeType = 'image/jpeg';
+    else if (data.ext === '.png') mimeType = 'image/png';
+    else if (data.ext === '.webp') mimeType = 'image/webp';
+
+    const dataUrl = `data:${mimeType};base64,${data.data_b64}`;
+    
+    // Trigger direct browser download automatically!
+    const triggerLink = document.createElement('a');
+    triggerLink.href = dataUrl;
+    triggerLink.download = downloadName;
+    document.body.appendChild(triggerLink);
+    triggerLink.click();
+    triggerLink.remove();
+    
+    toast(`Compression completed (${origKb} KB → ${compKb} KB)! Saved ${data.savings_percent}%. Downloading...`);
+  } catch (err) {
+    toast('Compression failed: ' + err.message, 'error');
+  }
+}
+</script>
 </body>
 </html>
